@@ -1,9 +1,9 @@
-/* Font locale da Google Fonts; la licenza è in assets/fonts/OFL.txt. */
+/* Font locale da Google Fonts; licenza in assets/fonts/ADLaMDisplay-OFL.txt. */
 @font-face {
-  font-family: "Instrument Sans";
-  src: url("assets/fonts/InstrumentSans.ttf") format("truetype");
+  font-family: "ADLaM Display";
+  src: url("assets/fonts/ADLaMDisplay-Regular.ttf") format("truetype");
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 400;
   font-display: swap;
 }
 
@@ -49,11 +49,12 @@ header {
 
 h1 {
   margin: 0;
-  font-family: "Instrument Sans", "Segoe UI", sans-serif;
+  font-family: "ADLaM Display", "Segoe UI", sans-serif;
   font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1;
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
 }
 
 /* Grid centra il timer nello spazio disponibile sotto il marchio. */
