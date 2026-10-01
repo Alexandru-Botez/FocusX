@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusX - Timer Pomodoro</title>
+
+    <!-- Il CSS definirà l'aspetto della pagina. -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- defer esegue lo script dopo che l'HTML è stato letto. -->
+    <script src="script.js" defer></script>
+  </head>
+
+  <body>
+    <header>
+      <h1>FocusX</h1>
+      <p>Studia un obiettivo alla volta.</p>
+    </header>
+
+    <main>
+      <section aria-labelledby="timer-heading">
+        <h2 id="timer-heading">Timer Pomodoro</h2>
+        <p>Sessione di studio: 25 minuti.</p>
+
+        
+        <p id="timer" role="timer" aria-live="off">25:00</p>
+
+        <div class="timer-controls">
+          <button id="start-button" type="button">Avvia</button>
+          <button id="pause-button" type="button">Pausa</button>
+          <button id="reset-button" type="button">Reset</button>
+        </div>
+
+      
+        <p id="timer-status" role="status">Pronto per iniziare.</p>
+      </section>
+    </main>
+  </body>
+</html>
