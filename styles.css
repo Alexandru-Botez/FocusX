@@ -1,0 +1,149 @@
+/* Le variabili permettono di riutilizzare gli stessi colori. */
+:root {
+  --background: #f3f7f4;
+  --surface: #ffffff;
+  --text: #20382d;
+  --muted: #52665b;
+  --accent: #236d4d;
+  --accent-hover: #184f38;
+  --border: #d9e4dc;
+}
+
+/* Padding e bordi sono inclusi nella larghezza degli elementi. */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, sans-serif;
+  color: var(--text);
+  background-color: var(--background);
+}
+
+header,
+main {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: var(--accent);
+}
+
+header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+main {
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background-color: var(--surface);
+  box-shadow: 0 12px 36px rgb(32 56 45 / 8%);
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+
+section > p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* # seleziona un elemento tramite il suo id. */
+#timer {
+  margin: 24px 0;
+  padding: 24px 12px;
+  border-radius: 20px;
+  background-color: var(--background);
+  color: var(--accent);
+  font-size: clamp(4rem, 17vw, 6rem);
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* . seleziona una classe; Flexbox dispone i pulsanti in una riga. */
+.timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+button {
+  flex: 1 1 100px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 600;
+  background-color: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--accent);
+  background-color: var(--background);
+}
+
+#start-button {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  color: var(--surface);
+}
+
+#start-button:hover {
+  border-color: var(--accent-hover);
+  background-color: var(--accent-hover);
+}
+
+/* Evidenzia il pulsante selezionato usando il tasto Tab. */
+button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#timer-status {
+  margin-top: 20px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Su schermi piccoli i pulsanti occupano una riga ciascuno. */
+@media (max-width: 420px) {
+  main {
+    padding: 20px;
+  }
+
+  .timer-controls {
+    gap: 8px;
+  }
+
+  button {
+    flex-basis: 100%;
+  }
+}
