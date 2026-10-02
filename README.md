@@ -5,8 +5,10 @@ Il progetto usa HTML, CSS e JavaScript per imparare lo sviluppo web e il lavoro 
 
 ## Stato del progetto
 
-Attualmente è disponibile l'interfaccia statica. Il file `script.js` è vuoto:
-il tempo mostrato è `25:00` e i pulsanti Avvia, Pausa e Reset non eseguono ancora azioni.
+Il pulsante Avvia fa partire il conto alla rovescia da `25:00`.
+Quando i secondi rimanenti arrivano a zero, il tempo torna subito a `25:00`
+e il conto alla rovescia continua automaticamente.
+Pausa, Reset e la gestione degli obiettivi sono ancora da sviluppare.
 
 Già presenti:
 
@@ -15,13 +17,14 @@ Già presenti:
 - Logo SVG con testa di profilo e occhio a mirino.
 - Font ADLaM Display incluso nel progetto.
 - Nomi accessibili per i pulsanti e indicatore di focus da tastiera.
-- Commenti didattici nell'HTML e nel CSS.
+- Avvio del timer con aggiornamento del tempo e ripartenza automatica.
+- Commenti didattici nell'HTML, nel CSS e nel JavaScript.
 
 ## Tecnologie e requisiti
 
 - **HTML:** struttura e significato dei contenuti.
 - **CSS:** colori, tipografia, disposizione e adattamento allo schermo.
-- **JavaScript:** file predisposto per la futura logica del timer.
+- **JavaScript:** avvio, conto alla rovescia e ripartenza automatica del timer.
 - **Git:** cronologia delle modifiche.
 
 Per seguire la procedura di avvio servono un browser moderno, Git e Python 3.
@@ -76,8 +79,7 @@ FocusX/
 
 ## Funzioni da sviluppare
 
-- [ ] Conto alla rovescia della sessione Pomodoro.
-- [ ] Avvio, pausa e ripristino del timer.
+- [ ] Pausa e ripristino del timer.
 - [ ] Segnalazione della fine della sessione.
 - [ ] Inserimento e completamento degli obiettivi di studio.
 

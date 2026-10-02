@@ -13,7 +13,7 @@ La documentazione di FocusX vive nello stesso repository del codice:
 | [README.md](../README.md), nella cartella principale | Presentazione, stato del progetto, requisiti, avvio e collegamenti alle guide. |
 | [docs/guida-sviluppo.md](guida-sviluppo.md) | Organizzazione del codice, scelte, convenzioni e verifiche. |
 | Questo file, `docs/documentazione.md` | Regole per scrivere e aggiornare la documentazione. |
-| Commenti in [index.html](../index.html) e [styles.css](../styles.css) | Spiegazioni vicine agli elementi e alle regole interessate. |
+| Commenti in [index.html](../index.html), [styles.css](../styles.css) e [script.js](../script.js) | Spiegazioni vicine agli elementi, alle regole e alla logica interessata. |
 
 Git registra le modifiche dei documenti come quelle del codice.
 Dopo un commit e un push sul ramo `main`, i documenti aggiornati sono disponibili
