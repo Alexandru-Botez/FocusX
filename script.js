@@ -3,6 +3,7 @@
 const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
+const pulsanteReset = document.getElementById("reset-button");
 const statoTimer = document.getElementById("timer-status");
 
 // Lavoriamo in secondi: 25 minuti sono 25 × 60 = 1500 secondi.
@@ -58,6 +59,9 @@ function avviaTimer() {
   // false riabilita Pausa: adesso c'è un conteggio che possiamo fermare.
   pulsantePausa.disabled = false;
 
+  // Dopo l'avvio possiamo riportare il timer al suo valore iniziale con Reset.
+  pulsanteReset.disabled = false;
+
   // hidden nasconde l'elemento HTML: il messaggio scompare dopo l'avvio.
   statoTimer.hidden = true;
 
@@ -79,9 +83,27 @@ function pausaTimer() {
   pulsantePausa.disabled = true;
 }
 
+function resetTimer() {
+  // Riutilizziamo Pausa per fermare l'intervallo e rendere di nuovo disponibile Avvia.
+  pausaTimer();
+
+  // Ripristiniamo i secondi della sessione e aggiorniamo subito il testo a 25:00.
+  secondiRimanenti = durataSessione;
+  aggiornaTimer();
+
+  // Non serve un altro Reset finché non premiamo nuovamente Avvia.
+  pulsanteReset.disabled = true;
+
+  // false rende di nuovo visibile il messaggio iniziale: il timer è pronto a ripartire.
+  statoTimer.hidden = false;
+}
+
 // addEventListener collega un evento a una funzione: un clic eseguirà avviaTimer.
 // Anche qui passiamo il nome della funzione senza eseguirla subito.
 pulsanteAvvia.addEventListener("click", avviaTimer);
 
 // Il clic su Pausa esegue la funzione che ferma il conteggio.
 pulsantePausa.addEventListener("click", pausaTimer);
+
+// Il clic su Reset ferma il conteggio e ripristina lo stato iniziale.
+pulsanteReset.addEventListener("click", resetTimer);

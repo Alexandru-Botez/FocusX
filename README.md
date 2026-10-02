@@ -7,9 +7,12 @@ Il progetto usa HTML, CSS e JavaScript per imparare lo sviluppo web e il lavoro 
 
 Il pulsante Avvia fa partire il conto alla rovescia da `25:00`.
 Pausa ferma il conteggio; premendo di nuovo Avvia si riprende dal tempo rimasto.
+Reset ferma il timer e lo riporta a `25:00`: per ripartire bisogna premere Avvia.
+Pausa e Reset sono disabilitati all'apertura e dopo un reset; Reset è disponibile
+durante il conteggio e in pausa dopo l'avvio.
 Quando i secondi rimanenti arrivano a zero, il tempo torna subito a `25:00`
 e il conto alla rovescia continua automaticamente.
-Reset e la gestione degli obiettivi sono ancora da sviluppare.
+La gestione degli obiettivi è ancora da sviluppare.
 
 Già presenti:
 
@@ -20,6 +23,7 @@ Già presenti:
 - Nomi accessibili per i pulsanti e indicatore di focus da tastiera.
 - Avvio del timer con aggiornamento del tempo e ripartenza automatica.
 - Pausa e ripresa dal tempo rimanente, con aggiornamento dei pulsanti disponibili.
+- Reset del timer a 25 minuti, con ritorno allo stato iniziale.
 - Sfondo rosso chiaro con testo nero al passaggio del mouse sul pulsante Reset.
 - Commenti didattici nell'HTML, nel CSS e nel JavaScript.
 
@@ -27,7 +31,7 @@ Già presenti:
 
 - **HTML:** struttura e significato dei contenuti.
 - **CSS:** colori, tipografia, disposizione e adattamento allo schermo.
-- **JavaScript:** avvio, pausa, ripresa, conto alla rovescia e ripartenza automatica del timer.
+- **JavaScript:** avvio, pausa, ripresa, reset, conto alla rovescia e ripartenza automatica del timer.
 - **Git:** cronologia delle modifiche.
 
 Per seguire la procedura di avvio servono un browser moderno, Git e Python 3.
@@ -82,7 +86,6 @@ FocusX/
 
 ## Funzioni da sviluppare
 
-- [ ] Ripristino del timer.
 - [ ] Segnalazione della fine della sessione.
 - [ ] Inserimento e completamento degli obiettivi di studio.
 

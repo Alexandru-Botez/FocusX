@@ -34,7 +34,7 @@
       script collega il file JavaScript indicato da src.
       defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
       dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
-      script.js gestisce avvio, pausa, ripresa e ripartenza automatica del timer.
+      script.js gestisce avvio, pausa, ripresa, reset e ripartenza automatica del timer.
     -->
     <script src="script.js" defer></script>
   </head>
@@ -120,8 +120,11 @@
             </svg>
           </button>
 
-          <!-- Il testo "Reset" dà già un nome al pulsante, quindi non serve aria-label. -->
-          <button id="reset-button" type="button">Reset</button>
+          <!--
+            Il testo "Reset" dà già un nome al pulsante, quindi non serve aria-label.
+            disabled impedisce il ripristino prima dell'avvio: il tempo è già a 25:00.
+          -->
+          <button id="reset-button" type="button" disabled>Reset</button>
         </div>
 
         <!--
