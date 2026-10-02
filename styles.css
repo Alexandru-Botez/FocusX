@@ -1,166 +1,367 @@
-/* Font locale da Google Fonts; licenza in assets/fonts/ADLaMDisplay-OFL.txt. */
+/*
+  CSS descrive l'aspetto degli elementi definiti nell'HTML.
+  Ogni regola contiene un selettore e, tra parentesi graffe, le dichiarazioni.
+  Una dichiarazione ha la forma proprietà: valore; il punto e virgola la conclude.
+  I selettori di tag, come body, selezionano tutti gli elementi di quel tipo.
+  Il punto seleziona una class (.brand-logo); il cancelletto seleziona un id (#timer).
+  La cascata combina le regole: una regola più specifica può prevalere su una generica;
+  a parità di priorità e specificità, per la stessa proprietà prevale quella scritta dopo.
+*/
+
+/*
+  @font-face registra un font che il browser può usare nelle regole successive.
+  Il file è incluso nel progetto; la licenza è in assets/fonts/ADLaMDisplay-OFL.txt.
+*/
 @font-face {
+  /* È il nome con cui richiameremo questo font, per esempio nella regola h1. */
   font-family: "ADLaM Display";
+
+  /* Percorso relativo al CSS; format indica che il file usa il formato TrueType. */
   src: url("assets/fonts/ADLaMDisplay-Regular.ttf") format("truetype");
+
+  /* Questo file contiene la variante normale, non quella corsiva. */
   font-style: normal;
+
+  /* 400 identifica il peso normale di questo font. */
   font-weight: 400;
+
+  /* Mostra subito un font di riserva e lo sostituisce quando quello locale è pronto. */
   font-display: swap;
 }
 
-/* Le variabili permettono di riutilizzare gli stessi colori. */
+/*
+  :root seleziona la radice del documento, cioè l'elemento html.
+  Le proprietà che iniziano con -- sono variabili CSS, chiamate custom properties.
+  Le recuperiamo con var(--nome): cambiare un colore qui aggiorna tutte le regole che lo usano.
+  I colori con # sono esadecimali: le coppie di cifre rappresentano rosso, verde e blu.
+*/
 :root {
+  /* Comunica il tema scuro al browser per i controlli e le altre parti native della pagina. */
   color-scheme: dark;
+
+  /* Nero: sfondo principale dell'app. */
   --background: #000000;
+
+  /* Bianco leggermente attenuato: testo e pulsante di avvio. */
   --text: #f5f5f5;
+
+  /* Grigio: testo secondario, come il messaggio sotto il timer. */
   --muted: #a3a3a3;
+
+  /* Grigio scuro: bordi dei pulsanti. */
   --border: #383838;
+
+  /* Sfondo usato al passaggio del mouse sui pulsanti. */
   --hover: #1a1a1a;
 }
 
-/* Padding e bordi sono inclusi nella larghezza degli elementi. */
+/*
+  * è il selettore universale: questa regola si applica a tutti gli elementi.
+  Il box model descrive contenuto, padding (spazio interno), bordo e margin (spazio esterno).
+*/
 * {
+  /* Con border-box, width e height includono contenuto, padding e bordo, ma non i margini. */
   box-sizing: border-box;
 }
 
+/* body è il contenitore generale; molti valori del testo vengono ereditati dai suoi figli. */
 body {
+  /* Elimina il margine che il browser applica normalmente intorno alla pagina. */
   margin: 0;
+
+  /* La pagina occupa almeno l'altezza della finestra: 1vh è l'1% dell'altezza del viewport. */
   min-height: 100vh;
+
+  /*
+    svh usa l'altezza del viewport piccolo, con le barre del browser mobile visibili.
+    Questa dichiarazione prevale su quella precedente se il browser la supporta;
+    altrimenti 100vh resta il valore di riserva.
+  */
   min-height: 100svh;
+
+  /* Grid permette di organizzare i figli diretti, header e main, in righe e colonne. */
   display: grid;
+
+  /* Prima riga alta quanto serve all'header; la seconda usa lo spazio restante (1fr). */
   grid-template-rows: auto 1fr;
+
+  /* Usa il font dell'interfaccia del sistema operativo, con sans-serif come riserva. */
   font-family: system-ui, sans-serif;
+
+  /* Colore del testo, ereditato dagli elementi che non ne impostano uno diverso. */
   color: var(--text);
+
+  /* Riempie lo sfondo del body usando la variabile definita in :root. */
   background-color: var(--background);
 }
 
-/* Il marchio resta in alto a sinistra, separato dal timer. */
+/* L'intestazione contiene logo e titolo, disposti in alto a sinistra. */
 header {
+  /* Flexbox dispone i figli su un asse: per impostazione predefinita, una riga. */
   display: flex;
+
+  /* Allinea verticalmente i centri di logo e titolo all'interno della riga. */
   align-items: center;
+
+  /* Distanza tra gli elementi, senza aggiungere margini esterni al gruppo. */
   gap: 12px;
+
+  /* Due valori: 28px sopra e sotto, 40px a sinistra e a destra. */
   padding: 28px 40px;
 }
 
+/* Il punto indica una class: seleziona l'immagine con class="brand-logo". */
 .brand-logo {
+  /* Larghezza e altezza uguali riservano al logo uno spazio quadrato. */
   width: 40px;
   height: 40px;
+
+  /* Impedisce a Flexbox di restringere il logo quando lo spazio disponibile diminuisce. */
   flex-shrink: 0;
 }
 
+/* Aspetto del titolo principale dell'app. */
 h1 {
+  /* Rimuove i margini predefiniti dei titoli. */
   margin: 0;
+
+  /* Prova i font nell'ordine: ADLaM Display, Segoe UI, infine un generico sans-serif. */
   font-family: "ADLaM Display", "Segoe UI", sans-serif;
+
+  /* rem è relativo al font della radice html: 1.5rem vale 24px se la radice è 16px. */
   font-size: 1.5rem;
+
+  /* Usa il peso normale, coerente con il file registrato in @font-face. */
   font-weight: 400;
+
+  /* Evita che il browser inventi grassetto o corsivo se una variante del font manca. */
   font-synthesis: none;
+
+  /* em è relativo al font dell'elemento; il valore negativo avvicina leggermente le lettere. */
   letter-spacing: -0.01em;
+
+  /* Senza unità, 1.1 significa un'altezza di riga pari a 1.1 volte la dimensione del font. */
   line-height: 1.1;
 }
 
-/* Grid centra il timer nello spazio disponibile sotto il marchio. */
+/* Il contenuto principale occupa la seconda riga del body, sotto l'intestazione. */
 main {
+  /* Crea una griglia anche dentro main, indipendente dalla griglia del body. */
   display: grid;
+
+  /* Scorciatoia che centra l'elemento della griglia sia verticalmente sia orizzontalmente. */
   place-items: center;
+
+  /* Tre valori: 40px sopra, 24px ai lati, 88px sotto. */
   padding: 40px 24px 88px;
 }
 
+/* Il blocco del timer si adatta allo spazio disponibile, con un limite di larghezza. */
 section {
+  /* Chiede tutta la larghezza disponibile nel contenitore. */
   width: 100%;
+
+  /* Impedisce alla sezione di diventare più larga di 560px sui monitor grandi. */
   max-width: 560px;
+
+  /* Centra il testo e gli altri contenuti inline; non centra da solo tutti i blocchi. */
   text-align: center;
 }
 
-/* clamp adatta la dimensione; tabular-nums mantiene stabili le cifre. */
+/* Il cancelletto seleziona l'elemento HTML con id="timer". */
 #timer {
+  /* Tre valori: nessun margine sopra o ai lati, 36px sotto per separare i pulsanti. */
   margin: 0 0 36px;
+
+  /*
+    clamp(minimo, valore preferito, massimo) fa variare il font entro due limiti.
+    Qui va da 5rem a 9rem; 23vw equivale al 23% della larghezza del viewport.
+  */
   font-size: clamp(5rem, 23vw, 9rem);
+
+  /* 500 richiede un peso medio: più marcato del normale 400. */
   font-weight: 500;
+
+  /* Riduce lo spazio fra i caratteri per rendere le cifre più compatte. */
   letter-spacing: -0.06em;
+
+  /* Tiene l'altezza di riga vicina alla dimensione delle cifre. */
   line-height: 1.1;
+
+  /* Se il font lo supporta, usa cifre tutte della stessa larghezza: il timer non oscilla. */
   font-variant-numeric: tabular-nums;
 }
 
+/* Contenitore comune dei pulsanti Avvia, Pausa e Reset. */
 .timer-controls {
+  /* Dispone i pulsanti in una riga con Flexbox. */
   display: flex;
+
+  /* Centra gli elementi lungo l'asse trasversale, qui quello verticale. */
   align-items: center;
+
+  /* Centra il gruppo lungo l'asse principale, qui quello orizzontale. */
   justify-content: center;
+
+  /* Consente ai pulsanti di andare a capo quando non c'è abbastanza spazio. */
   flex-wrap: wrap;
+
+  /* Mantiene 12px di distanza fra i pulsanti, anche quando ci sono più righe. */
   gap: 12px;
 }
 
+/* Regola comune a tutti i pulsanti; più avanti personalizziamo Avvia e Reset con i loro id. */
 button {
+  /* Il pulsante si comporta come un elemento inline e organizza i suoi contenuti con Flexbox. */
   display: inline-flex;
+
+  /* Centra verticalmente l'icona o il testo nel pulsante. */
   align-items: center;
+
+  /* Centra orizzontalmente l'icona o il testo nel pulsante. */
   justify-content: center;
+
+  /* Dimensioni uguali permettono di ottenere pulsanti circolari. */
   width: 56px;
   height: 56px;
+
+  /* Rimuove lo spazio interno predefinito dei pulsanti. */
   padding: 0;
+
+  /* Scorciatoia: bordo spesso 1px, continuo (solid), del colore --border. */
   border: 1px solid var(--border);
+
+  /* Arrotonda gli angoli fino a ottenere un cerchio, perché larghezza e altezza coincidono. */
   border-radius: 50%;
+
+  /* Eredita le impostazioni del font dal contenitore, invece di usare quelle native dei pulsanti. */
   font: inherit;
+
+  /* Sfondo nero per lo stile comune dei pulsanti. */
   background-color: var(--background);
+
+  /* Colora il testo e le icone SVG che usano currentColor. */
   color: var(--text);
+
+  /* Mostra il cursore a forma di mano quando il mouse è sopra un pulsante. */
   cursor: pointer;
 }
 
+/* Lo spazio nel selettore indica un discendente: solo gli svg contenuti dentro un button. */
 button svg {
+  /* Ridimensiona le icone; viewBox nell'HTML conserva il loro sistema di coordinate. */
   width: 22px;
   height: 22px;
 }
 
+/*
+  :hover seleziona il pulsante sotto il mouse.
+  :not(:disabled) esclude i pulsanti con l'attributo disabled.
+*/
 button:hover:not(:disabled) {
+  /* Rende più evidente il bordo del pulsante su cui si trova il mouse. */
   border-color: var(--text);
+
+  /* Aggiunge un leggero contrasto allo sfondo. */
   background-color: var(--hover);
 }
 
+/* Un selettore con id è più specifico di button e personalizza il pulsante di avvio. */
 #start-button {
+  /* Il bordo riprende il colore chiaro dello sfondo di questo pulsante. */
   border-color: var(--text);
+
+  /* Usa il bianco per rendere Avvia più evidente degli altri pulsanti. */
   background-color: var(--text);
+
+  /* L'icona diventa nera grazie a fill="currentColor" nell'HTML. */
   color: var(--background);
 }
 
+/* Hover specifico per Avvia: prevale sullo sfondo definito dal suo id. */
 #start-button:hover:not(:disabled) {
+  /* Scurisce leggermente il bianco quando il mouse passa sopra il pulsante. */
   background-color: #dedede;
 }
 
+/* Reset contiene una parola: lo adattiamo al testo invece di mantenere il cerchio. */
 #reset-button {
+  /* La larghezza viene calcolata dal contenuto e dal padding, invece di restare a 56px. */
   width: auto;
+
+  /* Nessuno spazio interno sopra o sotto; 18px a sinistra e a destra del testo. */
   padding: 0 18px;
+
+  /* Rende invisibile il bordo mantenendone lo spessore e lo spazio occupato. */
   border-color: transparent;
+
+  /* Gli angoli arrotondati danno al pulsante largo una forma simile a una pillola. */
   border-radius: 28px;
+
+  /* Testo più piccolo: 0.875rem equivale a 14px se il font della radice è 16px. */
   font-size: 0.875rem;
 }
 
-/* Evidenzia il pulsante selezionato usando il tasto Tab. */
+/*
+  :focus-visible seleziona un elemento che ha il focus quando il browser ritiene utile evidenziarlo.
+  Questo avviene normalmente navigando con Tab: aiuta a capire quale pulsante riceverà l'azione.
+*/
 button:focus-visible {
+  /* Disegna un contorno esterno che, a differenza del bordo, non occupa spazio nel layout. */
   outline: 2px solid var(--text);
+
+  /* Separa il contorno dal bordo del pulsante di 3px. */
   outline-offset: 3px;
 }
 
+/*
+  :disabled seleziona i pulsanti con l'attributo HTML disabled.
+  L'attributo disabilita l'interazione; queste regole ne comunicano soltanto l'aspetto.
+*/
 button:disabled {
+  /* Rende semitrasparenti sia il pulsante sia il suo contenuto. */
   opacity: 0.5;
+
+  /* Ripristina il cursore normale al posto della mano definita nella regola button. */
   cursor: default;
 }
 
+/* Testo secondario sotto i controlli del timer. */
 #timer-status {
+  /* Tre valori: 24px sopra, nessun margine ai lati o sotto. */
   margin: 24px 0 0;
+
+  /* Il grigio lo distingue dal tempo, che è l'informazione principale. */
   color: var(--muted);
+
+  /* Usa la stessa dimensione del testo del pulsante Reset. */
   font-size: 0.875rem;
+
+  /* Una riga alta 1.5 volte il font resta leggibile anche se il messaggio va a capo. */
   line-height: 1.5;
 }
 
-/* Su schermi piccoli riduciamo gli spazi senza cambiare i controlli. */
+/*
+  Una media query applica le regole al suo interno soltanto quando la condizione è vera.
+  Qui max-width: 480px indica un viewport largo al massimo 480 pixel CSS.
+  Riutilizziamo gli stessi selettori: a parità di specificità, questi valori scritti dopo prevalgono.
+*/
 @media (max-width: 480px) {
   header {
+    /* Un solo valore significa 24px su tutti e quattro i lati dell'intestazione. */
     padding: 24px;
   }
 
   main {
+    /* Riduce gli spazi a 24px sopra, 20px ai lati e 64px sotto. */
     padding: 24px 20px 64px;
   }
 
   button {
+    /* Avvia e Pausa diventano cerchi da 52px, occupando meno spazio sui telefoni. */
     width: 52px;
     height: 52px;
+
+    /* Reset mantiene width: auto perché il suo selettore #reset-button è più specifico. */
   }
 }

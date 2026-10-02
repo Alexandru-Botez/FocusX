@@ -1,44 +1,132 @@
 <!DOCTYPE html>
+<!--
+  DOCTYPE indica che il documento usa HTML moderno (HTML5).
+  Questi blocchi sono commenti: servono a chi legge il codice e non appaiono nella pagina.
+  I tag delimitano gli elementi; gli attributi ne specificano le caratteristiche.
+  L'indentazione mostra quali elementi sono contenuti dentro altri elementi.
+-->
+
+<!-- html contiene l'intero documento; lang="it" indica la lingua a browser e lettori di schermo. -->
 <html lang="it">
+  <!-- head contiene le informazioni sulla pagina e i collegamenti alle sue risorse. -->
   <head>
+    <!-- UTF-8 permette di interpretare correttamente lettere accentate e altri caratteri. -->
     <meta charset="UTF-8">
+
+    <!--
+      Il viewport è l'area in cui il browser mostra la pagina.
+      width=device-width usa la larghezza del dispositivo in pixel CSS.
+      initial-scale=1.0 imposta lo zoom iniziale al 100%, utile soprattutto sui telefoni.
+    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- title è il nome mostrato nella scheda del browser e nei segnalibri. -->
     <title>FocusX - Timer Pomodoro</title>
 
-    <!-- Il CSS definirà l'aspetto della pagina. -->
+    <!--
+      link collega una risorsa esterna al documento.
+      rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
+      href è il percorso del file, relativo alla cartella di questo documento.
+    -->
     <link rel="stylesheet" href="styles.css">
 
-    <!-- defer esegue lo script dopo che l'HTML è stato letto. -->
+    <!--
+      script collega il file JavaScript indicato da src.
+      defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
+      dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
+      script.js è ancora vuoto: qui predisponiamo il collegamento per la logica del timer.
+    -->
     <script src="script.js" defer></script>
   </head>
 
+  <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
   <body>
+    <!-- header è l'intestazione della pagina: raggruppa logo e nome dell'app. -->
     <header>
-      <!-- Il logo è decorativo: il nome del marchio è già nel titolo. -->
+      <!--
+        img mostra il logo vettoriale: SVG può essere ingrandito senza perdere nitidezza.
+        class="brand-logo" collega questo elemento al selettore .brand-logo nel CSS.
+        src indica il file; ?v=mirino-1 è una versione che possiamo cambiare
+        quando aggiorniamo il logo, per far richiedere al browser un nuovo URL.
+        alt="" indica un'immagine decorativa: il nome dell'app è già presente nel titolo.
+        width e height riservano uno spazio di 40 × 40 pixel anche prima del caricamento.
+      -->
       <img class="brand-logo" src="assets/focusx-mark.svg?v=mirino-1" alt="" width="40" height="40">
+
+      <!-- h1 è il titolo principale del documento; il CSS ne sceglie font e dimensione. -->
       <h1>FocusX</h1>
     </header>
 
+    <!-- main identifica il contenuto principale, distinto dall'intestazione. -->
     <main>
+      <!--
+        section raggruppa contenuti che appartengono allo stesso argomento.
+        aria-label dà un nome accessibile alla sezione senza aggiungere testo visibile.
+      -->
       <section aria-label="Timer Pomodoro">
+        <!--
+          p è un paragrafo: qui contiene il tempo iniziale, 25 minuti e 0 secondi.
+          id="timer" identifica un solo elemento nella pagina:
+          il CSS lo seleziona con #timer e JavaScript potrà modificarne il testo.
+          role="timer" comunica alle tecnologie assistive il tipo di informazione.
+          aria-live="off" evita annunci automatici continui durante il conto alla rovescia.
+        -->
         <p id="timer" role="timer" aria-live="off">25:00</p>
 
+        <!--
+          div è un contenitore generico: raggruppa i tre pulsanti per disporli con Flexbox.
+          Una class può essere riutilizzata su più elementi; un id deve essere unico.
+        -->
         <div class="timer-controls">
-          <!-- aria-label dà un nome ai pulsanti anche senza testo visibile. -->
+          <!--
+            button crea un pulsante utilizzabile anche con la tastiera.
+            id permetterà a JavaScript di riconoscere quale pulsante è stato premuto.
+            type="button" evita che il pulsante invii un modulo, se in futuro fosse dentro un form.
+            aria-label assegna il nome "Avvia" al pulsante che mostra soltanto un'icona.
+            title offre un suggerimento che molti browser mostrano al passaggio del mouse.
+          -->
           <button id="start-button" type="button" aria-label="Avvia" title="Avvia">
+            <!--
+              svg disegna un'immagine vettoriale direttamente nell'HTML.
+              viewBox definisce un sistema di coordinate da (0, 0), largo e alto 24 unità.
+              aria-hidden="true" nasconde l'icona ai lettori di schermo: il pulsante ha già un nome.
+              focusable="false" evita che l'icona diventi un punto di selezione separato.
+            -->
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!--
+                path disegna il triangolo di avvio usando le istruzioni nell'attributo d.
+                M sposta il punto iniziale, l traccia segmenti con spostamenti relativi,
+                z chiude la figura. currentColor usa il valore della proprietà CSS color.
+              -->
               <path d="M9 5l10 7-10 7z" fill="currentColor"></path>
             </svg>
           </button>
+
+          <!-- Il secondo pulsante usa gli stessi attributi, con id e nome dedicati alla pausa. -->
           <button id="pause-button" type="button" aria-label="Pausa" title="Pausa">
+            <!-- Anche questa icona usa il sistema di coordinate 24 × 24 e resta decorativa. -->
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!--
+                rect disegna un rettangolo: x e y indicano l'angolo superiore sinistro.
+                width e height ne indicano le dimensioni nel sistema di coordinate SVG.
+                rx arrotonda gli angoli; fill="currentColor" riprende il colore CSS del pulsante.
+                I due rettangoli affiancati formano il simbolo della pausa.
+              -->
               <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"></rect>
               <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"></rect>
             </svg>
           </button>
+
+          <!-- Il testo "Reset" dà già un nome al pulsante, quindi non serve aria-label. -->
           <button id="reset-button" type="button">Reset</button>
         </div>
 
+        <!--
+          Questo paragrafo contiene un messaggio sullo stato del timer.
+          JavaScript potrà aggiornarlo tramite id="timer-status".
+          role="status" fa annunciare gli aggiornamenti ai lettori di schermo
+          quando possibile, senza interrompere ciò che stanno già leggendo.
+        -->
         <p id="timer-status" role="status">Pronto per iniziare.</p>
       </section>
     </main>
