@@ -53,6 +53,9 @@
 
   /* Sfondo usato al passaggio del mouse sui pulsanti. */
   --hover: #1a1a1a;
+
+  /* Rosso chiaro per Reset: cambia la tonalità, mantenendo lo sfondo senza trasparenza. */
+  --reset-hover: #ff6b6b;
 }
 
 /*
@@ -300,6 +303,14 @@ button:hover:not(:disabled) {
 
   /* Testo più piccolo: 0.875rem equivale a 14px se il font della radice è 16px. */
   font-size: 0.875rem;
+}
+
+/* La regola con id personalizza lo sfondo hover del solo pulsante Reset. */
+#reset-button:hover:not(:disabled) {
+  /* Cambia il colore dello sfondo senza modificare l'opacità del pulsante o del testo. */
+  background-color: var(--reset-hover);
+  /* Il testo nero mantiene un buon contrasto con lo sfondo rosso chiaro. */
+  color: var(--background);
 }
 
 /*

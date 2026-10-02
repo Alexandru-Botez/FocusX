@@ -34,7 +34,7 @@
       script collega il file JavaScript indicato da src.
       defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
       dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
-      script.js gestisce l'avvio, il conto alla rovescia e la ripartenza automatica del timer.
+      script.js gestisce avvio, pausa, ripresa e ripartenza automatica del timer.
     -->
     <script src="script.js" defer></script>
   </head>
@@ -102,8 +102,11 @@
             </svg>
           </button>
 
-          <!-- Il secondo pulsante usa gli stessi attributi, con id e nome dedicati alla pausa. -->
-          <button id="pause-button" type="button" aria-label="Pausa" title="Pausa">
+          <!--
+            Il secondo pulsante ha id e nome dedicati alla pausa.
+            disabled lo rende inizialmente indisponibile: JavaScript lo abilita all'avvio.
+          -->
+          <button id="pause-button" type="button" aria-label="Pausa" title="Pausa" disabled>
             <!-- Anche questa icona usa il sistema di coordinate 24 × 24 e resta decorativa. -->
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <!--

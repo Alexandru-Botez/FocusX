@@ -5,9 +5,9 @@ Per scaricarlo e avviarlo, parti dal [README](../README.md).
 
 ## Stato attuale
 
-FocusX ha un primo comportamento JavaScript: Avvia fa partire il conto alla rovescia
+FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa lo ferma
 e il timer ricomincia automaticamente da 25 minuti quando i secondi rimanenti arrivano a zero.
-Pausa, Reset e gli obiettivi sono ancora da sviluppare.
+Reset e gli obiettivi sono ancora da sviluppare.
 Non c'è ancora una suite di test automatici nel repository.
 
 ## Responsabilità dei file
@@ -16,7 +16,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | --- | --- |
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
 | [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
-| [script.js](../script.js) | Avvio, conto alla rovescia, formattazione del tempo e ripartenza automatica. |
+| [script.js](../script.js) | Avvio, pausa, ripresa, formattazione del tempo e ripartenza automatica. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Disegno vettoriale del logo. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
@@ -37,8 +37,8 @@ Gli identificatori da conoscere sono:
 | `.brand-logo` | Immagine del logo | Dimensione e comportamento del logo nell'intestazione. |
 | `#timer` | Paragrafo con `25:00` | Visualizzazione del tempo, aggiornata da JavaScript. |
 | `.timer-controls` | Contenitore dei pulsanti | Disposizione dei controlli con Flexbox. |
-| `#start-button` | Pulsante Avvia | Collegato ad avviaTimer; viene disabilitato dopo il primo clic. |
-| `#pause-button` | Pulsante Pausa | Futuro collegamento alla funzione di pausa. |
+| `#start-button` | Pulsante Avvia | Collegato ad avviaTimer; disponibile quando il timer è fermo. |
+| `#pause-button` | Pulsante Pausa | Collegato a pausaTimer; disponibile durante il conteggio. |
 | `#reset-button` | Pulsante Reset | Stile dedicato e futuro collegamento al ripristino. |
 | `#timer-status` | Messaggio di stato | Visibile prima dell'avvio; viene nascosto al clic su Avvia. |
 
@@ -68,6 +68,7 @@ Per cambiare la palette, parti dalle variabili in `:root`:
 | `--muted` | Testo secondario. |
 | `--border` | Bordi dei pulsanti. |
 | `--hover` | Sfondo comune al passaggio del mouse. |
+| `--reset-hover` | Sfondo rosso chiaro al passaggio del mouse su Reset, con la stessa opacità dello sfondo comune. |
 
 Grid organizza la pagina in intestazione e contenuto e centra la sezione del timer.
 Flexbox dispone il marchio e il gruppo dei pulsanti.
@@ -80,18 +81,32 @@ Il tempo viene conservato come un numero di secondi, non come il testo mostrato 
 `durataSessione` vale `25 * 60`, cioè 1500. `secondiRimanenti` parte da questo valore
 e diminuisce durante il conto alla rovescia.
 
-Le tre funzioni hanno responsabilità distinte:
+Le quattro funzioni hanno responsabilità distinte:
 
 | Funzione | Responsabilità |
 | --- | --- |
-| `avviaTimer()` | Disabilita Avvia, nasconde il messaggio di stato e avvia un intervallo. |
+| `avviaTimer()` | Disabilita Avvia, abilita Pausa, nasconde lo stato e avvia o riprende il conteggio. |
+| `pausaTimer()` | Ferma l'intervallo, abilita Avvia e disabilita Pausa, conservando i secondi rimasti. |
 | `passaUnSecondo()` | Sottrae un secondo, ripristina 1500 quando arriva a zero e aggiorna il testo. |
 | `aggiornaTimer()` | Converte i secondi rimanenti nel formato minuti:secondi. |
 
 `addEventListener("click", avviaTimer)` collega il clic alla funzione di avvio.
-`setInterval(passaUnSecondo, 1000)` richiede un'esecuzione ogni secondo.
-Avvia viene disabilitato per evitare che più clic creino più intervalli.
+`setInterval(passaUnSecondo, 1000)` richiede un'esecuzione ogni secondo e restituisce
+un identificatore, che viene conservato in `intervalloTimer`.
+Avvia viene disabilitato durante il conteggio; una condizione impedisce anche di creare
+un secondo intervallo se la funzione viene richiamata mentre uno è già attivo.
 Il messaggio «Pronto per iniziare.» scompare impostando `statoTimer.hidden = true`.
+
+`clearInterval(intervalloTimer)` interrompe le chiamate periodiche quando premi Pausa.
+Il valore `secondiRimanenti` resta intatto e `intervalloTimer` torna a `null`,
+che nel progetto indica l'assenza di un intervallo attivo.
+Premendo Avvia viene creato un nuovo intervallo a partire dal tempo conservato.
+
+| Stato | Avvia | Pausa |
+| --- | --- | --- |
+| Prima del primo avvio | Disponibile | Disabilitato |
+| Conteggio in corso | Disabilitato | Disponibile |
+| Timer in pausa | Disponibile | Disabilitato |
 
 Per visualizzare il tempo, `Math.floor()` ricava i minuti interi e `%` ricava i secondi restanti.
 `String()` converte i numeri in testo e `padStart(2, "0")` mantiene due cifre.
@@ -104,6 +119,7 @@ Ricaricare la pagina riporta il timer allo stato iniziale.
 Questo primo esempio usa un intervallo semplice. Il browser può ritardare le esecuzioni,
 per esempio in una scheda in background: non è ancora un conteggio basato sul tempo reale trascorso.
 Vedi [setInterval su MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/setInterval)
+e [clearInterval su MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/clearInterval)
 e [padStart su MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart).
 
 ## Accessibilità
@@ -155,11 +171,16 @@ Per il timer attuale controlla anche che:
 - Il tempo resti a `25:00` prima di premere Avvia.
 - Il primo aggiornamento mostri `24:59`, poi `24:58`.
 - Avvia sia disabilitato durante il conto alla rovescia.
+- Pausa sia disabilitato all'apertura e abilitato durante il conteggio.
+- Dopo un clic su Pausa, il tempo resti fermo e Avvia torni disponibile.
+- Premendo Avvia dopo una pausa, il timer continui dal valore rimasto.
+- Più cicli di pausa e ripresa non accelerino il conteggio.
+- Passando il mouse su Reset, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - Il messaggio di stato sia visibile prima dell'avvio e nascosto dopo il clic.
 - Il formato mantenga due cifre per minuti e secondi.
 - Dopo 25 minuti il timer torni a `25:00` e continui.
 
-Quando Pausa e Reset saranno implementati, aggiungi le relative verifiche.
+Quando Reset sarà implementato, aggiungi le relative verifiche.
 
 ## Aggiornamento della guida
 

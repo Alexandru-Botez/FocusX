@@ -2,6 +2,7 @@
 // getElementById trova l'elemento HTML che ha l'id indicato tra virgolette.
 const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
+const pulsantePausa = document.getElementById("pause-button");
 const statoTimer = document.getElementById("timer-status");
 
 // Lavoriamo in secondi: 25 minuti sono 25 × 60 = 1500 secondi.
@@ -9,6 +10,10 @@ const durataSessione = 25 * 60;
 
 // let permette di riassegnare il valore: questo numero diminuirà durante il timer.
 let secondiRimanenti = durataSessione;
+
+// Conserviamo l'identificatore restituito da setInterval per poter fermare l'intervallo.
+// null significa che, all'inizio, non c'è un intervallo attivo.
+let intervalloTimer = null;
 
 // Una funzione raggruppa istruzioni che possiamo eseguire richiamando il suo nome.
 function aggiornaTimer() {
@@ -42,17 +47,41 @@ function passaUnSecondo() {
 }
 
 function avviaTimer() {
+  // Se un intervallo è già attivo, return termina la funzione senza crearne un altro.
+  if (intervalloTimer !== null) {
+    return;
+  }
+
   // true significa "vero": disabled impedisce altri clic e quindi altri intervalli.
   pulsanteAvvia.disabled = true;
+
+  // false riabilita Pausa: adesso c'è un conteggio che possiamo fermare.
+  pulsantePausa.disabled = false;
 
   // hidden nasconde l'elemento HTML: il messaggio scompare dopo l'avvio.
   statoTimer.hidden = true;
 
   // setInterval richiede di eseguire la funzione ogni 1000 millisecondi, cioè un secondo.
   // Passiamo passaUnSecondo senza (): dovrà essere eseguita dall'intervallo, non adesso.
-  setInterval(passaUnSecondo, 1000);
+  // Salviamo il suo identificatore; i secondi rimasti non vengono azzerati alla ripresa.
+  intervalloTimer = setInterval(passaUnSecondo, 1000);
+}
+
+function pausaTimer() {
+  // clearInterval ferma le chiamate periodiche usando l'identificatore salvato.
+  clearInterval(intervalloTimer);
+
+  // Non c'è più un intervallo attivo: Avvia potrà crearne uno nuovo.
+  intervalloTimer = null;
+
+  // Permettiamo la ripresa con Avvia e disabilitiamo Pausa mentre il timer è fermo.
+  pulsanteAvvia.disabled = false;
+  pulsantePausa.disabled = true;
 }
 
 // addEventListener collega un evento a una funzione: un clic eseguirà avviaTimer.
 // Anche qui passiamo il nome della funzione senza eseguirla subito.
 pulsanteAvvia.addEventListener("click", avviaTimer);
+
+// Il clic su Pausa esegue la funzione che ferma il conteggio.
+pulsantePausa.addEventListener("click", pausaTimer);
