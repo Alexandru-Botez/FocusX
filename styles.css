@@ -352,6 +352,12 @@ button:disabled {
   line-height: 1.5;
 }
 
+/* Seleziona lo status quando JavaScript gli aggiunge la classe is-hidden. */
+#timer-status.is-hidden {
+  /* Nasconde il testo conservando spazio e margini, così tempo e pulsanti restano fermi. */
+  visibility: hidden;
+}
+
 /*
   Una media query applica le regole al suo interno soltanto quando la condizione è vera.
   Qui max-width: 480px indica un viewport largo al massimo 480 pixel CSS.

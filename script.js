@@ -62,8 +62,9 @@ function avviaTimer() {
   // Dopo l'avvio possiamo riportare il timer al suo valore iniziale con Reset.
   pulsanteReset.disabled = false;
 
-  // hidden nasconde l'elemento HTML: il messaggio scompare dopo l'avvio.
-  statoTimer.hidden = true;
+  // classList.add aggiunge una classe CSS all'elemento del messaggio.
+  // La classe usa visibility: hidden: lo status scompare ma conserva il suo spazio.
+  statoTimer.classList.add("is-hidden");
 
   // setInterval richiede di eseguire la funzione ogni 1000 millisecondi, cioè un secondo.
   // Passiamo passaUnSecondo senza (): dovrà essere eseguita dall'intervallo, non adesso.
@@ -94,8 +95,8 @@ function resetTimer() {
   // Non serve un altro Reset finché non premiamo nuovamente Avvia.
   pulsanteReset.disabled = true;
 
-  // false rende di nuovo visibile il messaggio iniziale: il timer è pronto a ripartire.
-  statoTimer.hidden = false;
+  // classList.remove toglie la classe: il messaggio torna visibile senza spostare il timer.
+  statoTimer.classList.remove("is-hidden");
 }
 
 // addEventListener collega un evento a una funzione: un clic eseguirà avviaTimer.

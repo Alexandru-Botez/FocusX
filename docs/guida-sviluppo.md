@@ -97,7 +97,10 @@ Le cinque funzioni hanno responsabilità distinte:
 un identificatore, che viene conservato in `intervalloTimer`.
 Avvia viene disabilitato durante il conteggio; una condizione impedisce anche di creare
 un secondo intervallo se la funzione viene richiamata mentre uno è già attivo.
-Il messaggio «Pronto per iniziare.» scompare impostando `statoTimer.hidden = true`.
+Il messaggio «Pronto per iniziare.» scompare quando JavaScript aggiunge la classe `is-hidden`
+con `statoTimer.classList.add("is-hidden")`.
+Il CSS applica `visibility: hidden`: lo status conserva spazio e margini nel layout,
+quindi il timer e i pulsanti non cambiano posizione quando il testo viene nascosto.
 
 `clearInterval(intervalloTimer)` interrompe le chiamate periodiche quando premi Pausa.
 Il valore `secondiRimanenti` resta intatto e `intervalloTimer` torna a `null`,
@@ -107,7 +110,8 @@ Premendo Avvia viene creato un nuovo intervallo a partire dal tempo conservato.
 `resetTimer()` richiama `pausaTimer()` per fermare il conteggio senza duplicare quelle istruzioni.
 Poi assegna `durataSessione` a `secondiRimanenti` e richiama `aggiornaTimer()`:
 il testo torna subito a `25:00`, senza attendere un altro secondo.
-Reset viene disabilitato e il messaggio iniziale torna visibile.
+Reset viene disabilitato e il messaggio iniziale torna visibile rimuovendo la classe
+con `statoTimer.classList.remove("is-hidden")`.
 Il conteggio riparte solo quando premi nuovamente Avvia.
 
 | Stato | Avvia | Pausa | Reset |
@@ -149,7 +153,7 @@ Le scelte presenti nel codice sono:
 - Il messaggio informativo usa `role="status"`, è nascosto dopo l'avvio e torna visibile dopo Reset.
 
 Se nelle prossime funzioni servirà mostrare un nuovo messaggio, rendi prima visibile
-l'elemento con `hidden = false`. Evita annunci continui a ogni secondo.
+l'elemento con `statoTimer.classList.remove("is-hidden")`. Evita annunci continui a ogni secondo.
 
 ## Convenzioni del codice
 
@@ -194,6 +198,7 @@ Per il timer attuale controlla anche che:
 - Passando il mouse su Reset abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - Il messaggio di stato sia visibile prima dell'avvio e nascosto dopo il clic.
 - Il messaggio di stato torni visibile dopo Reset.
+- La posizione del timer e dei pulsanti resti invariata quando lo status scompare o riappare.
 - Il formato mantenga due cifre per minuti e secondi.
 - Dopo 25 minuti il timer torni a `25:00` e continui.
 
