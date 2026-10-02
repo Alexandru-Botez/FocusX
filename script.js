@@ -44,7 +44,9 @@ function passaUnSecondo() {
 function avviaTimer() {
   // true significa "vero": disabled impedisce altri clic e quindi altri intervalli.
   pulsanteAvvia.disabled = true;
-  statoTimer.textContent = "Timer in corso.";
+
+  // hidden nasconde l'elemento HTML: il messaggio scompare dopo l'avvio.
+  statoTimer.hidden = true;
 
   // setInterval richiede di eseguire la funzione ogni 1000 millisecondi, cioè un secondo.
   // Passiamo passaUnSecondo senza (): dovrà essere eseguita dall'intervallo, non adesso.

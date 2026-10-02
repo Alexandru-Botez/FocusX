@@ -40,7 +40,7 @@ Gli identificatori da conoscere sono:
 | `#start-button` | Pulsante Avvia | Collegato ad avviaTimer; viene disabilitato dopo il primo clic. |
 | `#pause-button` | Pulsante Pausa | Futuro collegamento alla funzione di pausa. |
 | `#reset-button` | Pulsante Reset | Stile dedicato e futuro collegamento al ripristino. |
-| `#timer-status` | Messaggio di stato | Diventa «Timer in corso.» all'avvio. |
+| `#timer-status` | Messaggio di stato | Visibile prima dell'avvio; viene nascosto al clic su Avvia. |
 
 Una `class` può essere condivisa da più elementi. Un `id` deve identificare un solo elemento
 nel documento. Se cambi un nome, aggiorna anche i selettori CSS, gli eventuali riferimenti
@@ -84,13 +84,14 @@ Le tre funzioni hanno responsabilità distinte:
 
 | Funzione | Responsabilità |
 | --- | --- |
-| `avviaTimer()` | Disabilita Avvia, aggiorna il messaggio e avvia un intervallo. |
+| `avviaTimer()` | Disabilita Avvia, nasconde il messaggio di stato e avvia un intervallo. |
 | `passaUnSecondo()` | Sottrae un secondo, ripristina 1500 quando arriva a zero e aggiorna il testo. |
 | `aggiornaTimer()` | Converte i secondi rimanenti nel formato minuti:secondi. |
 
 `addEventListener("click", avviaTimer)` collega il clic alla funzione di avvio.
 `setInterval(passaUnSecondo, 1000)` richiede un'esecuzione ogni secondo.
 Avvia viene disabilitato per evitare che più clic creino più intervalli.
+Il messaggio «Pronto per iniziare.» scompare impostando `statoTimer.hidden = true`.
 
 Per visualizzare il tempo, `Math.floor()` ricava i minuti interi e `%` ricava i secondi restanti.
 `String()` converte i numeri in testo e `padStart(2, "0")` mantiene due cifre.
@@ -117,10 +118,10 @@ Le scelte presenti nel codice sono:
 - I controlli sono elementi `button`, utilizzabili anche con la tastiera.
 - `:focus-visible` rende visibile il pulsante selezionato da tastiera.
 - Il timer usa `role="timer"` e `aria-live="off"` per evitare annunci continui.
-- Il messaggio informativo usa `role="status"` e viene aggiornato all'avvio.
+- Il messaggio informativo usa `role="status"` ed è nascosto dopo l'avvio.
 
-Nelle prossime funzioni, aggiorna il messaggio di stato nei momenti utili
-come pausa e fine della sessione, anziché annunciare ogni secondo.
+Se nelle prossime funzioni servirà mostrare un nuovo messaggio, rendi prima visibile
+l'elemento con `hidden = false`. Evita annunci continui a ogni secondo.
 
 ## Convenzioni del codice
 
@@ -154,6 +155,7 @@ Per il timer attuale controlla anche che:
 - Il tempo resti a `25:00` prima di premere Avvia.
 - Il primo aggiornamento mostri `24:59`, poi `24:58`.
 - Avvia sia disabilitato durante il conto alla rovescia.
+- Il messaggio di stato sia visibile prima dell'avvio e nascosto dopo il clic.
 - Il formato mantenga due cifre per minuti e secondi.
 - Dopo 25 minuti il timer torni a `25:00` e continui.
 
