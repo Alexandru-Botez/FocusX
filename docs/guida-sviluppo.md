@@ -17,7 +17,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | --- | --- |
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
 | [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
-| [script.js](../script.js) | Avvio, pausa, ripresa, reset, formattazione del tempo e ripartenza automatica. |
+| [script.js](../script.js) | Comportamento del timer e cambio di stato dell'icona hamburger. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Disegno vettoriale del logo. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
@@ -27,7 +27,7 @@ e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi del
 
 ## Struttura HTML
 
-L'intestazione `header` contiene il logo e il titolo principale `h1`.
+L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il titolo principale `h1`.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
 
@@ -35,6 +35,7 @@ Gli identificatori da conoscere sono:
 
 | Selettore | Elemento | Uso nel progetto |
 | --- | --- | --- |
+| `#menu-button` | Pulsante Menu | Collega il clic al cambio di stato dell'icona animata. |
 | `.brand-logo` | Immagine del logo | Dimensione e comportamento del logo nell'intestazione. |
 | `#timer` | Paragrafo con `25:00` | Visualizzazione del tempo, aggiornata da JavaScript. |
 | `.timer-controls` | Contenitore dei pulsanti | Disposizione dei controlli con Flexbox. |
@@ -138,6 +139,21 @@ Vedi [setInterval su MDN](https://developer.mozilla.org/en-US/docs/Web/API/Windo
 e [clearInterval su MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/clearInterval)
 e [padStart su MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart).
 
+## Icona hamburger
+
+L'icona riprende i sei tracciati SVG e le transizioni dei file `hamburgermenu.html`
+e `hamburgermenu.css` forniti come riferimento. È integrata in un `button` nell'header.
+I selettori CSS sono limitati a `#menu-button`, così non modificano il logo,
+le icone del timer o lo sfondo della pagina.
+
+`alternaIconaMenu()` usa `classList.toggle("active")` per aggiungere o rimuovere la classe.
+Le transizioni CSS di 500 millisecondi animano la rotazione e i tratti dell'SVG in entrambi i versi.
+La funzione aggiorna anche `aria-pressed`, che descrive lo stato attivo dell'icona.
+Il pulsante non apre ancora un menu e non usa `aria-expanded`, perché non controlla un pannello.
+
+Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
+La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
+
 ## Accessibilità
 
 Le scelte presenti nel codice sono:
@@ -146,6 +162,7 @@ Le scelte presenti nel codice sono:
 - `header`, `main`, `section` e `h1` descrivono la struttura dei contenuti.
 - Il logo ha `alt=""` perché il nome FocusX è già scritto accanto.
 - Avvia e Pausa hanno `aria-label`, dato che mostrano soltanto un'icona.
+- Menu ha `aria-label` e `aria-pressed`, dato che alterna due stati della sua icona.
 - Le icone SVG sono decorative e hanno `aria-hidden="true"` e `focusable="false"`.
 - I controlli sono elementi `button`, utilizzabili anche con la tastiera.
 - `:focus-visible` rende visibile il pulsante selezionato da tastiera.
@@ -181,6 +198,15 @@ Prima di considerare pronta una modifica all'interfaccia:
 5. Usa `Tab` per passare fra i pulsanti e verifica che il focus sia visibile.
 6. Controlla la console del browser per eventuali errori.
 7. Leggi il diff con `git diff` e aggiorna le guide coinvolte dalla modifica.
+
+Per l'icona hamburger controlla che:
+
+- Il pulsante si trovi a sinistra del logo e resti allineato con il titolo.
+- Il clic animi l'icona e un secondo clic la riporti allo stato iniziale.
+- Invio e Spazio eseguano lo stesso cambio di stato.
+- L'animazione non modifichi il tempo o lo stato dei pulsanti del timer.
+- Su uno schermo piccolo l'header non crei scorrimento orizzontale.
+- Con la preferenza di movimento ridotto, il cambio avvenga senza transizioni.
 
 Per il timer attuale controlla anche che:
 

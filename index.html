@@ -35,14 +35,36 @@
       defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
       dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
       script.js gestisce avvio, pausa, ripresa, reset e ripartenza automatica del timer.
+      Collega anche il clic del pulsante Menu all'animazione della sua icona.
     -->
     <script src="script.js" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
   <body>
-    <!-- header è l'intestazione della pagina: raggruppa logo e nome dell'app. -->
+    <!-- header è l'intestazione della pagina: raggruppa pulsante Menu, logo e nome dell'app. -->
     <header>
+      <!--
+        Questo button integra l'icona SVG fornita e funziona anche con Invio e Spazio.
+        aria-label dà un nome all'icona; aria-pressed indica se è nello stato attivo.
+        Per ora il clic cambia solo l'icona: non c'è ancora un pannello di navigazione.
+      -->
+      <button id="menu-button" type="button" aria-label="Menu" aria-pressed="false" title="Menu">
+        <!-- viewBox conserva le coordinate originali; il CSS ridimensiona e anima il disegno. -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+          <!-- currentColor riprende il bianco del pulsante; round arrotonda le estremità. -->
+          <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round">
+            <!-- L'ordine dei sei path è importante: il CSS li seleziona con nth-child. -->
+            <path d="M72 82.286h28.75"></path>
+            <path d="M100.75 103.714l72.482-.143c.043 39.398-32.284 71.434-72.16 71.434-39.878 0-72.204-32.036-72.204-71.554"></path>
+            <path d="M72 125.143h28.75"></path>
+            <path d="M100.75 103.714l-71.908-.143c.026-39.638 32.352-71.674 72.23-71.674 39.876 0 72.203 32.036 72.203 71.554"></path>
+            <path d="M100.75 82.286h28.75"></path>
+            <path d="M100.75 125.143h28.75"></path>
+          </g>
+        </svg>
+      </button>
+
       <!--
         img mostra il logo vettoriale: SVG può essere ingrandito senza perdere nitidezza.
         class="brand-logo" collega questo elemento al selettore .brand-logo nel CSS.

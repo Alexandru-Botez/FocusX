@@ -98,12 +98,12 @@ body {
   background-color: var(--background);
 }
 
-/* L'intestazione contiene logo e titolo, disposti in alto a sinistra. */
+/* L'intestazione contiene pulsante Menu, logo e titolo, disposti in alto a sinistra. */
 header {
   /* Flexbox dispone i figli su un asse: per impostazione predefinita, una riga. */
   display: flex;
 
-  /* Allinea verticalmente i centri di logo e titolo all'interno della riga. */
+  /* Allinea verticalmente i centri del pulsante Menu, del logo e del titolo. */
   align-items: center;
 
   /* Distanza tra gli elementi, senza aggiungere margini esterni al gruppo. */
@@ -213,7 +213,7 @@ section {
   gap: 12px;
 }
 
-/* Regola comune a tutti i pulsanti; più avanti personalizziamo Avvia e Reset con i loro id. */
+/* Regola comune a tutti i pulsanti; più avanti personalizziamo Menu, Avvia e Reset con i loro id. */
 button {
   /* Il pulsante si comporta come un elemento inline e organizza i suoi contenuti con Flexbox. */
   display: inline-flex;
@@ -267,6 +267,96 @@ button:hover:not(:disabled) {
 
   /* Aggiunge un leggero contrasto allo sfondo. */
   background-color: var(--hover);
+}
+
+/* Il pulsante Menu ha un'area cliccabile quadrata, adatta anche al tocco. */
+#menu-button {
+  width: 44px;
+  height: 44px;
+  /* Mantiene le dimensioni anche quando l'header ha poco spazio disponibile. */
+  flex-shrink: 0;
+  border-color: transparent;
+  border-radius: 8px;
+}
+
+/* Il disegno originale contiene margini interni: un SVG più grande rende visibili le linee. */
+#menu-button svg {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+/* Ruota soltanto il gruppo del disegno, mantenendo fermo il riquadro SVG nell'header. */
+#menu-button g {
+  /* Il centro del viewBox originale è il punto attorno al quale ruota l'icona. */
+  transform-origin: 50% 50%;
+  /* 500ms sono mezzo secondo; cubic-bezier controlla l'accelerazione del movimento. */
+  transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Le regole dell'animazione fornita sono limitate al Menu, senza coinvolgere le altre icone. */
+#menu-button.active g {
+  transform: rotate(90deg);
+}
+
+#menu-button path {
+  /* Anima posizione e rotazione delle linee e la porzione visibile dei tratti curvi. */
+  transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke-dasharray 500ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke-dashoffset 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* nth-child seleziona ogni path in base alla sua posizione nel gruppo SVG. */
+#menu-button path:nth-child(1) {
+  /* transform-origin indica il punto attorno al quale ruota questo tratto. */
+  transform-origin: 36% 40%;
+}
+
+#menu-button path:nth-child(2) {
+  /* Il primo numero disegna un tratto; il secondo lascia un intervallo vuoto lungo la curva. */
+  stroke-dasharray: 29 299;
+}
+
+#menu-button path:nth-child(3) {
+  transform-origin: 35% 63%;
+}
+
+#menu-button path:nth-child(4) {
+  stroke-dasharray: 29 299;
+}
+
+#menu-button path:nth-child(5) {
+  transform-origin: 61% 52%;
+}
+
+#menu-button path:nth-child(6) {
+  transform-origin: 62% 52%;
+}
+
+/* La classe active applica le trasformazioni finali; rimuoverla anima il ritorno. */
+#menu-button.active path:nth-child(1),
+#menu-button.active path:nth-child(6) {
+  transform: translateX(9px) translateY(1px) rotate(45deg);
+}
+
+#menu-button.active path:nth-child(2),
+#menu-button.active path:nth-child(4) {
+  stroke-dasharray: 225 299;
+  /* Sposta la porzione visibile lungo la curva. */
+  stroke-dashoffset: -72px;
+}
+
+#menu-button.active path:nth-child(3),
+#menu-button.active path:nth-child(5) {
+  transform: translateX(9px) translateY(1px) rotate(-45deg);
+}
+
+/* Chi preferisce ridurre il movimento ottiene il cambio dell'icona senza animazione. */
+@media (prefers-reduced-motion: reduce) {
+  #menu-button g,
+  #menu-button path {
+    transition: none;
+  }
 }
 
 /* Un selettore con id è più specifico di button e personalizza il pulsante di avvio. */

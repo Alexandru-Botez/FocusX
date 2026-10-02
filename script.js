@@ -108,3 +108,18 @@ pulsantePausa.addEventListener("click", pausaTimer);
 
 // Il clic su Reset ferma il conteggio e ripristina lo stato iniziale.
 pulsanteReset.addEventListener("click", resetTimer);
+
+// Questa parte gestisce soltanto l'icona animata nell'header.
+const pulsanteMenu = document.getElementById("menu-button");
+
+function alternaIconaMenu() {
+  // toggle aggiunge active se manca, oppure la rimuove se è già presente.
+  // Restituisce true quando la classe è presente, false quando viene rimossa.
+  const iconaAttiva = pulsanteMenu.classList.toggle("active");
+
+  // String converte il valore in testo; aria-pressed comunica lo stato del pulsante.
+  pulsanteMenu.setAttribute("aria-pressed", String(iconaAttiva));
+}
+
+// Il browser genera click anche quando attiviamo il button con Invio o Spazio.
+pulsanteMenu.addEventListener("click", alternaIconaMenu);

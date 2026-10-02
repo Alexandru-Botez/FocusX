@@ -19,6 +19,7 @@ Già presenti:
 - Struttura HTML con intestazione, timer e controlli.
 - Tema scuro in bianco e nero, adattato anche a schermi piccoli.
 - Logo SVG con testa di profilo e occhio a mirino.
+- Pulsante hamburger animato a sinistra del logo: il clic alterna l'icona, senza aprire un pannello.
 - Font ADLaM Display incluso nel progetto.
 - Nomi accessibili per i pulsanti e indicatore di focus da tastiera.
 - Avvio del timer con aggiornamento del tempo e ripartenza automatica.
