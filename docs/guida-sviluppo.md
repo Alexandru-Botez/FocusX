@@ -18,7 +18,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
 | [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
 | [script.js](../script.js) | Comportamento del timer e cambio di stato dell'icona hamburger. |
-| [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto su griglia quadrata, con tre cerchi collegati e colori invertiti per la V. |
+| [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto su griglia quadrata, con fiamma bianca e due occhi neri. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
 

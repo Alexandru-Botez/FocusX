@@ -1,19 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- La disposizione triangolare compatta rende il simbolo adatto a un logo quadrato. -->
-  <g stroke="#f5f5f5" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Collegamenti brevi e punte essenziali mantengono il percorso dello sketch. -->
-    <path d="M21.5 36L26.5 27M37.5 27L42.5 36"/>
-    <path d="M22.5 29L26.5 27L27 31.5M38.5 34L42.5 36L43 31.5" stroke-width="2.2"/>
+  <!-- Sagoma bianca ispirata alla fiamma: punta curva, due lingue laterali e base arrotondata. -->
+  <path d="M35 4C41 13 35 20 27 25C18 31 15 38 16 44C11 41 10 35 10 30C5 47 13 60 31 60C48 60 58 49 53 35C53 40 51 44 49 46C47 35 39 34 40 24C42 15 40 8 35 4Z" fill="#f5f5f5"/>
 
-    <!-- cx e cy indicano il centro; r è il raggio del cerchio. -->
-    <circle cx="32" cy="17" r="11.5"/>
-    <circle cx="48" cy="46" r="11.5"/>
-    <!-- Colori invertiti per il cerchio a sinistra: pieno bianco e V nera. -->
-    <circle cx="16" cy="46" r="11.5" fill="#f5f5f5"/>
+  <!-- ellipse disegna gli occhi: cx e cy sono il centro, rx e ry i due raggi. -->
+  <g fill="#000000">
+    <ellipse cx="25" cy="44" rx="3" ry="4"/>
+    <ellipse cx="38" cy="44" rx="3" ry="4"/>
   </g>
-
-  <!-- Due segmenti incrociati disegnano la X nel cerchio superiore. -->
-  <path d="M28 13L36 21M36 13L28 21" stroke="#f5f5f5" stroke-width="3.2" stroke-linecap="round"/>
-  <!-- Il tratto nero forma la V sul cerchio bianco. -->
-  <path d="M11 42L16 50L22 41" stroke="#000000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
