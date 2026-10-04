@@ -60,7 +60,7 @@
   /* Sfondo del pannello, leggermente più chiaro rispetto alla pagina. */
   --surface: #0f0f0f;
 
-  /* 44px di pulsante + 28px di padding sopra e sotto: il menu inizia sotto l'header. */
+  /* 44px di pulsante + 28px di padding sopra e sotto: riserviamo spazio prima delle voci. */
   --header-height: 100px;
 }
 
@@ -110,7 +110,7 @@ header {
   position: sticky;
   top: 0;
 
-  /* z-index stabilisce l'ordine di sovrapposizione: l'header resta sopra il pannello. */
+  /* z-index stabilisce l'ordine di sovrapposizione: header e menu restano sopra il timer. */
   z-index: 2;
   background-color: var(--background);
 
@@ -163,13 +163,14 @@ h1 {
 
 /*
   fixed posiziona il pannello rispetto alla finestra, senza spostare il timer.
-  top e bottom lo estendono dall'header fino al bordo inferiore della finestra.
+  top e bottom lo estendono dall'inizio fino al bordo inferiore della finestra.
 */
 .sidebar-menu {
   position: fixed;
-  top: var(--header-height);
+  top: 0;
   bottom: 0;
   left: 0;
+  /* Dentro l'header, il pannello copre logo e titolo; il pulsante ha z-index: 2. */
   z-index: 1;
   width: 250px;
 
@@ -177,7 +178,6 @@ h1 {
   max-width: calc(100vw - 32px);
   overflow-y: auto;
   background-color: var(--surface);
-  border-top: 1px solid var(--border);
   border-right: 1px solid var(--border);
 
   /* -100% sposta a sinistra il pannello di tutta la sua larghezza. */
@@ -200,12 +200,12 @@ h1 {
   /* Rimuove i pallini e i margini predefiniti della lista. */
   list-style: none;
   margin: 0;
-  padding: 12px 0;
+  /* Lascia liberi i primi pixel per la X; le voci iniziano sotto l'altezza dell'header. */
+  padding: calc(var(--header-height) + 12px) 0 12px;
 }
 
 .sidebar-menu li {
   padding: 20px 28px;
-  border-bottom: 1px solid var(--border);
   font-size: 1rem;
   font-weight: 500;
 }
@@ -334,12 +334,22 @@ button:hover:not(:disabled) {
 
 /* Il pulsante Menu ha un'area cliccabile quadrata, adatta anche al tocco. */
 #menu-button {
+  /* relative permette al pulsante di stare sopra il pannello senza spostarlo. */
+  position: relative;
+  z-index: 2;
   width: 44px;
   height: 44px;
   /* Mantiene le dimensioni anche quando l'header ha poco spazio disponibile. */
   flex-shrink: 0;
   border-color: transparent;
   border-radius: 8px;
+}
+
+/* Quando il menu è aperto, anche il passaggio del mouse mantiene lo stesso sfondo. */
+#menu-button.active,
+#menu-button.active:hover {
+  background-color: var(--surface);
+  border-color: transparent;
 }
 
 /* Il disegno originale contiene margini interni: un SVG più grande rende visibili le linee. */

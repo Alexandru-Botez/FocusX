@@ -20,6 +20,7 @@ Già presenti:
 - Tema scuro in bianco e nero, adattato anche a schermi piccoli.
 - Logo SVG compatto con fiamma bianca e occhi neri inclinati, dall'espressione concentrata.
 - Pulsante hamburger animato a sinistra del logo e pannello che scorre da sinistra.
+- Il pannello copre logo e titolo; la X resta visibile sullo stesso sfondo del menu.
 - Voci Progetti, Obiettivi e Statistica, per ora senza collegamenti alle future sezioni.
 - Chiusura del menu con un secondo clic, Esc o un clic fuori dal pannello.
 - Font ADLaM Display incluso nel progetto.

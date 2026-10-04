@@ -28,7 +28,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=menu-header-2">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -38,7 +38,7 @@
       script.js gestisce avvio, pausa, ripresa, reset e ripartenza automatica del timer.
       Collega anche il pulsante Menu all'icona animata e al pannello laterale.
     -->
-    <script src="script.js?v=menu-laterale-1" defer></script>
+    <script src="script.js?v=menu-header-2" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -78,22 +78,22 @@
 
       <!-- h1 è il titolo principale del documento; il CSS ne sceglie font e dimensione. -->
       <h1>FocusX</h1>
+      <!--
+        nav identifica il pannello destinato alla navigazione.
+        È dentro l'header: il CSS lo sovrappone a logo e titolo, lasciando il pulsante sopra.
+        inert rende il menu chiuso non interattivo e lo esclude dai lettori di schermo.
+        JavaScript rimuove questo stato quando apre il pannello.
+        ul è una lista; ogni li è una voce. Per ora sono etichette senza destinazione:
+        aggiungeremo i collegamenti quando realizzeremo le rispettive sezioni.
+      -->
+      <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
+        <ul>
+          <li>Progetti</li>
+          <li>Obiettivi</li>
+          <li>Statistica</li>
+        </ul>
+      </nav>
     </header>
-
-    <!--
-      nav identifica il pannello destinato alla navigazione.
-      inert rende il menu chiuso non interattivo e lo esclude dai lettori di schermo.
-      JavaScript rimuove questo stato quando apre il pannello.
-      ul è una lista; ogni li è una voce. Per ora sono etichette senza destinazione:
-      aggiungeremo i collegamenti quando realizzeremo le rispettive sezioni.
-    -->
-    <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
-      <ul>
-        <li>Progetti</li>
-        <li>Obiettivi</li>
-        <li>Statistica</li>
-      </ul>
-    </nav>
 
     <!-- main identifica il contenuto principale, distinto dall'intestazione. -->
     <main>

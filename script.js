@@ -139,10 +139,9 @@ function chiudiMenuFuori(evento) {
 }
 
 function gestisciTastoMenu(evento) {
-  // key contiene il tasto premuto. Esc chiude il menu e riporta il focus al pulsante.
+  // key contiene il tasto premuto. Esc chiude il menu.
   if (evento.key === "Escape" && pulsanteMenu.classList.contains("active")) {
     alternaMenu();
-    pulsanteMenu.focus();
   }
 }
 

@@ -28,7 +28,7 @@ e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi del
 ## Struttura HTML
 
 L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il titolo principale `h1`.
-Il pannello `nav` contiene le tre voci destinate alla futura navigazione.
+Il pannello `nav`, dentro l'header, contiene le tre voci destinate alla futura navigazione.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
 
@@ -75,8 +75,8 @@ Per cambiare la palette, parti dalle variabili in `:root`:
 | `--hover` | Sfondo comune al passaggio del mouse. |
 | `--reset-hover` | Sfondo rosso chiaro al passaggio del mouse su Reset, con la stessa opacità dello sfondo comune. |
 
-`--header-height` imposta la distanza del pannello dal bordo superiore: 100 pixel
-su desktop e 92 su mobile. Se cambi altezza del logo, del pulsante Menu o padding
+`--header-height` riserva lo spazio sopra le voci del pannello: 100 pixel
+su desktop e 92 su mobile, più 12 pixel di separazione. Se cambi altezza del logo, del pulsante Menu o padding
 verticale dell'header, aggiorna anche questa variabile.
 
 Grid organizza la pagina in intestazione e contenuto e centra la sezione del timer.
@@ -155,10 +155,15 @@ le icone del timer o lo sfondo della pagina.
 
 Il pannello riprende lo scorrimento da sinistra del riferimento
 [Pure CSS Sidebar Toggle Menu](https://codepen.io/plavookac/pen/qomrMw),
-adattato al tema nero e bianco. È largo 250 pixel, inizia sotto l'header e usa
+adattato al tema nero e bianco. È largo 250 pixel, inizia dal bordo superiore e usa
 `position: fixed`, quindi non sposta il timer. `translateX(-100%)` lo porta fuori
 dalla finestra; la classe `is-open` lo riporta a `translateX(0)` in 250 millisecondi.
 `visibility` lo nasconde dopo l'animazione di chiusura.
+
+Il pannello è dentro l'header: il suo `z-index: 1` lo sovrappone a logo e titolo,
+mentre il pulsante Menu ha `position: relative` e `z-index: 2` per restare sopra.
+Quando è attivo, il pulsante usa lo stesso sfondo del pannello anche in hover.
+Le voci non hanno bordi divisori; il padding superiore le separa dalla X.
 
 `alternaMenu()` usa `classList.toggle("active")` sul pulsante e conserva il booleano
 restituito in `menuAperto`. Passando quel booleano come secondo argomento di
@@ -172,7 +177,7 @@ Vedi il [riferimento MDN su inert](https://developer.mozilla.org/en-US/docs/Web/
 
 `chiudiMenuFuori(evento)` controlla il bersaglio del clic con `contains()`:
 chiude solo se il clic è fuori sia dal pulsante sia dal pannello.
-`gestisciTastoMenu(evento)` riconosce Esc, chiude e riporta il focus al pulsante.
+`gestisciTastoMenu(evento)` riconosce Esc e chiude senza chiamare `focus()`.
 Le tre voci sono per ora elementi di lista senza collegamenti: le destinazioni
 verranno aggiunte quando saranno disponibili le rispettive sezioni.
 
@@ -230,7 +235,9 @@ Per il menu laterale controlla che:
 - Il pulsante si trovi a sinistra del logo e resti allineato con il titolo.
 - Il clic animi l'icona e apra il pannello con le tre voci richieste.
 - Un secondo clic, Esc e un clic fuori chiudano il pannello.
-- Un clic dentro il pannello lo lasci aperto; Esc riporti il focus al pulsante.
+- Un clic dentro il pannello lo lasci aperto; Esc lo chiuda senza spostare esplicitamente il focus.
+- Il pannello copra logo e titolo, lasciando la X visibile sullo stesso sfondo del menu.
+- Le tre voci non mostrino bordi divisori.
 - `aria-expanded`, `active`, `is-open` e `inert` restino coerenti dopo più aperture e chiusure.
 - Invio e Spazio eseguano lo stesso cambio di stato.
 - L'animazione non modifichi il tempo o lo stato dei pulsanti del timer.
