@@ -613,13 +613,15 @@ button:disabled {
   }
 
   .sidebar-menu ul {
-    /* Il gruppo di voci è centrato nello spazio disponibile sotto la X. */
+    /* Il gruppo di voci resta centrato orizzontalmente e leggermente più alto nella finestra. */
     min-height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 8px;
-    padding: var(--header-height) 24px 24px;
+    /* 16px separano le voci, aumentando lo spazio rispetto al menu precedente. */
+    gap: 16px;
+    /* Più spazio sotto il gruppo lo sposta circa 32px verso l'alto, senza usare transform. */
+    padding: var(--header-height) 24px 88px;
   }
 
   .sidebar-menu li {
@@ -631,7 +633,14 @@ button:disabled {
     display: flex;
     justify-content: center;
     gap: 12px;
-    font-size: 1.125rem;
+    /* 1.375rem corrisponde a 22px con il font di base del browser a 16px. */
+    font-size: 1.375rem;
+  }
+
+  .sidebar-menu .menu-icon {
+    /* Le icone crescono insieme al testo per mantenere le proporzioni. */
+    width: 26px;
+    height: 26px;
   }
 
   main {

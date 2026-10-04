@@ -24,6 +24,7 @@ Non c'è ancora una suite di test automatici nel repository.
 
 Il browser legge `index.html`, carica il foglio CSS e il file JavaScript collegati
 e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi dell'HTML.
+Il tag `title` imposta il nome della scheda del browser a «FocusX».
 
 ## Struttura HTML
 
@@ -175,6 +176,9 @@ del pannello. Il font ADLaM Display riprende quello del titolo.
 Fino a 480 pixel di larghezza, il pannello occupa tutta la finestra. La lista usa
 Flexbox per centrare verticalmente il gruppo nello spazio sotto la X; ogni
 pulsante centra insieme icona e testo con `justify-content: center`.
+Su mobile il testo usa `1.375rem` (22 pixel con la dimensione di base a 16), le icone
+misurano 26 pixel e le voci sono separate da 16 pixel. Il padding inferiore della
+lista è di 88 pixel: aumenta lo spazio sotto il gruppo e lo colloca leggermente più in alto.
 Il pannello può scorrere se la finestra è troppo bassa per mostrare tutte le voci.
 
 Su dispositivi con `hover: hover`, il puntatore mostra uno sfondo grigio e solleva
