@@ -18,8 +18,10 @@ Già presenti:
 
 - Struttura HTML con intestazione, timer e controlli.
 - Tema scuro in bianco e nero, adattato anche a schermi piccoli.
-- Logo SVG compatto con fiamma bianca e due occhi neri.
-- Pulsante hamburger animato a sinistra del logo: il clic alterna l'icona, senza aprire un pannello.
+- Logo SVG compatto con fiamma bianca e occhi neri inclinati, dall'espressione concentrata.
+- Pulsante hamburger animato a sinistra del logo e pannello che scorre da sinistra.
+- Voci Progetti, Obiettivi e Statistica, per ora senza collegamenti alle future sezioni.
+- Chiusura del menu con un secondo clic, Esc o un clic fuori dal pannello.
 - Font ADLaM Display incluso nel progetto.
 - Nomi accessibili per i pulsanti e indicatore di focus da tastiera.
 - Avvio del timer con aggiornamento del tempo e ripartenza automatica.

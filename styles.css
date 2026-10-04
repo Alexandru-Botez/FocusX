@@ -56,6 +56,12 @@
 
   /* Rosso chiaro per Reset: cambia la tonalità, mantenendo lo sfondo senza trasparenza. */
   --reset-hover: #ff6b6b;
+
+  /* Sfondo del pannello, leggermente più chiaro rispetto alla pagina. */
+  --surface: #0f0f0f;
+
+  /* 44px di pulsante + 28px di padding sopra e sotto: il menu inizia sotto l'header. */
+  --header-height: 100px;
 }
 
 /*
@@ -100,6 +106,14 @@ body {
 
 /* L'intestazione contiene pulsante Menu, logo e titolo, disposti in alto a sinistra. */
 header {
+  /* sticky mantiene l'header visibile durante lo scorrimento, conservando il suo spazio. */
+  position: sticky;
+  top: 0;
+
+  /* z-index stabilisce l'ordine di sovrapposizione: l'header resta sopra il pannello. */
+  z-index: 2;
+  background-color: var(--background);
+
   /* Flexbox dispone i figli su un asse: per impostazione predefinita, una riga. */
   display: flex;
 
@@ -145,6 +159,55 @@ h1 {
 
   /* Senza unità, 1.1 significa un'altezza di riga pari a 1.1 volte la dimensione del font. */
   line-height: 1.1;
+}
+
+/*
+  fixed posiziona il pannello rispetto alla finestra, senza spostare il timer.
+  top e bottom lo estendono dall'header fino al bordo inferiore della finestra.
+*/
+.sidebar-menu {
+  position: fixed;
+  top: var(--header-height);
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 250px;
+
+  /* calc lascia almeno 32px di pagina visibili anche su finestre molto strette. */
+  max-width: calc(100vw - 32px);
+  overflow-y: auto;
+  background-color: var(--surface);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+
+  /* -100% sposta a sinistra il pannello di tutta la sua larghezza. */
+  transform: translateX(-100%);
+  visibility: hidden;
+
+  /* Lo scorrimento dura 250ms; visibility attende la fine dell'animazione di chiusura. */
+  transition: transform 250ms ease-in-out, visibility 0s 250ms;
+}
+
+.sidebar-menu.is-open {
+  transform: translateX(0);
+  visibility: visible;
+
+  /* All'apertura la visibilità cambia subito, prima dello scorrimento. */
+  transition-delay: 0s;
+}
+
+.sidebar-menu ul {
+  /* Rimuove i pallini e i margini predefiniti della lista. */
+  list-style: none;
+  margin: 0;
+  padding: 12px 0;
+}
+
+.sidebar-menu li {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 /* Il contenuto principale occupa la seconda riga del body, sotto l'intestazione. */
@@ -353,6 +416,7 @@ button:hover:not(:disabled) {
 
 /* Chi preferisce ridurre il movimento ottiene il cambio dell'icona senza animazione. */
 @media (prefers-reduced-motion: reduce) {
+  .sidebar-menu,
   #menu-button g,
   #menu-button path {
     transition: none;
@@ -454,6 +518,11 @@ button:disabled {
   Riutilizziamo gli stessi selettori: a parità di specificità, questi valori scritti dopo prevalgono.
 */
 @media (max-width: 480px) {
+  :root {
+    /* Su mobile il padding verticale scende a 24px: 44 + 24 + 24 = 92. */
+    --header-height: 92px;
+  }
+
   header {
     /* Un solo valore significa 24px su tutti e quattro i lati dell'intestazione. */
     padding: 24px;

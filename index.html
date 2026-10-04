@@ -34,10 +34,11 @@
       script collega il file JavaScript indicato da src.
       defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
       dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
+      Il parametro ?v aggiorna l'URL per evitare una vecchia copia del file in cache.
       script.js gestisce avvio, pausa, ripresa, reset e ripartenza automatica del timer.
-      Collega anche il clic del pulsante Menu all'animazione della sua icona.
+      Collega anche il pulsante Menu all'icona animata e al pannello laterale.
     -->
-    <script src="script.js" defer></script>
+    <script src="script.js?v=menu-laterale-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -46,10 +47,10 @@
     <header>
       <!--
         Questo button integra l'icona SVG fornita e funziona anche con Invio e Spazio.
-        aria-label dà un nome all'icona; aria-pressed indica se è nello stato attivo.
-        Per ora il clic cambia solo l'icona: non c'è ancora un pannello di navigazione.
+        aria-label dà un nome all'icona; aria-expanded indica se il menu è aperto.
+        aria-controls contiene l'id del pannello controllato da questo pulsante.
       -->
-      <button id="menu-button" type="button" aria-label="Menu" aria-pressed="false" title="Menu">
+      <button id="menu-button" type="button" aria-label="Menu" aria-expanded="false" aria-controls="sidebar-menu" title="Menu">
         <!-- viewBox conserva le coordinate originali; il CSS ridimensiona e anima il disegno. -->
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
           <!-- currentColor riprende il bianco del pulsante; round arrotonda le estremità. -->
@@ -68,16 +69,31 @@
       <!--
         img mostra il logo vettoriale: SVG può essere ingrandito senza perdere nitidezza.
         class="brand-logo" collega questo elemento al selettore .brand-logo nel CSS.
-        src indica il file; ?v=fiamma-1 è una versione che possiamo cambiare
+        src indica il file; ?v=fiamma-concentrata-2 è una versione che possiamo cambiare
         quando aggiorniamo il logo, per far richiedere al browser un nuovo URL.
         alt="" indica un'immagine decorativa: il nome dell'app è già presente nel titolo.
         width e height riservano uno spazio di 44 × 44 pixel anche prima del caricamento.
       -->
-      <img class="brand-logo" src="assets/focusx-mark.svg?v=fiamma-1" alt="" width="44" height="44">
+      <img class="brand-logo" src="assets/focusx-mark.svg?v=fiamma-concentrata-2" alt="" width="44" height="44">
 
       <!-- h1 è il titolo principale del documento; il CSS ne sceglie font e dimensione. -->
       <h1>FocusX</h1>
     </header>
+
+    <!--
+      nav identifica il pannello destinato alla navigazione.
+      inert rende il menu chiuso non interattivo e lo esclude dai lettori di schermo.
+      JavaScript rimuove questo stato quando apre il pannello.
+      ul è una lista; ogni li è una voce. Per ora sono etichette senza destinazione:
+      aggiungeremo i collegamenti quando realizzeremo le rispettive sezioni.
+    -->
+    <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
+      <ul>
+        <li>Progetti</li>
+        <li>Obiettivi</li>
+        <li>Statistica</li>
+      </ul>
+    </nav>
 
     <!-- main identifica il contenuto principale, distinto dall'intestazione. -->
     <main>
