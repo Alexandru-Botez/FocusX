@@ -205,12 +205,23 @@ h1 {
 }
 
 .sidebar-menu li {
+  /* Il margine laterale lascia spazio al contorno del focus e agli angoli arrotondati. */
+  margin: 0 12px;
+}
+
+.sidebar-menu .menu-option {
   /* Colonne laterali uguali: l'icona sta a sinistra e il testo resta al centro del pannello. */
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr) 22px;
   align-items: center;
   column-gap: 8px;
-  padding: 20px 28px;
+  width: 100%;
+  height: auto;
+  min-height: 64px;
+  padding: 18px 16px;
+  border: 0;
+  border-radius: 12px;
+  background-color: transparent;
   text-align: center;
 
   /* Riprende il font locale del titolo, usando il peso disponibile senza grassetto artificiale. */
@@ -219,6 +230,40 @@ h1 {
   font-weight: 400;
   font-synthesis: none;
   line-height: 1.5;
+
+  /* Colore e dimensione cambiano gradualmente, senza modificare lo spazio della riga. */
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+/* Supera l'hover generico dei pulsanti: sui dispositivi touch lo sfondo resta neutro. */
+.sidebar-menu .menu-option:hover:not(:disabled) {
+  background-color: transparent;
+}
+
+/* hover: hover limita l'effetto ai dispositivi che permettono il passaggio del puntatore. */
+@media (hover: hover) {
+  .sidebar-menu .menu-option:hover:not(:disabled) {
+    background-color: var(--hover);
+    transform: translateY(-2px);
+  }
+}
+
+/* :active dura durante la pressione; al rilascio la voce torna gradualmente alla dimensione normale. */
+.sidebar-menu .menu-option:active:not(:disabled) {
+  background-color: #2a2a2a;
+  transform: scale(0.96);
+}
+
+/* Chi preferisce meno movimento conserva il feedback di colore senza spostamenti. */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-menu .menu-option {
+    transition: none;
+  }
+
+  .sidebar-menu .menu-option:hover:not(:disabled),
+  .sidebar-menu .menu-option:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 /* Queste regole riguardano soltanto le icone delle voci, senza cambiare l'hamburger o il timer. */
@@ -558,6 +603,35 @@ button:disabled {
   header {
     /* Un solo valore significa 24px su tutti e quattro i lati dell'intestazione. */
     padding: 24px;
+  }
+
+  .sidebar-menu {
+    /* Su telefono il pannello copre tutta la finestra, compreso il timer. */
+    width: 100%;
+    max-width: none;
+    border-right: 0;
+  }
+
+  .sidebar-menu ul {
+    /* Il gruppo di voci è centrato nello spazio disponibile sotto la X. */
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: var(--header-height) 24px 24px;
+  }
+
+  .sidebar-menu li {
+    margin: 0;
+  }
+
+  .sidebar-menu .menu-option {
+    /* Flexbox centra insieme icona e testo, senza la colonna vuota usata su desktop. */
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1.125rem;
   }
 
   main {

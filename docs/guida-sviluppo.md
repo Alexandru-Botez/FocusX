@@ -29,7 +29,7 @@ e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi del
 
 L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il titolo principale `h1`.
 Il pannello `nav`, dentro l'header, contiene le quattro voci destinate alla futura navigazione.
-Ogni `li` contiene un'icona SVG decorativa e uno `span` con il testo.
+Ogni `li` contiene un `button.menu-option` con un'icona SVG decorativa e uno `span` con il testo.
 Nel `head`, un `link` con `rel="icon"` riutilizza il logo SVG come favicon della scheda.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
@@ -41,6 +41,7 @@ Gli identificatori da conoscere sono:
 | `#menu-button` | Pulsante Menu | Collega il clic al cambio di stato dell'icona e del pannello. |
 | `#sidebar-menu` | Pannello laterale | Contiene le voci Progetti, Obiettivi, Statistica e Impostazioni. |
 | `.menu-icon` | Icone delle voci | Cartella, bersaglio, grafico a barre e cursori delle impostazioni. |
+| `.menu-option` | Pulsanti delle voci | Feedback di hover e pressione, utilizzabile anche con la tastiera. |
 | `.brand-logo` | Immagine del logo | Dimensione e comportamento del logo nell'intestazione. |
 | `#timer` | Paragrafo con `25:00` | Visualizzazione del tempo, aggiornata da JavaScript. |
 | `.timer-controls` | Contenitore dei pulsanti | Disposizione dei controlli con Flexbox. |
@@ -158,7 +159,7 @@ le icone del timer o lo sfondo della pagina.
 
 Il pannello riprende lo scorrimento da sinistra del riferimento
 [Pure CSS Sidebar Toggle Menu](https://codepen.io/plavookac/pen/qomrMw),
-adattato al tema nero e bianco. È largo 250 pixel, inizia dal bordo superiore e usa
+adattato al tema nero e bianco. Su desktop è largo 250 pixel, inizia dal bordo superiore e usa
 `position: fixed`, quindi non sposta il timer. `translateX(-100%)` lo porta fuori
 dalla finestra; la classe `is-open` lo riporta a `translateX(0)` in 250 millisecondi.
 `visibility` lo nasconde dopo l'animazione di chiusura.
@@ -167,9 +168,22 @@ Il pannello è dentro l'header: il suo `z-index: 1` lo sovrappone a logo e titol
 mentre il pulsante Menu ha `position: relative` e `z-index: 2` per restare sopra.
 Quando è attivo, il pulsante usa lo stesso sfondo del pannello anche in hover.
 Le voci non hanno bordi divisori; il padding superiore le separa dalla X.
-Le righe usano una griglia con due colonne laterali uguali da 22 pixel: quella
+Su desktop i pulsanti delle voci usano una griglia con due colonne laterali uguali da 22 pixel: quella
 sinistra ospita l'icona e quella destra resta vuota, mantenendo il testo al centro
 del pannello. Il font ADLaM Display riprende quello del titolo.
+
+Fino a 480 pixel di larghezza, il pannello occupa tutta la finestra. La lista usa
+Flexbox per centrare verticalmente il gruppo nello spazio sotto la X; ogni
+pulsante centra insieme icona e testo con `justify-content: center`.
+Il pannello può scorrere se la finestra è troppo bassa per mostrare tutte le voci.
+
+Su dispositivi con `hover: hover`, il puntatore mostra uno sfondo grigio e solleva
+la voce di 2 pixel. Durante la pressione, `:active` la riduce al 96%; al rilascio
+torna alla dimensione normale grazie a una transizione di 180 millisecondi.
+Questi effetti sono CSS e non richiedono nuovo JavaScript.
+Con `prefers-reduced-motion: reduce` restano solo i cambi di colore.
+Riferimenti: [hover](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/hover)
+e [:active](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:active) su MDN.
 
 `alternaMenu()` usa `classList.toggle("active")` sul pulsante e conserva il booleano
 restituito in `menuAperto`. Passando quel booleano come secondo argomento di
@@ -184,7 +198,7 @@ Vedi il [riferimento MDN su inert](https://developer.mozilla.org/en-US/docs/Web/
 `chiudiMenuFuori(evento)` controlla il bersaglio del clic con `contains()`:
 chiude solo se il clic è fuori sia dal pulsante sia dal pannello.
 `gestisciTastoMenu(evento)` riconosce Esc e chiude senza chiamare `focus()`.
-Le quattro voci sono per ora elementi di lista senza collegamenti: le destinazioni
+Le quattro voci sono per ora pulsanti senza destinazioni, con solo feedback visivo: le destinazioni
 verranno aggiunte quando saranno disponibili le rispettive sezioni.
 
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
@@ -244,6 +258,9 @@ Per il menu laterale controlla che:
 - Un clic dentro il pannello lo lasci aperto; Esc lo chiuda senza spostare esplicitamente il focus.
 - Il pannello copra logo e titolo, lasciando la X visibile sullo stesso sfondo del menu.
 - Le quattro voci non mostrino bordi divisori e abbiano testo centrato e icone visibili.
+- Su telefono il pannello occupi tutta la finestra e ogni coppia icona-testo sia centrata.
+- Hover e pressione mostrino gli effetti previsti senza aprire sezioni o modificare il timer.
+- Le voci si possano raggiungere con Tab solo quando il menu è aperto.
 - La favicon usi il logo dell'app e il relativo file sia caricato senza errori.
 - `aria-expanded`, `active`, `is-open` e `inert` restino coerenti dopo più aperture e chiusure.
 - Invio e Spazio eseguano lo stesso cambio di stato.

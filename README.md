@@ -23,6 +23,8 @@ Già presenti:
 - Il pannello copre logo e titolo; la X resta visibile sullo stesso sfondo del menu.
 - Voci Progetti, Obiettivi, Statistica e Impostazioni, per ora senza collegamenti alle future sezioni.
 - Testi del menu centrati con font ADLaM Display e icone SVG dedicate.
+- Menu a tutto schermo su telefono, con icone e testi centrati insieme.
+- Hover con sfondo grigio e lieve sollevamento; pressione con riduzione e ritorno graduali.
 - Favicon della scheda del browser ricavata dal logo dell'app.
 - Chiusura del menu con un secondo clic, Esc o un clic fuori dal pannello.
 - Font ADLaM Display incluso nel progetto.
