@@ -9,6 +9,7 @@ FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa
 e Reset lo ferma riportando il tempo a 25 minuti.
 Il timer ricomincia automaticamente da 25 minuti quando i secondi rimanenti arrivano a zero.
 Gli obiettivi sono ancora da sviluppare.
+La pagina Progetti consente di creare progetti con nome e salvarli nel browser.
 Non c'è ancora una suite di test automatici nel repository.
 
 ## Responsabilità dei file
@@ -17,7 +18,10 @@ Non c'è ancora una suite di test automatici nel repository.
 | --- | --- |
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
 | [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
-| [script.js](../script.js) | Comportamento del timer, apertura e chiusura del menu con la sua icona. |
+| [script.js](../script.js) | Comportamento del timer nella pagina principale. |
+| [menu.js](../menu.js) | Apertura e chiusura del menu, condivise dalle due pagine. |
+| [progetti.html](../progetti.html) | Pagina Progetti, modulo e lista dei progetti creati. |
+| [progetti.js](../progetti.js) | Creazione, visualizzazione e salvataggio locale dei progetti. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto con fiamma bianca e occhi neri inclinati e concentrati. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app e le voci del menu. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
@@ -31,6 +35,8 @@ Il tag `title` imposta il nome della scheda del browser a «FocusX».
 L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il titolo principale `h1`.
 Il pannello `nav`, dentro l'header, contiene le quattro voci destinate alla futura navigazione.
 Ogni `li` contiene un `button.menu-option` con un'icona SVG decorativa e uno `span` con il testo.
+La voce Progetti usa invece un `a.menu-option` con `href="progetti.html"` per navigare;
+nella pagina di destinazione ha `aria-current="page"`. Il nome FocusX è un link a `index.html`.
 Nel `head`, un `link` con `rel="icon"` riutilizza il logo SVG come favicon della scheda.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
@@ -202,8 +208,36 @@ Vedi il [riferimento MDN su inert](https://developer.mozilla.org/en-US/docs/Web/
 `chiudiMenuFuori(evento)` controlla il bersaglio del clic con `contains()`:
 chiude solo se il clic è fuori sia dal pulsante sia dal pannello.
 `gestisciTastoMenu(evento)` riconosce Esc e chiude senza chiamare `focus()`.
-Le quattro voci sono per ora pulsanti senza destinazioni, con solo feedback visivo: le destinazioni
-verranno aggiunte quando saranno disponibili le rispettive sezioni.
+Progetti è un collegamento alla pagina dedicata; le altre tre voci sono pulsanti
+con solo feedback visivo, in attesa delle rispettive sezioni.
+
+## Prima versione dei progetti
+
+`progetti.html` carica `menu.js` e `progetti.js`, mentre `index.html` carica
+`menu.js` e `script.js`. Non carichiamo il timer dove i suoi elementi non sono presenti.
+L'header è attualmente ripetuto nei due file HTML: quando lo modifichi, aggiorna entrambi.
+
+Il pulsante Crea progetto mostra `#project-form`. Il campo `#project-name` è obbligatorio
+e ammette al massimo 80 caratteri. L'evento `submit` chiama `creaProgetto(evento)`:
+`preventDefault()` evita la ricarica e `trim()` rimuove gli spazi alle estremità.
+Un nome composto solo da spazi viene rifiutato. Annulla chiude e svuota il modulo.
+
+Un progetto ha la forma `{ id, nome }`. L'id viene generato con
+[`crypto.randomUUID()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID)
+e servirà a collegare gli obiettivi; il nome può coincidere con quello di un altro progetto.
+`mostraProgetti()` ricostruisce `#project-list` creando elementi `li` e usando
+`textContent`, così i nomi sono testo e non HTML da eseguire.
+
+`caricaProgetti()` e `salvaProgetti(elenco)` concentrano l'accesso a
+[`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
+con chiave `focusx.progetti.v1`. `JSON.parse` legge l'array salvato e `JSON.stringify`
+lo converte in testo. Il nuovo progetto compare solo dopo un salvataggio riuscito.
+Se l'archivio non è leggibile, la creazione viene disabilitata per non sovrascriverlo;
+se il salvataggio fallisce, il modulo mantiene il nome e mostra un messaggio.
+Queste funzioni potranno essere adattate alle richieste verso un futuro backend.
+
+Per ora i progetti non hanno obiettivi, modifica o eliminazione. Il cambio di pagina
+interrompe il timer: tornando a `index.html`, il tempo riparte dallo stato iniziale.
 
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
 La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
@@ -263,7 +297,7 @@ Per il menu laterale controlla che:
 - Il pannello copra logo e titolo, lasciando la X visibile sullo stesso sfondo del menu.
 - Le quattro voci non mostrino bordi divisori e abbiano testo centrato e icone visibili.
 - Su telefono il pannello occupi tutta la finestra e ogni coppia icona-testo sia centrata.
-- Hover e pressione mostrino gli effetti previsti senza aprire sezioni o modificare il timer.
+- Hover e pressione mostrino gli effetti previsti; solo Progetti navighi alla sua pagina.
 - Le voci si possano raggiungere con Tab solo quando il menu è aperto.
 - La favicon usi il logo dell'app e il relativo file sia caricato senza errori.
 - `aria-expanded`, `active`, `is-open` e `inert` restino coerenti dopo più aperture e chiusure.
@@ -271,6 +305,16 @@ Per il menu laterale controlla che:
 - L'animazione non modifichi il tempo o lo stato dei pulsanti del timer.
 - Su uno schermo piccolo l'header non crei scorrimento orizzontale.
 - Con la preferenza di movimento ridotto, il cambio avvenga senza transizioni.
+
+Per i progetti controlla che:
+
+- Il collegamento dal menu apra `progetti.html` e FocusX riporti al timer.
+- Crea progetto apra il modulo; Annulla lo chiuda senza creare una voce.
+- Un nome vuoto o composto solo da spazi non venga accettato.
+- Un nome valido venga aggiunto una sola volta e rimanga dopo una ricarica.
+- Si possano aggiungere più progetti, compresi nomi con accenti o caratteri come `<` e `>`.
+- Su mobile il modulo e i nomi lunghi non allarghino la pagina.
+- Non compaiano errori JavaScript né nella pagina Progetti né nel timer.
 
 Per il timer attuale controlla anche che:
 

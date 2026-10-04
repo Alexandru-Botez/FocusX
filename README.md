@@ -13,6 +13,8 @@ durante il conteggio e in pausa dopo l'avvio.
 Quando i secondi rimanenti arrivano a zero, il tempo torna subito a `25:00`
 e il conto alla rovescia continua automaticamente.
 La gestione degli obiettivi è ancora da sviluppare.
+Dal menu, Progetti apre una pagina dedicata: Crea progetto mostra un modulo per il
+nome. Salva progetto aggiunge una voce all'elenco e la conserva nel browser.
 
 Già presenti:
 
@@ -21,7 +23,8 @@ Già presenti:
 - Logo SVG compatto con fiamma bianca e occhi neri inclinati, dall'espressione concentrata.
 - Pulsante hamburger animato a sinistra del logo e pannello che scorre da sinistra.
 - Il pannello copre logo e titolo; la X resta visibile sullo stesso sfondo del menu.
-- Voci Progetti, Obiettivi, Statistica e Impostazioni, per ora senza collegamenti alle future sezioni.
+- Voce Progetti collegata alla sua pagina; Obiettivi, Statistica e Impostazioni ancora senza destinazioni.
+- Creazione di progetti con nome e salvataggio locale nel browser.
 - Testi del menu centrati con font ADLaM Display e icone SVG dedicate.
 - Menu a tutto schermo su telefono, con icone e testi centrati insieme.
 - Hover con sfondo grigio e lieve sollevamento; pressione con riduzione e ritorno graduali.
@@ -75,8 +78,11 @@ e apri l'indirizzo con lo stesso numero di porta.
 FocusX/
 ├── README.md
 ├── index.html
+├── progetti.html
 ├── styles.css
 ├── script.js
+├── menu.js
+├── progetti.js
 ├── assets/
 │   ├── focusx-mark.svg
 │   └── fonts/
@@ -96,6 +102,12 @@ FocusX/
 
 - [ ] Segnalazione della fine della sessione.
 - [ ] Inserimento e completamento degli obiettivi di studio.
+- [ ] Backend e database per il salvataggio dei progetti online.
+
+I progetti attuali sono salvati in `localStorage`, nel browser e nell'indirizzo
+usati: non vengono sincronizzati tra dispositivi. Il nome FocusX nell'header
+riporta al timer. Cambiare pagina interrompe il timer e tornando si riparte dallo
+stato iniziale; la continuità della sessione tra pagine è ancora da sviluppare.
 
 Questa lista descrive il lavoro previsto, non funzionalità già disponibili.
 

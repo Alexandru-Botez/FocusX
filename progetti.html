@@ -38,11 +38,11 @@
       defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
       dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
       Il parametro ?v aggiorna l'URL per evitare una vecchia copia del file in cache.
-      script.js gestisce avvio, pausa, ripresa, reset e ripartenza automatica del timer.
+      progetti.js gestisce la creazione e il salvataggio locale dei progetti.
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="script.js?v=progetti-1" defer></script>
+    <script src="progetti.js?v=progetti-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -94,7 +94,7 @@
         <ul>
           <!-- Le icone sono decorative: aria-hidden evita di ripetere il nome della voce. -->
           <li>
-            <a class="menu-option" href="progetti.html">
+            <a class="menu-option" href="progetti.html" aria-current="page">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <!-- Una cartella rappresenta i progetti. -->
                 <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v11a1 1 0 0 1-1-1H4a1 1 0 0 1-1-1V7Z"></path>
@@ -138,84 +138,30 @@
       </nav>
     </header>
 
-    <!-- main identifica il contenuto principale, distinto dall'intestazione. -->
-    <main>
-      <!--
-        section raggruppa contenuti che appartengono allo stesso argomento.
-        aria-label dà un nome accessibile alla sezione senza aggiungere testo visibile.
-      -->
-      <section aria-label="Timer Pomodoro">
-        <!--
-          p è un paragrafo: qui contiene il tempo iniziale, 25 minuti e 0 secondi.
-          id="timer" identifica un solo elemento nella pagina:
-          il CSS lo seleziona con #timer e JavaScript ne modifica il testo.
-          role="timer" comunica alle tecnologie assistive il tipo di informazione.
-          aria-live="off" evita annunci automatici continui durante il conto alla rovescia.
-        -->
-        <p id="timer" role="timer" aria-live="off">25:00</p>
-
-        <!--
-          div è un contenitore generico: raggruppa i tre pulsanti per disporli con Flexbox.
-          Una class può essere riutilizzata su più elementi; un id deve essere unico.
-        -->
-        <div class="timer-controls">
-          <!--
-            button crea un pulsante utilizzabile anche con la tastiera.
-            id permette a JavaScript di trovare il pulsante e collegare un'azione al clic.
-            type="button" evita che il pulsante invii un modulo, se in futuro fosse dentro un form.
-            aria-label assegna il nome "Avvia" al pulsante che mostra soltanto un'icona.
-            title offre un suggerimento che molti browser mostrano al passaggio del mouse.
-          -->
-          <button id="start-button" type="button" aria-label="Avvia" title="Avvia">
-            <!--
-              svg disegna un'immagine vettoriale direttamente nell'HTML.
-              viewBox definisce un sistema di coordinate da (0, 0), largo e alto 24 unità.
-              aria-hidden="true" nasconde l'icona ai lettori di schermo: il pulsante ha già un nome.
-              focusable="false" evita che l'icona diventi un punto di selezione separato.
-            -->
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <!--
-                path disegna il triangolo di avvio usando le istruzioni nell'attributo d.
-                M sposta il punto iniziale, l traccia segmenti con spostamenti relativi,
-                z chiude la figura. currentColor usa il valore della proprietà CSS color.
-              -->
-              <path d="M9 5l10 7-10 7z" fill="currentColor"></path>
-            </svg>
-          </button>
-
-          <!--
-            Il secondo pulsante ha id e nome dedicati alla pausa.
-            disabled lo rende inizialmente indisponibile: JavaScript lo abilita all'avvio.
-          -->
-          <button id="pause-button" type="button" aria-label="Pausa" title="Pausa" disabled>
-            <!-- Anche questa icona usa il sistema di coordinate 24 × 24 e resta decorativa. -->
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <!--
-                rect disegna un rettangolo: x e y indicano l'angolo superiore sinistro.
-                width e height ne indicano le dimensioni nel sistema di coordinate SVG.
-                rx arrotonda gli angoli; fill="currentColor" riprende il colore CSS del pulsante.
-                I due rettangoli affiancati formano il simbolo della pausa.
-              -->
-              <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"></rect>
-              <rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"></rect>
-            </svg>
-          </button>
-
-          <!--
-            Il testo "Reset" dà già un nome al pulsante, quindi non serve aria-label.
-            disabled impedisce il ripristino prima dell'avvio: il tempo è già a 25:00.
-          -->
-          <button id="reset-button" type="button" disabled>Reset</button>
+    <!-- Questa pagina carica progetti.js e menu.js; il timer vive nella pagina index.html. -->
+    <main class="projects-main">
+      <section class="projects-section" aria-labelledby="projects-heading">
+        <div class="projects-heading-row">
+          <h2 id="projects-heading">Progetti</h2>
+          <button id="new-project-button" class="project-action project-action-primary" type="button">Crea progetto</button>
         </div>
 
-        <!--
-          Questo paragrafo contiene un messaggio sullo stato del timer.
-          JavaScript trova il messaggio tramite id="timer-status" e aggiunge la classe is-hidden.
-          Il CSS lo nasconde mantenendo il suo spazio, così il timer non cambia posizione.
-          role="status" fa annunciare gli aggiornamenti ai lettori di schermo
-          quando possibile, senza interrompere ciò che stanno già leggendo.
-        -->
-        <p id="timer-status" role="status">Pronto per iniziare.</p>
+        <!-- hidden nasconde il modulo finché l'utente non preme Crea progetto. -->
+        <form id="project-form" class="project-form" hidden>
+          <!-- for collega l'etichetta all'input; required e maxlength validano il campo. -->
+          <label for="project-name">Nome del progetto</label>
+          <input id="project-name" name="nome" type="text" required maxlength="80" autocomplete="off">
+          <div class="project-form-actions">
+            <button class="project-action project-action-primary" type="submit">Salva progetto</button>
+            <button id="cancel-project-button" class="project-action" type="button">Annulla</button>
+          </div>
+        </form>
+
+        <p id="projects-empty" class="projects-empty">Non hai ancora creato progetti.</p>
+        <!-- JavaScript crea una voce per ciascun progetto, usando textContent per il nome. -->
+        <ul id="project-list" class="project-list" aria-label="Progetti creati"></ul>
+        <!-- role=status annuncia l'esito senza interrompere la lettura. -->
+        <p id="projects-message" class="projects-message" role="status"></p>
       </section>
     </main>
   </body>
