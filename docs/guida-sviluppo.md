@@ -19,7 +19,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
 | [script.js](../script.js) | Comportamento del timer, apertura e chiusura del menu con la sua icona. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto con fiamma bianca e occhi neri inclinati e concentrati. |
-| [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app. |
+| [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app e le voci del menu. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
 
 Il browser legge `index.html`, carica il foglio CSS e il file JavaScript collegati
@@ -28,7 +28,9 @@ e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi del
 ## Struttura HTML
 
 L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il titolo principale `h1`.
-Il pannello `nav`, dentro l'header, contiene le tre voci destinate alla futura navigazione.
+Il pannello `nav`, dentro l'header, contiene le quattro voci destinate alla futura navigazione.
+Ogni `li` contiene un'icona SVG decorativa e uno `span` con il testo.
+Nel `head`, un `link` con `rel="icon"` riutilizza il logo SVG come favicon della scheda.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
 
@@ -37,7 +39,8 @@ Gli identificatori da conoscere sono:
 | Selettore | Elemento | Uso nel progetto |
 | --- | --- | --- |
 | `#menu-button` | Pulsante Menu | Collega il clic al cambio di stato dell'icona e del pannello. |
-| `#sidebar-menu` | Pannello laterale | Contiene le voci Progetti, Obiettivi e Statistica. |
+| `#sidebar-menu` | Pannello laterale | Contiene le voci Progetti, Obiettivi, Statistica e Impostazioni. |
+| `.menu-icon` | Icone delle voci | Cartella, bersaglio, grafico a barre e cursori delle impostazioni. |
 | `.brand-logo` | Immagine del logo | Dimensione e comportamento del logo nell'intestazione. |
 | `#timer` | Paragrafo con `25:00` | Visualizzazione del tempo, aggiornata da JavaScript. |
 | `.timer-controls` | Contenitore dei pulsanti | Disposizione dei controlli con Flexbox. |
@@ -164,6 +167,9 @@ Il pannello è dentro l'header: il suo `z-index: 1` lo sovrappone a logo e titol
 mentre il pulsante Menu ha `position: relative` e `z-index: 2` per restare sopra.
 Quando è attivo, il pulsante usa lo stesso sfondo del pannello anche in hover.
 Le voci non hanno bordi divisori; il padding superiore le separa dalla X.
+Le righe usano una griglia con due colonne laterali uguali da 22 pixel: quella
+sinistra ospita l'icona e quella destra resta vuota, mantenendo il testo al centro
+del pannello. Il font ADLaM Display riprende quello del titolo.
 
 `alternaMenu()` usa `classList.toggle("active")` sul pulsante e conserva il booleano
 restituito in `menuAperto`. Passando quel booleano come secondo argomento di
@@ -178,7 +184,7 @@ Vedi il [riferimento MDN su inert](https://developer.mozilla.org/en-US/docs/Web/
 `chiudiMenuFuori(evento)` controlla il bersaglio del clic con `contains()`:
 chiude solo se il clic è fuori sia dal pulsante sia dal pannello.
 `gestisciTastoMenu(evento)` riconosce Esc e chiude senza chiamare `focus()`.
-Le tre voci sono per ora elementi di lista senza collegamenti: le destinazioni
+Le quattro voci sono per ora elementi di lista senza collegamenti: le destinazioni
 verranno aggiunte quando saranno disponibili le rispettive sezioni.
 
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
@@ -233,11 +239,12 @@ Prima di considerare pronta una modifica all'interfaccia:
 Per il menu laterale controlla che:
 
 - Il pulsante si trovi a sinistra del logo e resti allineato con il titolo.
-- Il clic animi l'icona e apra il pannello con le tre voci richieste.
+- Il clic animi l'icona e apra il pannello con le quattro voci richieste.
 - Un secondo clic, Esc e un clic fuori chiudano il pannello.
 - Un clic dentro il pannello lo lasci aperto; Esc lo chiuda senza spostare esplicitamente il focus.
 - Il pannello copra logo e titolo, lasciando la X visibile sullo stesso sfondo del menu.
-- Le tre voci non mostrino bordi divisori.
+- Le quattro voci non mostrino bordi divisori e abbiano testo centrato e icone visibili.
+- La favicon usi il logo dell'app e il relativo file sia caricato senza errori.
 - `aria-expanded`, `active`, `is-open` e `inert` restino coerenti dopo più aperture e chiusure.
 - Invio e Spazio eseguano lo stesso cambio di stato.
 - L'animazione non modifichi il tempo o lo stato dei pulsanti del timer.

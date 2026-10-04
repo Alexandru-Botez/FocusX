@@ -205,9 +205,31 @@ h1 {
 }
 
 .sidebar-menu li {
+  /* Colonne laterali uguali: l'icona sta a sinistra e il testo resta al centro del pannello. */
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 22px;
+  align-items: center;
+  column-gap: 8px;
   padding: 20px 28px;
+  text-align: center;
+
+  /* Riprende il font locale del titolo, usando il peso disponibile senza grassetto artificiale. */
+  font-family: "ADLaM Display", "Segoe UI", sans-serif;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.5;
+}
+
+/* Queste regole riguardano soltanto le icone delle voci, senza cambiare l'hamburger o il timer. */
+.menu-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* Il contenuto principale occupa la seconda riga del body, sotto l'intestazione. */

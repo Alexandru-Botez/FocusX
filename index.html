@@ -23,12 +23,15 @@
     <!-- title è il nome mostrato nella scheda del browser e nei segnalibri. -->
     <title>FocusX - Timer Pomodoro</title>
 
+    <!-- rel="icon" sceglie l'icona della scheda del browser: riutilizziamo il nostro logo SVG. -->
+    <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
+
     <!--
       link collega una risorsa esterna al documento.
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=menu-header-2">
+    <link rel="stylesheet" href="styles.css?v=menu-icone-3">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -88,9 +91,40 @@
       -->
       <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
         <ul>
-          <li>Progetti</li>
-          <li>Obiettivi</li>
-          <li>Statistica</li>
+          <!-- Le icone sono decorative: aria-hidden evita di ripetere il nome della voce. -->
+          <li>
+            <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!-- Una cartella rappresenta i progetti. -->
+              <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+            </svg>
+            <span>Progetti</span>
+          </li>
+          <li>
+            <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!-- Un bersaglio rappresenta gli obiettivi. -->
+              <circle cx="12" cy="12" r="9"></circle>
+              <circle cx="12" cy="12" r="5"></circle>
+              <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"></circle>
+            </svg>
+            <span>Obiettivi</span>
+          </li>
+          <li>
+            <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!-- Tre barre di altezza diversa rappresentano le statistiche. -->
+              <path d="M3 3v18h18M7 17v-5M12 17V8M17 17V5"></path>
+            </svg>
+            <span>Statistica</span>
+          </li>
+          <li>
+            <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!-- Tre cursori regolabili rappresentano le impostazioni. -->
+              <path d="M5 3v4m0 6v8M12 3v10m0 6v2M19 3v4m0 6v8"></path>
+              <circle cx="5" cy="10" r="3"></circle>
+              <circle cx="12" cy="16" r="3"></circle>
+              <circle cx="19" cy="10" r="3"></circle>
+            </svg>
+            <span>Impostazioni</span>
+          </li>
         </ul>
       </nav>
     </header>
