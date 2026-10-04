@@ -1,14 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Sagoma di profilo ispirata al riferimento: nuca piena e base piatta. -->
-  <path d="M27 5C19 5 14 8.5 10.3 15L7.8 21.4C6.2 25.8 6.9 32.6 8.4 37.5C9.4 41.1 11.6 45.2 13.5 48.3L15 59H43.5V52.4L49.8 50.7Q51.6 49.4 51.6 47.2V43.8Q51.2 42.5 50.4 42Q52.6 40.2 50.8 37.9L50.6 36.2L56.5 33.9Q56.8 33.4 56.3 32.5L50.7 24.7Q49.3 22.7 49.7 21.2L50.2 19.5Q50.1 12.7 47.5 8.6L42.8 6.4Q35.1 4.8 27 5Z" fill="#f5f5f5"/>
+  <!-- La disposizione triangolare compatta rende il simbolo adatto a un logo quadrato. -->
+  <g stroke="#f5f5f5" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Collegamenti brevi e punte essenziali mantengono il percorso dello sketch. -->
+    <path d="M21.5 36L26.5 27M37.5 27L42.5 36"/>
+    <path d="M22.5 29L26.5 27L27 31.5M38.5 34L42.5 36L43 31.5" stroke-width="2.2"/>
 
-  <!-- L'occhio circolare ospita il mirino, in contrasto con la testa. -->
-  <circle cx="40" cy="24" r="7.9" fill="#000000"/>
-  <g stroke="#f5f5f5" stroke-width="0.9" stroke-linecap="round">
-    <circle cx="40" cy="24" r="5.4"/>
-    <circle cx="40" cy="24" r="3"/>
-    <circle cx="40" cy="24" r="1.15"/>
-    <path d="M40 17.7V19.1M40 20.3V21.9M40 26.1V27.7M40 28.9V30.3M33.7 24H35.1M36.3 24H37.9M42.1 24H43.7M44.9 24H46.3"/>
+    <!-- cx e cy indicano il centro; r è il raggio del cerchio. -->
+    <circle cx="32" cy="17" r="11.5"/>
+    <circle cx="48" cy="46" r="11.5"/>
+    <!-- Colori invertiti per il cerchio a sinistra: pieno bianco e V nera. -->
+    <circle cx="16" cy="46" r="11.5" fill="#f5f5f5"/>
   </g>
-  <circle cx="40" cy="24" r="0.35" fill="#f5f5f5"/>
+
+  <!-- Due segmenti incrociati disegnano la X nel cerchio superiore. -->
+  <path d="M28 13L36 21M36 13L28 21" stroke="#f5f5f5" stroke-width="3.2" stroke-linecap="round"/>
+  <!-- Il tratto nero forma la V sul cerchio bianco. -->
+  <path d="M11 42L16 50L22 41" stroke="#000000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

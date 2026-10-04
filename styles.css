@@ -115,9 +115,9 @@ header {
 
 /* Il punto indica una class: seleziona l'immagine con class="brand-logo". */
 .brand-logo {
-  /* Larghezza e altezza uguali riservano al logo uno spazio quadrato. */
-  width: 40px;
-  height: 40px;
+  /* Il simbolo compatto usa un riquadro quadrato, alto quanto il pulsante Menu. */
+  width: 44px;
+  height: 44px;
 
   /* Impedisce a Flexbox di restringere il logo quando lo spazio disponibile diminuisce. */
   flex-shrink: 0;
