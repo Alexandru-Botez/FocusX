@@ -1,57 +1,55 @@
 # FocusX
 
-FocusX è un progetto didattico per costruire un'app web Pomodoro con obiettivi di studio.
-Il progetto usa HTML, CSS e JavaScript per imparare lo sviluppo web e il lavoro con Git.
+FocusX è un timer Pomodoro per lo studio, in bianco e nero, con una pagina per organizzare i progetti.
+
+È un progetto didattico: usa soltanto HTML, CSS e JavaScript, senza librerie né compilazione,
+e ogni file è commentato riga per riga per chi sta imparando lo sviluppo web e Git.
 
 ## Stato del progetto
 
-Il pulsante Avvia fa partire il conto alla rovescia da `25:00`.
-Pausa ferma il conteggio; premendo di nuovo Avvia si riprende dal tempo rimasto.
-Reset ferma il timer e lo riporta a `25:00`: per ripartire bisogna premere Avvia.
-Pausa e Reset sono disabilitati all'apertura e dopo un reset; Reset è disponibile
-durante il conteggio e in pausa dopo l'avvio.
-Quando i secondi rimanenti arrivano a zero, il tempo torna subito a `25:00`
-e il conto alla rovescia continua automaticamente.
-La gestione degli obiettivi è ancora da sviluppare.
-Dal menu, Progetti apre una pagina dedicata: Crea progetto mostra un modulo per il
-nome. Salva progetto aggiunge una voce all'elenco e la conserva nel browser.
+Il timer e la creazione dei progetti funzionano. Obiettivi, statistiche e impostazioni
+sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare).
 
-Già presenti:
+### Timer
 
-- Struttura HTML con intestazione, timer e controlli.
-- Tema scuro in bianco e nero, adattato anche a schermi piccoli.
-- Logo SVG compatto con fiamma bianca e occhi neri inclinati, dall'espressione concentrata.
-- Pulsante hamburger animato a sinistra del logo e pannello che scorre da sinistra.
-- Il pannello copre logo e titolo; la X resta visibile sullo stesso sfondo del menu.
-- Voce Progetti collegata alla sua pagina; Obiettivi, Statistica e Impostazioni ancora senza destinazioni.
-- Creazione di progetti con nome e salvataggio locale nel browser.
-- Testi del menu centrati con font ADLaM Display e icone SVG dedicate.
-- Menu a tutto schermo su telefono, con icone e testi centrati insieme.
-- Hover con sfondo grigio e lieve sollevamento; pressione con riduzione e ritorno graduali.
-- Favicon della scheda del browser ricavata dal logo dell'app.
-- Chiusura del menu con un secondo clic, Esc o un clic fuori dal pannello.
-- Font ADLaM Display incluso nel progetto.
-- Nomi accessibili per i pulsanti e indicatore di focus da tastiera.
-- Avvio del timer con aggiornamento del tempo e ripartenza automatica.
-- Pausa e ripresa dal tempo rimanente, con aggiornamento dei pulsanti disponibili.
-- Reset del timer a 25 minuti, con ritorno allo stato iniziale.
-- Sfondo rosso chiaro con testo nero al passaggio del mouse sul pulsante Reset.
-- Rifiniture in solo CSS: transizioni e pressione dei pulsanti, cifre grigie in pausa,
-  velo dietro il menu, ingresso graduale di voci e contenuti, dissolvenza fra le pagine.
-- Commenti didattici nell'HTML, nel CSS e nel JavaScript.
+- Conto alla rovescia di 25 minuti con i pulsanti Avvia, Pausa e Reset.
+- Pausa conserva il tempo rimasto e Avvia riprende da lì; in pausa le cifre diventano grigie.
+- Reset ferma il timer e lo riporta a `25:00`.
+- Arrivato a zero, il timer riparte da `25:00` e continua da solo.
+- Ogni pulsante è disponibile solo quando ha senso usarlo:
 
-## Tecnologie e requisiti
+| Stato | Avvia | Pausa | Reset |
+| --- | --- | --- | --- |
+| All'apertura e dopo Reset | Disponibile | Disabilitato | Disabilitato |
+| Conteggio in corso | Disabilitato | Disponibile | Disponibile |
+| In pausa | Disponibile | Disabilitato | Disponibile |
 
-- **HTML:** struttura e significato dei contenuti.
-- **CSS:** colori, tipografia, disposizione e adattamento allo schermo.
-- **JavaScript:** avvio, pausa, ripresa, reset, conto alla rovescia e ripartenza automatica del timer.
-- **Git:** cronologia delle modifiche.
+### Progetti
 
-Per seguire la procedura di avvio servono un browser moderno, Git e Python 3.
-L'app non richiede un gestore di pacchetti o una procedura di compilazione.
+- Una pagina dedicata, raggiungibile dal menu.
+- Crea progetto apre un modulo per il nome; Salva progetto aggiunge la voce all'elenco.
+- I progetti restano dopo una ricarica: sono salvati in `localStorage`, nel browser
+  e all'indirizzo usati, e non vengono sincronizzati tra dispositivi.
+
+### Interfaccia
+
+- Tema scuro in bianco e nero, adattato agli schermi piccoli.
+- Menu laterale con icona hamburger animata; su telefono occupa tutto lo schermo.
+  Si chiude con un secondo clic, con Esc o con un clic fuori dal pannello.
+- Animazioni discrete in solo CSS, disattivate per chi preferisce ridurre il movimento.
+- Uso da tastiera, indicatore di focus visibile e nomi accessibili per i pulsanti.
+- Logo SVG e font ADLaM Display inclusi nel progetto: nessuna risorsa esterna.
+
+### Limiti attuali
+
+- Nel menu soltanto Progetti apre una pagina: Obiettivi, Statistica e Impostazioni
+  non hanno ancora una destinazione.
+- Cambiare pagina interrompe il timer: tornando si riparte da `25:00`.
+- I progetti hanno solo un nome: non si possono modificare o eliminare.
 
 ## Avvio locale
 
+Servono un browser moderno, Git e Python 3.
 Per scaricare il progetto per la prima volta:
 
 ```bash
@@ -79,14 +77,14 @@ e apri l'indirizzo con lo stesso numero di porta.
 ```text
 FocusX/
 ├── README.md
-├── index.html
-├── progetti.html
-├── styles.css
-├── script.js
-├── menu.js
-├── progetti.js
+├── index.html              Pagina del timer
+├── progetti.html           Pagina dei progetti
+├── styles.css              Stile di entrambe le pagine
+├── script.js               Timer: avvio, pausa, reset e ripartenza
+├── menu.js                 Menu laterale, condiviso dalle due pagine
+├── progetti.js             Creazione e salvataggio dei progetti
 ├── assets/
-│   ├── focusx-mark.svg
+│   ├── focusx-mark.svg     Logo e favicon
 │   └── fonts/
 │       ├── ADLaMDisplay-Regular.ttf
 │       └── ADLaMDisplay-OFL.txt
@@ -104,12 +102,8 @@ FocusX/
 
 - [ ] Segnalazione della fine della sessione.
 - [ ] Inserimento e completamento degli obiettivi di studio.
+- [ ] Continuità del timer nel passaggio da una pagina all'altra.
 - [ ] Backend e database per il salvataggio dei progetti online.
-
-I progetti attuali sono salvati in `localStorage`, nel browser e nell'indirizzo
-usati: non vengono sincronizzati tra dispositivi. Il nome FocusX nell'header
-riporta al timer. Cambiare pagina interrompe il timer e tornando si riparte dallo
-stato iniziale; la continuità della sessione tra pagine è ancora da sviluppare.
 
 Questa lista descrive il lavoro previsto, non funzionalità già disponibili.
 
@@ -125,4 +119,3 @@ Il codice del progetto non ha ancora un file `LICENSE`.
 Il font ADLaM Display è distribuito con la SIL Open Font License 1.1:
 il testo è incluso in [ADLaMDisplay-OFL.txt](assets/fonts/ADLaMDisplay-OFL.txt).
 Questa licenza riguarda il font.
-
