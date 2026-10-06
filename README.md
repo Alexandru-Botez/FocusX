@@ -7,7 +7,7 @@ e ogni file è commentato riga per riga per chi sta imparando lo sviluppo web e 
 
 ## Stato del progetto
 
-Il timer e la creazione dei progetti funzionano. Obiettivi, statistiche e impostazioni
+Il timer, la creazione e l'eliminazione dei progetti funzionano. Obiettivi, statistiche e impostazioni
 sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare).
 
 ### Timer
@@ -28,6 +28,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 - Una pagina dedicata, raggiungibile dal menu.
 - Crea progetto apre un modulo per il nome; Salva progetto aggiunge la voce all'elenco.
+- Il cestino a destra di ogni progetto lo elimina; al passaggio del mouse diventa rosso.
 - I progetti restano dopo una ricarica: sono salvati in `localStorage`, nel browser
   e all'indirizzo usati, e non vengono sincronizzati tra dispositivi.
 
@@ -45,7 +46,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Nel menu soltanto Progetti apre una pagina: Obiettivi, Statistica e Impostazioni
   non hanno ancora una destinazione.
 - Cambiare pagina interrompe il timer: tornando si riparte da `25:00`.
-- I progetti hanno solo un nome: non si possono modificare o eliminare.
+- I progetti hanno solo un nome: non si possono modificare e l'eliminazione non chiede conferma.
 
 ## Avvio locale
 
@@ -82,7 +83,7 @@ FocusX/
 ├── styles.css              Stile di entrambe le pagine
 ├── script.js               Timer: avvio, pausa, reset e ripartenza
 ├── menu.js                 Menu laterale, condiviso dalle due pagine
-├── progetti.js             Creazione e salvataggio dei progetti
+├── progetti.js             Creazione, eliminazione e salvataggio dei progetti
 ├── assets/
 │   ├── focusx-mark.svg     Logo e favicon
 │   └── fonts/

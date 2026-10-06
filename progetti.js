@@ -6,6 +6,7 @@ const pulsanteAnnullaProgetto = document.getElementById("cancel-project-button")
 const elencoProgetti = document.getElementById("project-list");
 const statoVuotoProgetti = document.getElementById("projects-empty");
 const messaggioProgetti = document.getElementById("projects-message");
+const modelloVoceProgetto = document.getElementById("project-item-template");
 
 // Questa chiave distingue i dati di FocusX da eventuali altri dati dello stesso sito.
 const chiaveProgetti = "focusx.progetti.v1";
@@ -46,17 +47,49 @@ function salvaProgetti(elenco) {
 
 let progetti = caricaProgetti();
 
-function mostraProgetti() {
+// idNuovo indica il progetto appena creato, l'unico che compare con l'animazione.
+function mostraProgetti(idNuovo) {
   // Svuotiamo l'elenco prima di ricostruirlo, evitando righe duplicate.
   elencoProgetti.replaceChildren();
   statoVuotoProgetti.hidden = progetti.length > 0;
 
   for (const progetto of progetti) {
-    const voce = document.createElement("li");
+    // cloneNode(true) copia il li del template insieme a tutto il suo contenuto.
+    const voce = modelloVoceProgetto.content.firstElementChild.cloneNode(true);
     // textContent mostra il nome come testo, anche se contiene caratteri come < o >.
-    voce.textContent = progetto.nome;
+    voce.querySelector(".project-name").textContent = progetto.nome;
+    voce.classList.toggle("is-new", progetto.id === idNuovo);
+
+    const pulsanteElimina = voce.querySelector(".project-delete");
+    // Il pulsante mostra solo un'icona: aria-label dice quale progetto elimina.
+    pulsanteElimina.setAttribute("aria-label", "Elimina " + progetto.nome);
+    pulsanteElimina.addEventListener("click", () => eliminaProgetto(progetto.id));
     elencoProgetti.append(voce);
   }
+}
+
+function eliminaProgetto(id) {
+  // findIndex restituisce la posizione del progetto, servirà a spostare il focus.
+  const posizione = progetti.findIndex(progetto => progetto.id === id);
+  if (posizione === -1) {
+    return;
+  }
+
+  const nome = progetti[posizione].nome;
+  // filter crea un nuovo array con tutti i progetti tranne quello da eliminare.
+  const elencoAggiornato = progetti.filter(progetto => progetto.id !== id);
+  if (!salvaProgetti(elencoAggiornato)) {
+    return;
+  }
+
+  progetti = elencoAggiornato;
+  mostraProgetti();
+  messaggioProgetti.textContent = "Progetto eliminato: " + nome + ".";
+
+  // Il pulsante premuto non esiste più: il focus passa al cestino vicino o a Crea progetto.
+  const pulsantiElimina = elencoProgetti.querySelectorAll(".project-delete");
+  const prossimo = pulsantiElimina[Math.min(posizione, pulsantiElimina.length - 1)];
+  (prossimo || pulsanteNuovoProgetto).focus();
 }
 
 function apriModuloProgetto() {
@@ -93,7 +126,7 @@ function creaProgetto(evento) {
   }
 
   progetti = elencoAggiornato;
-  mostraProgetti();
+  mostraProgetti(nuovoProgetto.id);
   chiudiModuloProgetto();
   messaggioProgetti.textContent = "Progetto creato: " + nome + ".";
 }

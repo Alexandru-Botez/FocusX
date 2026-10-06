@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=rifiniture-1">
+    <link rel="stylesheet" href="styles.css?v=elimina-progetto-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="progetti.js?v=progetti-1" defer></script>
+    <script src="progetti.js?v=elimina-progetto-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -163,6 +163,21 @@
         <p id="projects-empty" class="projects-empty">Non hai ancora creato progetti.</p>
         <!-- JavaScript crea una voce per ciascun progetto, usando textContent per il nome. -->
         <ul id="project-list" class="project-list" aria-label="Progetti creati"></ul>
+        <!--
+          template non viene mostrato: è un modello che JavaScript copia per ogni progetto.
+          Lo span riceve il nome; il pulsante con il cestino elimina il progetto.
+        -->
+        <template id="project-item-template">
+          <li>
+            <span class="project-name"></span>
+            <button class="project-delete" type="button" title="Elimina progetto">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <!-- Coperchio, maniglia, contenitore e due righe verticali formano il cestino. -->
+                <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6M10 11v6M14 11v6"></path>
+              </svg>
+            </button>
+          </li>
+        </template>
         <!-- role=status annuncia l'esito senza interrompere la lettura. -->
         <p id="projects-message" class="projects-message" role="status"></p>
       </section>
