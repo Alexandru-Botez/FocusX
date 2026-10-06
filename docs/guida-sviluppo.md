@@ -72,7 +72,9 @@ Le regole sono organizzate dal contesto generale ai componenti e alle loro varia
 5. I selettori del logo, del titolo e del timer definiscono la tipografia e le dimensioni.
 6. I pulsanti condividono una regola di base e hanno alcune personalizzazioni tramite `id`.
 7. Le pseudo-classi definiscono gli stati hover, focus e disabilitato.
-8. La media query finale adatta gli spazi e i pulsanti ai viewport fino a 480 pixel CSS.
+8. La media query `max-width: 480px` adatta gli spazi e i pulsanti ai viewport fino a 480 pixel CSS.
+9. L'ultima regola, `prefers-reduced-motion: reduce`, disattiva transizioni e animazioni
+   delle rifiniture: è in fondo al file per prevalere sulle regole scritte prima.
 
 Per cambiare la palette, parti dalle variabili in `:root`:
 
@@ -85,6 +87,9 @@ Per cambiare la palette, parti dalle variabili in `:root`:
 | `--border` | Bordi dei pulsanti. |
 | `--hover` | Sfondo comune al passaggio del mouse. |
 | `--reset-hover` | Sfondo rosso chiaro al passaggio del mouse su Reset, con la stessa opacità dello sfondo comune. |
+| `--border-strong` | Bordo dei campi di testo al passaggio del mouse. |
+| `--transition-fast` | Durata comune (180 millisecondi) dei cambi di colore, bordo, opacità e pressione. |
+| `--ease-out` | Curva di accelerazione degli elementi che entrano: veloce all'inizio, lenta alla fine. |
 
 `--header-height` riserva lo spazio sopra le voci del pannello: 100 pixel
 su desktop e 92 su mobile, più 12 pixel di separazione. Se cambi altezza del logo, del pulsante Menu o padding
@@ -94,6 +99,33 @@ Grid organizza la pagina in intestazione e contenuto e centra la sezione del tim
 Flexbox dispone il marchio e il gruppo dei pulsanti.
 `clamp()` adatta la dimensione delle cifre alla larghezza del viewport entro due limiti.
 I commenti in `styles.css` spiegano ogni dichiarazione e le unità utilizzate.
+
+## Rifiniture visive in CSS
+
+Queste rifiniture sono scritte soltanto in `styles.css`: non cambiano il comportamento
+e non richiedono JavaScript. Dove serve conoscere lo stato, il CSS lo legge dall'HTML
+con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
+
+| Rifinitura | Come funziona |
+| --- | --- |
+| Transizioni dei pulsanti | `button` anima colore, bordo, opacità e `transform` in `--transition-fast`. |
+| Pressione | `button:active` riduce il pulsante al 94% (97% per i pulsanti dei progetti); il Menu è escluso. |
+| Hover solo con puntatore | Gli hover sono dentro `@media (hover: hover)`: su touch l'evidenziazione non resta dopo il tocco. |
+| Cifre grigie in pausa | `section:has(#start-button:enabled):has(#reset-button:enabled) #timer` usa `--muted`. |
+| Dissolvenza dello status | `#timer-status` anima `opacity`; `visibility` cambia alla fine, conservando lo spazio. |
+| Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
+| Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 200 millisecondi. |
+| Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`. |
+| Ingresso dei contenuti | L'animazione `compari` fa salire di 8 pixel la sezione, il modulo e l'ultimo progetto. |
+| Cambio di pagina | `@view-transition` chiede una dissolvenza di 200 millisecondi fra Timer e Progetti. |
+| Selezione e barre | `::selection` inverte bianco e nero; `scrollbar-color` scurisce le barre di scorrimento. |
+
+Il velo ha `pointer-events: none`: un clic fuori dal menu raggiunge l'elemento sottostante,
+come prima. `@view-transition` e `:has()` sono miglioramenti progressivi: un browser che non
+li supporta mostra la pagina senza queste rifiniture. Se aggiungi una voce al menu,
+aggiungi anche il suo `transition-delay`. Lo stato «in pausa» dipende dagli attributi
+`disabled` di Avvia e Reset: se cambi la tabella degli stati, aggiorna anche quel selettore.
+Il `meta` `theme-color` nei due file HTML colora di nero la barra del browser su mobile.
 
 ## Primo passo JavaScript
 
@@ -305,6 +337,8 @@ Per il menu laterale controlla che:
 - L'animazione non modifichi il tempo o lo stato dei pulsanti del timer.
 - Su uno schermo piccolo l'header non crei scorrimento orizzontale.
 - Con la preferenza di movimento ridotto, il cambio avvenga senza transizioni.
+- A menu aperto la pagina sotto l'header si scurisca e le voci entrino una dopo l'altra.
+- Nella pagina Progetti la voce Progetti abbia lo sfondo grigio della pagina corrente.
 
 Per i progetti controlla che:
 
@@ -313,7 +347,8 @@ Per i progetti controlla che:
 - Un nome vuoto o composto solo da spazi non venga accettato.
 - Un nome valido venga aggiunto una sola volta e rimanga dopo una ricarica.
 - Si possano aggiungere più progetti, compresi nomi con accenti o caratteri come `<` e `>`.
-- Su mobile il modulo e i nomi lunghi non allarghino la pagina.
+- Su mobile il modulo, i nomi lunghi e il messaggio di conferma non allarghino la pagina.
+- Il modulo e il progetto appena creato compaiano salendo di pochi pixel.
 - Non compaiano errori JavaScript né nella pagina Progetti né nel timer.
 
 Per il timer attuale controlla anche che:
@@ -332,6 +367,8 @@ Per il timer attuale controlla anche che:
 - Passando il mouse su Reset abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - Il messaggio di stato sia visibile prima dell'avvio e nascosto dopo il clic.
 - Il messaggio di stato torni visibile dopo Reset.
+- In pausa le cifre diventino grigie e tornino bianche con Avvia o Reset.
+- Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.
 - La posizione del timer e dei pulsanti resti invariata quando lo status scompare o riappare.
 - Il formato mantenga due cifre per minuti e secondi.
 - Dopo 25 minuti il timer torni a `25:00` e continui.

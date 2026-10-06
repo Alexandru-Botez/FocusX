@@ -62,6 +62,38 @@
 
   /* 44px di pulsante + 28px di padding sopra e sotto: riserviamo spazio prima delle voci. */
   --header-height: 100px;
+
+  /* Grigio intermedio: bordo dei campi al passaggio del mouse. */
+  --border-strong: #5c5c5c;
+
+  /* Durata comune dei piccoli cambi di stato: colore, bordo, opacità e pressione. */
+  --transition-fast: 180ms;
+
+  /* Curva che parte veloce e rallenta alla fine: adatta agli elementi che entrano. */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Barre di scorrimento sottili e scure, coerenti con il tema, dove il browser le supporta. */
+  scrollbar-color: var(--border) transparent;
+}
+
+/*
+  @view-transition chiede al browser una dissolvenza fra una pagina e l'altra dello stesso sito.
+  È una regola soltanto CSS: i browser che non la conoscono la ignorano e cambiano pagina come prima.
+*/
+@view-transition {
+  navigation: auto;
+}
+
+/* ::view-transition-old e -new sono le "fotografie" della pagina che esce e di quella che entra. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+/* ::selection è il testo evidenziato con il mouse: invertiamo bianco e nero. */
+::selection {
+  background-color: var(--text);
+  color: var(--background);
 }
 
 /*
@@ -102,6 +134,35 @@ body {
 
   /* Riempie lo sfondo del body usando la variabile definita in :root. */
   background-color: var(--background);
+
+  /* Rimuove il riquadro colorato del tocco su mobile: il feedback è dato da :active. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+  ::after crea un elemento decorativo senza aggiungerlo all'HTML: qui è un velo nero
+  che copre la pagina sotto l'header. Resta sempre presente ma trasparente,
+  così l'opacità può cambiare gradualmente.
+*/
+body::after {
+  /* content è obbligatorio per far esistere lo pseudo-elemento, anche se vuoto. */
+  content: "";
+  position: fixed;
+  /* inset: 0 equivale a top, right, bottom e left a zero: copre tutta la finestra. */
+  inset: 0;
+  /* Sopra main (senza z-index) e sotto l'header con il menu, che hanno z-index: 2. */
+  z-index: 1;
+  background-color: var(--background);
+  opacity: 0;
+  /* Il velo non intercetta i clic: un clic fuori dal menu si comporta come prima. */
+  pointer-events: none;
+  /* Stessa durata dello scorrimento del pannello. */
+  transition: opacity 250ms ease-in-out;
+}
+
+/* :has seleziona body quando contiene il pannello aperto: il timer passa in secondo piano. */
+body:has(.sidebar-menu.is-open)::after {
+  opacity: 0.6;
 }
 
 /* L'intestazione contiene pulsante Menu, logo e titolo, disposti in alto a sinistra. */
@@ -207,6 +268,34 @@ h1 {
 .sidebar-menu li {
   /* Il margine laterale lascia spazio al contorno del focus e agli angoli arrotondati. */
   margin: 0 12px;
+
+  /* A menu chiuso le voci sono trasparenti e spostate di 8px a sinistra. */
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 200ms ease, transform 300ms var(--ease-out);
+}
+
+/* A menu aperto le voci tornano al loro posto, entrando dopo il pannello. */
+.sidebar-menu.is-open li {
+  opacity: 1;
+  transform: none;
+}
+
+/* Un ritardo crescente fa entrare le voci una dopo l'altra; in chiusura il ritardo è zero. */
+.sidebar-menu.is-open li:nth-child(1) {
+  transition-delay: 80ms;
+}
+
+.sidebar-menu.is-open li:nth-child(2) {
+  transition-delay: 120ms;
+}
+
+.sidebar-menu.is-open li:nth-child(3) {
+  transition-delay: 160ms;
+}
+
+.sidebar-menu.is-open li:nth-child(4) {
+  transition-delay: 200ms;
 }
 
 .sidebar-menu .menu-option {
@@ -260,7 +349,8 @@ h1 {
 
 /* Chi preferisce meno movimento conserva il feedback di colore senza spostamenti. */
 @media (prefers-reduced-motion: reduce) {
-  .sidebar-menu .menu-option {
+  .sidebar-menu .menu-option,
+  .sidebar-menu li {
     transition: none;
   }
 
@@ -268,6 +358,14 @@ h1 {
   .sidebar-menu .menu-option:active:not(:disabled) {
     transform: none;
   }
+}
+
+/*
+  [aria-current="page"] è un selettore di attributo: seleziona la voce della pagina aperta.
+  Lo sfondo grigio la distingue dalle altre; hover e pressione restano quelli comuni.
+*/
+.sidebar-menu .menu-option[aria-current="page"] {
+  background-color: var(--hover);
 }
 
 /* Queste regole riguardano soltanto le icone delle voci, senza cambiare l'hamburger o il timer. */
@@ -303,6 +401,20 @@ section {
 
   /* Centra il testo e gli altri contenuti inline; non centra da solo tutti i blocchi. */
   text-align: center;
+
+  /* All'apertura della pagina il contenuto compare salendo di pochi pixel. */
+  animation: compari 400ms var(--ease-out) both;
+}
+
+/*
+  @keyframes descrive le tappe di un'animazione: from è l'inizio, to è la fine.
+  Indichiamo solo l'inizio: la fine è lo stato normale dell'elemento.
+*/
+@keyframes compari {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
 /* Il cancelletto seleziona l'elemento HTML con id="timer". */
@@ -327,6 +439,18 @@ section {
 
   /* Se il font lo supporta, usa cifre tutte della stessa larghezza: il timer non oscilla. */
   font-variant-numeric: tabular-nums;
+
+  /* Il passaggio al grigio della pausa, e il ritorno al bianco, sono graduali. */
+  transition: color 300ms ease;
+}
+
+/*
+  In pausa Avvia e Reset sono entrambi disponibili: solo in quello stato le cifre diventano grigie.
+  Prima dell'avvio Reset è disabilitato; durante il conteggio lo è Avvia.
+  Leggiamo lo stato dai pulsanti con :has e :enabled, senza modificare JavaScript.
+*/
+section:has(#start-button:enabled):has(#reset-button:enabled) #timer {
+  color: var(--muted);
 }
 
 /* Contenitore comune dei pulsanti Avvia, Pausa e Reset. */
@@ -382,6 +506,18 @@ button {
 
   /* Mostra il cursore a forma di mano quando il mouse è sopra un pulsante. */
   cursor: pointer;
+
+  /* Colori, opacità e dimensione cambiano gradualmente invece di scattare. */
+  transition: background-color var(--transition-fast) ease,
+    border-color var(--transition-fast) ease,
+    color var(--transition-fast) ease,
+    opacity var(--transition-fast) ease,
+    transform var(--transition-fast) ease;
+}
+
+/* Durante la pressione il pulsante si riduce leggermente; al rilascio torna alla sua dimensione. */
+button:active:not(:disabled) {
+  transform: scale(0.94);
 }
 
 /* Lo spazio nel selettore indica un discendente: solo gli svg contenuti dentro un button. */
@@ -394,13 +530,17 @@ button svg {
 /*
   :hover seleziona il pulsante sotto il mouse.
   :not(:disabled) esclude i pulsanti con l'attributo disabled.
+  hover: hover limita l'effetto ai dispositivi con un puntatore: su touch
+  l'evidenziazione resterebbe "attaccata" al pulsante dopo il tocco.
 */
-button:hover:not(:disabled) {
-  /* Rende più evidente il bordo del pulsante su cui si trova il mouse. */
-  border-color: var(--text);
+@media (hover: hover) {
+  button:hover:not(:disabled) {
+    /* Rende più evidente il bordo del pulsante su cui si trova il mouse. */
+    border-color: var(--text);
 
-  /* Aggiunge un leggero contrasto allo sfondo. */
-  background-color: var(--hover);
+    /* Aggiunge un leggero contrasto allo sfondo. */
+    background-color: var(--hover);
+  }
 }
 
 /* Il pulsante Menu ha un'area cliccabile quadrata, adatta anche al tocco. */
@@ -421,6 +561,11 @@ button:hover:not(:disabled) {
 #menu-button.active:hover {
   background-color: var(--surface);
   border-color: transparent;
+}
+
+/* Il Menu è piccolo e contiene già un'animazione: alla pressione non cambia dimensione. */
+#menu-button:active {
+  transform: none;
 }
 
 /* Il disegno originale contiene margini interni: un SVG più grande rende visibili le linee. */
@@ -517,9 +662,11 @@ button:hover:not(:disabled) {
 }
 
 /* Hover specifico per Avvia: prevale sullo sfondo definito dal suo id. */
-#start-button:hover:not(:disabled) {
-  /* Scurisce leggermente il bianco quando il mouse passa sopra il pulsante. */
-  background-color: #dedede;
+@media (hover: hover) {
+  #start-button:hover:not(:disabled) {
+    /* Scurisce leggermente il bianco quando il mouse passa sopra il pulsante. */
+    background-color: #dedede;
+  }
 }
 
 /* Reset contiene una parola: lo adattiamo al testo invece di mantenere il cerchio. */
@@ -541,11 +688,13 @@ button:hover:not(:disabled) {
 }
 
 /* La regola con id personalizza lo sfondo hover del solo pulsante Reset. */
-#reset-button:hover:not(:disabled) {
-  /* Cambia il colore dello sfondo senza modificare l'opacità del pulsante o del testo. */
-  background-color: var(--reset-hover);
-  /* Il testo nero mantiene un buon contrasto con lo sfondo rosso chiaro. */
-  color: var(--background);
+@media (hover: hover) {
+  #reset-button:hover:not(:disabled) {
+    /* Cambia il colore dello sfondo senza modificare l'opacità del pulsante o del testo. */
+    background-color: var(--reset-hover);
+    /* Il testo nero mantiene un buon contrasto con lo sfondo rosso chiaro. */
+    color: var(--background);
+  }
 }
 
 /*
@@ -587,18 +736,35 @@ button:disabled {
 
   /* Una riga alta 1.5 volte il font resta leggibile anche se il messaggio va a capo. */
   line-height: 1.5;
+
+  /* Quando ricompare, visibility cambia subito e l'opacità sale gradualmente. */
+  transition: opacity 250ms ease, visibility 0s;
 }
 
 /* Seleziona lo status quando JavaScript gli aggiunge la classe is-hidden. */
 #timer-status.is-hidden {
   /* Nasconde il testo conservando spazio e margini, così tempo e pulsanti restano fermi. */
   visibility: hidden;
+
+  /* Il testo sfuma; visibility attende 250ms, la fine della dissolvenza, prima di nasconderlo. */
+  opacity: 0;
+  transition: opacity 250ms ease, visibility 0s 250ms;
 }
 
 /* Il nome dell'app diventa anche un link per tornare al timer dalla pagina Progetti. */
 .brand-link {
   color: inherit;
   text-decoration: none;
+  /* Angoli arrotondati anche per il contorno del focus da tastiera. */
+  border-radius: 4px;
+  transition: opacity var(--transition-fast) ease;
+}
+
+@media (hover: hover) {
+  /* Una lieve attenuazione segnala che il nome dell'app è cliccabile. */
+  .brand-link:hover {
+    opacity: 0.7;
+  }
 }
 
 /* hidden deve prevalere anche quando una regola del componente usa display: grid o flex. */
@@ -653,8 +819,15 @@ button:disabled {
   color: var(--background);
 }
 
-.projects-section .project-action-primary:hover:not(:disabled) {
-  background-color: #dedede;
+@media (hover: hover) {
+  .projects-section .project-action-primary:hover:not(:disabled) {
+    background-color: #dedede;
+  }
+}
+
+/* I pulsanti larghi si riducono meno dei cerchi del timer: l'effetto resta discreto. */
+.projects-section .project-action:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .project-form {
@@ -665,6 +838,15 @@ button:disabled {
   border: 1px solid var(--border);
   border-radius: 16px;
   background-color: var(--surface);
+
+  /* Parte quando hidden viene rimosso: il modulo compare salendo di pochi pixel. */
+  animation: compari 250ms var(--ease-out) both;
+}
+
+/* L'etichetta è un'informazione secondaria rispetto al valore scritto nel campo. */
+.project-form label {
+  color: var(--muted);
+  font-size: 0.875rem;
 }
 
 .project-form input {
@@ -677,6 +859,20 @@ button:disabled {
   font: inherit;
   background-color: var(--background);
   color: var(--text);
+  transition: border-color var(--transition-fast) ease;
+}
+
+@media (hover: hover) {
+  .project-form input:hover {
+    border-color: var(--border-strong);
+  }
+}
+
+/* Con il focus il bordo diventa bianco e si unisce al contorno, senza lasciare una riga grigia. */
+.project-form input:focus-visible {
+  border-color: var(--text);
+  outline-offset: 0;
+  outline-width: 1px;
 }
 
 .project-list {
@@ -696,11 +892,24 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
+/*
+  :last-child è l'ultima voce, cioè il progetto appena aggiunto: compare salendo.
+  Le altre voci restano ferme anche se JavaScript ricostruisce l'elenco.
+*/
+.project-list li:last-child {
+  animation: compari 300ms var(--ease-out) both;
+}
+
 .projects-empty,
 .projects-message {
   color: var(--muted);
   font-size: 0.875rem;
   line-height: 1.5;
+}
+
+/* Il messaggio ripete il nome del progetto: anche qui un nome lungo non deve allargare la pagina. */
+.projects-message {
+  overflow-wrap: anywhere;
 }
 
 /*
@@ -768,5 +977,40 @@ button:disabled {
     height: 52px;
 
     /* Reset mantiene width: auto perché il suo selettore #reset-button è più specifico. */
+  }
+}
+
+/*
+  Chi preferisce ridurre il movimento conserva i cambi di stato, ma immediati:
+  niente dissolvenze, spostamenti o riduzioni. Questa regola è l'ultima del file
+  perché, a parità di specificità, deve prevalere su quelle scritte prima.
+*/
+@media (prefers-reduced-motion: reduce) {
+  body::after,
+  button,
+  #timer,
+  #timer-status,
+  #timer-status.is-hidden,
+  .brand-link,
+  .project-form input {
+    transition: none;
+  }
+
+  section,
+  .project-form,
+  .project-list li:last-child {
+    animation: none;
+  }
+
+  button:active:not(:disabled),
+  .projects-section .project-action:active:not(:disabled) {
+    transform: none;
+  }
+
+  /* Anche il cambio di pagina torna immediato. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

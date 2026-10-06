@@ -36,6 +36,8 @@ Già presenti:
 - Pausa e ripresa dal tempo rimanente, con aggiornamento dei pulsanti disponibili.
 - Reset del timer a 25 minuti, con ritorno allo stato iniziale.
 - Sfondo rosso chiaro con testo nero al passaggio del mouse sul pulsante Reset.
+- Rifiniture in solo CSS: transizioni e pressione dei pulsanti, cifre grigie in pausa,
+  velo dietro il menu, ingresso graduale di voci e contenuti, dissolvenza fra le pagine.
 - Commenti didattici nell'HTML, nel CSS e nel JavaScript.
 
 ## Tecnologie e requisiti
