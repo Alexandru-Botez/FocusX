@@ -54,7 +54,7 @@
   /* Sfondo usato al passaggio del mouse sui pulsanti. */
   --hover: #1a1a1a;
 
-  /* Rosso chiaro per Reset: cambia la tonalità, mantenendo lo sfondo senza trasparenza. */
+  /* Rosso chiaro per Reset e per il cestino dei progetti: sfondo pieno, senza trasparenza. */
   --reset-hover: #ff6b6b;
 
   /* Sfondo del pannello, leggermente più chiaro rispetto alla pagina. */
@@ -884,19 +884,56 @@ button:disabled {
 }
 
 .project-list li {
-  padding: 20px;
+  /* Il nome occupa lo spazio a sinistra; il cestino resta all'estremità destra. */
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 12px 12px 20px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background-color: var(--surface);
+}
+
+.project-name {
+  /* flex: 1 assegna al nome lo spazio libero; min-width: 0 gli permette di restringersi. */
+  flex: 1;
+  min-width: 0;
   /* Anche un nome lungo senza spazi deve restare all'interno della scheda. */
   overflow-wrap: anywhere;
 }
 
+/* Più specifico di button: un quadrato arrotondato da 44px, uguale anche su mobile. */
+.project-list .project-delete {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.project-list .project-delete svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Come Reset, al passaggio del mouse il pulsante diventa rosso: l'azione elimina un dato. */
+@media (hover: hover) {
+  .project-list .project-delete:hover {
+    background-color: var(--reset-hover);
+    border-color: var(--reset-hover);
+    color: var(--background);
+  }
+}
+
 /*
-  :last-child è l'ultima voce, cioè il progetto appena aggiunto: compare salendo.
-  Le altre voci restano ferme anche se JavaScript ricostruisce l'elenco.
+  is-new segna il progetto appena aggiunto: solo lui compare salendo.
+  Le altre voci restano ferme anche quando JavaScript ricostruisce l'elenco.
 */
-.project-list li:last-child {
+.project-list li.is-new {
   animation: compari 300ms var(--ease-out) both;
 }
 
@@ -998,7 +1035,7 @@ button:disabled {
 
   section,
   .project-form,
-  .project-list li:last-child {
+  .project-list li.is-new {
     animation: none;
   }
 

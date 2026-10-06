@@ -9,7 +9,7 @@ FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa
 e Reset lo ferma riportando il tempo a 25 minuti.
 Il timer ricomincia automaticamente da 25 minuti quando i secondi rimanenti arrivano a zero.
 Gli obiettivi sono ancora da sviluppare.
-La pagina Progetti consente di creare progetti con nome e salvarli nel browser.
+La pagina Progetti consente di creare ed eliminare progetti con nome, salvati nel browser.
 Non c'è ancora una suite di test automatici nel repository.
 
 ## Responsabilità dei file
@@ -20,8 +20,8 @@ Non c'è ancora una suite di test automatici nel repository.
 | [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
 | [script.js](../script.js) | Comportamento del timer nella pagina principale. |
 | [menu.js](../menu.js) | Apertura e chiusura del menu, condivise dalle due pagine. |
-| [progetti.html](../progetti.html) | Pagina Progetti, modulo e lista dei progetti creati. |
-| [progetti.js](../progetti.js) | Creazione, visualizzazione e salvataggio locale dei progetti. |
+| [progetti.html](../progetti.html) | Pagina Progetti, modulo, lista e modello di una voce. |
+| [progetti.js](../progetti.js) | Creazione, eliminazione, visualizzazione e salvataggio locale dei progetti. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto con fiamma bianca e occhi neri inclinati e concentrati. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app e le voci del menu. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
@@ -116,7 +116,7 @@ con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 | Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
 | Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 200 millisecondi. |
 | Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`. |
-| Ingresso dei contenuti | L'animazione `compari` fa salire di 8 pixel la sezione, il modulo e l'ultimo progetto. |
+| Ingresso dei contenuti | L'animazione `compari` fa salire di 8 pixel la sezione, il modulo e il progetto appena creato (`li.is-new`). |
 | Cambio di pagina | `@view-transition` chiede una dissolvenza di 200 millisecondi fra Timer e Progetti. |
 | Selezione e barre | `::selection` inverte bianco e nero; `scrollbar-color` scurisce le barre di scorrimento. |
 
@@ -257,8 +257,15 @@ Un nome composto solo da spazi viene rifiutato. Annulla chiude e svuota il modul
 Un progetto ha la forma `{ id, nome }`. L'id viene generato con
 [`crypto.randomUUID()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID)
 e servirà a collegare gli obiettivi; il nome può coincidere con quello di un altro progetto.
-`mostraProgetti()` ricostruisce `#project-list` creando elementi `li` e usando
-`textContent`, così i nomi sono testo e non HTML da eseguire.
+`mostraProgetti(idNuovo)` ricostruisce `#project-list` copiando il `li` del
+`template#project-item-template` e usando `textContent`, così i nomi sono testo e non HTML
+da eseguire. Solo la voce con `idNuovo` riceve la classe `is-new` e compare con l'animazione.
+
+Ogni voce ha a destra un pulsante `.project-delete` con l'icona del cestino:
+il suo `aria-label` contiene il nome del progetto. Il clic chiama `eliminaProgetto(id)`,
+che salva l'elenco senza quel progetto e lo ricostruisce. Il focus passa al cestino
+della voce successiva, o a Crea progetto quando l'elenco è vuoto. Al passaggio del mouse
+il pulsante usa lo stesso rosso di Reset, `--reset-hover`. Non c'è richiesta di conferma.
 
 `caricaProgetti()` e `salvaProgetti(elenco)` concentrano l'accesso a
 [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
@@ -268,7 +275,7 @@ Se l'archivio non è leggibile, la creazione viene disabilitata per non sovrascr
 se il salvataggio fallisce, il modulo mantiene il nome e mostra un messaggio.
 Queste funzioni potranno essere adattate alle richieste verso un futuro backend.
 
-Per ora i progetti non hanno obiettivi, modifica o eliminazione. Il cambio di pagina
+Per ora i progetti non hanno obiettivi né modifica. Il cambio di pagina
 interrompe il timer: tornando a `index.html`, il tempo riparte dallo stato iniziale.
 
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
@@ -349,6 +356,9 @@ Per i progetti controlla che:
 - Si possano aggiungere più progetti, compresi nomi con accenti o caratteri come `<` e `>`.
 - Su mobile il modulo, i nomi lunghi e il messaggio di conferma non allarghino la pagina.
 - Il modulo e il progetto appena creato compaiano salendo di pochi pixel.
+- Il cestino resti all'estremità destra di ogni voce, anche con nomi lunghi e su mobile.
+- Al passaggio del mouse il cestino diventi rosso; il clic elimini solo quel progetto,
+  anche dopo una ricarica, senza animare di nuovo le altre voci.
 - Non compaiano errori JavaScript né nella pagina Progetti né nel timer.
 
 Per il timer attuale controlla anche che:
