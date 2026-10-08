@@ -301,6 +301,10 @@ h1 {
   transition-delay: 200ms;
 }
 
+.sidebar-menu.is-open li:nth-child(5) {
+  transition-delay: 240ms;
+}
+
 .sidebar-menu .menu-option {
   /* Le voci possono essere link o pulsanti: assegniamo a entrambi lo stesso aspetto. */
   color: var(--text);
@@ -846,6 +850,13 @@ button:disabled {
   animation: compari 250ms var(--ease-out) both;
 }
 
+/* Il titolo dice se il modulo crea un progetto nuovo o ne modifica uno. */
+.project-form-title {
+  margin: 0 0 4px;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
 /* Etichetta e legenda sono informazioni secondarie rispetto ai valori scelti. */
 .project-form label,
 .project-colors legend {
@@ -1010,7 +1021,7 @@ button:disabled {
 }
 
 .project-list li {
-  /* Il nome occupa lo spazio a sinistra; il cestino resta all'estremità destra. */
+  /* Il nome occupa lo spazio a sinistra; matita e cestino restano all'estremità destra. */
   display: flex;
   align-items: center;
   gap: 16px;
@@ -1039,15 +1050,21 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
+/* I due pulsanti stanno vicini fra loro, più vicini di quanto lo siano al nome. */
+.project-item-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 /* Più specifico di button: un quadrato arrotondato da 44px, uguale anche su mobile. */
-.project-list .project-delete {
+.project-list .project-item-action {
   width: 44px;
   height: 44px;
-  flex-shrink: 0;
   border-radius: 12px;
 }
 
-.project-list .project-delete svg {
+.project-list .project-item-action svg {
   width: 20px;
   height: 20px;
   fill: none;

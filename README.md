@@ -31,7 +31,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Dodici colori principali; il pulsante + apre una finestrella con altri dodici colori.
   Tutti sono abbastanza chiari da vedersi bene sullo sfondo scuro.
 - Una cartella del colore scelto compare a sinistra del nome di ogni progetto.
-- Il cestino a destra di ogni progetto lo elimina; al passaggio del mouse diventa rosso.
+- La matita a destra di ogni progetto riapre il modulo per cambiarne nome e colore.
+- Il cestino accanto lo elimina; al passaggio del mouse diventa rosso.
 - I progetti restano dopo una ricarica: sono salvati in `localStorage`, nel browser
   e all'indirizzo usati, e non vengono sincronizzati tra dispositivi.
 
@@ -46,10 +47,10 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 ### Limiti attuali
 
-- Nel menu soltanto Progetti apre una pagina: Obiettivi, Statistica e Impostazioni
+- Nel menu soltanto Home e Progetti aprono una pagina: Obiettivi, Statistica e Impostazioni
   non hanno ancora una destinazione.
 - Cambiare pagina interrompe il timer: tornando si riparte da `25:00`.
-- I progetti hanno solo nome e colore: non si possono modificare e l'eliminazione non chiede conferma.
+- I progetti hanno solo nome e colore, e l'eliminazione non chiede conferma.
 
 ## Avvio locale
 

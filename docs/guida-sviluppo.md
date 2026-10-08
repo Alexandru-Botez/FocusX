@@ -28,15 +28,15 @@ Non c'è ancora una suite di test automatici nel repository.
 
 Il browser legge `index.html`, carica il foglio CSS e il file JavaScript collegati
 e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi dell'HTML.
-Il tag `title` imposta il nome della scheda del browser a «FocusX».
+Il tag `title` imposta il nome della scheda del browser: «Home» per il timer, «Progetti» per i progetti.
 
 ## Struttura HTML
 
 L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il titolo principale `h1`.
-Il pannello `nav`, dentro l'header, contiene le quattro voci destinate alla futura navigazione.
+Il pannello `nav`, dentro l'header, contiene le cinque voci della navigazione.
 Ogni `li` contiene un `button.menu-option` con un'icona SVG decorativa e uno `span` con il testo.
-La voce Progetti usa invece un `a.menu-option` con `href="progetti.html"` per navigare;
-nella pagina di destinazione ha `aria-current="page"`. Il nome FocusX è un link a `index.html`.
+Le voci Home e Progetti usano invece un `a.menu-option` con `href="index.html"` e
+`href="progetti.html"` per navigare; nella pagina aperta la voce ha `aria-current="page"`. Il nome FocusX è un link a `index.html`.
 Nel `head`, un `link` con `rel="icon"` riutilizza il logo SVG come favicon della scheda.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
@@ -46,8 +46,8 @@ Gli identificatori da conoscere sono:
 | Selettore | Elemento | Uso nel progetto |
 | --- | --- | --- |
 | `#menu-button` | Pulsante Menu | Collega il clic al cambio di stato dell'icona e del pannello. |
-| `#sidebar-menu` | Pannello laterale | Contiene le voci Progetti, Obiettivi, Statistica e Impostazioni. |
-| `.menu-icon` | Icone delle voci | Cartella, bersaglio, grafico a barre e ingranaggio delle impostazioni. |
+| `#sidebar-menu` | Pannello laterale | Contiene le voci Home, Progetti, Obiettivi, Statistica e Impostazioni. |
+| `.menu-icon` | Icone delle voci | Casa, cartella, bersaglio, grafico a barre e ingranaggio delle impostazioni. |
 | `.menu-option` | Pulsanti delle voci | Feedback di hover e pressione, utilizzabile anche con la tastiera. |
 | `.brand-logo` | Immagine del logo | Dimensione e comportamento del logo nell'intestazione. |
 | `#timer` | Paragrafo con `25:00` | Visualizzazione del tempo, aggiornata da JavaScript. |
@@ -114,7 +114,7 @@ con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 | Cifre grigie in pausa | `section:has(#start-button:enabled):has(#reset-button:enabled) #timer` usa `--muted`. |
 | Dissolvenza dello status | `#timer-status` anima `opacity`; `visibility` cambia alla fine, conservando lo spazio. |
 | Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
-| Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 200 millisecondi. |
+| Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 240 millisecondi. |
 | Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`; 8px separano le voci. |
 | Ingresso dei contenuti | L'animazione `compari` fa salire di 8 pixel la sezione, il modulo e il progetto appena creato (`li.is-new`). |
 | Cambio di pagina | `@view-transition` chiede una dissolvenza di 200 millisecondi fra Timer e Progetti. |
@@ -240,7 +240,7 @@ Vedi il [riferimento MDN su inert](https://developer.mozilla.org/en-US/docs/Web/
 `chiudiMenuFuori(evento)` controlla il bersaglio del clic con `contains()`:
 chiude solo se il clic è fuori sia dal pulsante sia dal pannello.
 `gestisciTastoMenu(evento)` riconosce Esc e chiude senza chiamare `focus()`.
-Progetti è un collegamento alla pagina dedicata; le altre tre voci sono pulsanti
+Home e Progetti sono collegamenti alle loro pagine; le altre tre voci sono pulsanti
 con solo feedback visivo, in attesa delle rispettive sezioni.
 
 ## Prima versione dei progetti
@@ -250,7 +250,7 @@ con solo feedback visivo, in attesa delle rispettive sezioni.
 L'header è attualmente ripetuto nei due file HTML: quando lo modifichi, aggiorna entrambi.
 
 Il pulsante Crea progetto mostra `#project-form`. Il campo `#project-name` è obbligatorio
-e ammette al massimo 80 caratteri. L'evento `submit` chiama `creaProgetto(evento)`:
+e ammette al massimo 80 caratteri. L'evento `submit` chiama `inviaModuloProgetto(evento)`:
 `preventDefault()` evita la ricarica e `trim()` rimuove gli spazi alle estremità.
 Un nome composto solo da spazi viene rifiutato. Annulla chiude e svuota il modulo.
 
@@ -266,7 +266,7 @@ Il tredicesimo cerchio, `#more-colors-button`, mostra un + e apre `#more-colors`
 tramite l'attributo [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover):
 il browser gestisce apertura, chiusura con Esc o clic fuori e ritorno del focus.
 La finestrella contiene altri dodici radio con lo stesso `name="colore"`, quindi la scelta
-resta una sola e `creaProgetto` legge il colore sempre da `elements.colore.value`.
+resta una sola e `inviaModuloProgetto` legge il colore sempre da `elements.colore.value`.
 All'evento `change` della finestrella, `scegliAltroColore(evento)` scrive il colore scelto
 nella variabile `--swatch` del pulsante + e chiude la finestrella con `hidePopover()`.
 Con `:has()` il CSS colora il + e gli dà il doppio anello solo se è selezionato un colore
@@ -289,6 +289,18 @@ che salva l'elenco senza quel progetto e lo ricostruisce. Il focus passa al cest
 della voce successiva, o a Crea progetto quando l'elenco è vuoto. Al passaggio del mouse
 il pulsante usa lo stesso rosso di Reset, `--reset-hover`. Non c'è richiesta di conferma.
 
+Prima del cestino, il pulsante `.project-edit` con la matita chiama `apriModificaProgetto(id)`.
+Lo stesso `#project-form` serve per creare e per modificare: la variabile `idInModifica`
+vale `null` durante una creazione e contiene l'id del progetto durante una modifica.
+`apriModificaProgetto` cambia il titolo in «Modifica progetto» e il pulsante in «Salva modifiche»,
+scrive il nome nel campo e seleziona il colore assegnando `elements.colore.value`.
+Al salvataggio, `inviaModuloProgetto` controlla il nome e chiama `creaProgetto(nome, colore)`
+oppure `modificaProgetto(id, nome, colore)`. Quest'ultima usa `map` per creare un nuovo elenco
+in cui solo quel progetto cambia, copiato con `{ ...progetto, nome, colore }`: l'id resta
+lo stesso e le altre proprietà, come i futuri obiettivi, non vanno perse.
+`chiudiModuloProgetto()` riporta il modulo alla creazione; se elimini il progetto
+che stai modificando, il modulo si chiude.
+
 `caricaProgetti()` e `salvaProgetti(elenco)` concentrano l'accesso a
 [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
 con chiave `focusx.progetti.v1`. `JSON.parse` legge l'array salvato e `JSON.stringify`
@@ -297,7 +309,7 @@ Se l'archivio non è leggibile, la creazione viene disabilitata per non sovrascr
 se il salvataggio fallisce, il modulo mantiene il nome e mostra un messaggio.
 Queste funzioni potranno essere adattate alle richieste verso un futuro backend.
 
-Per ora i progetti non hanno obiettivi né modifica. Il cambio di pagina
+Per ora i progetti non hanno obiettivi. Il cambio di pagina
 interrompe il timer: tornando a `index.html`, il tempo riparte dallo stato iniziale.
 
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
@@ -352,13 +364,13 @@ Prima di considerare pronta una modifica all'interfaccia:
 Per il menu laterale controlla che:
 
 - Il pulsante si trovi a sinistra del logo e resti allineato con il titolo.
-- Il clic animi l'icona e apra il pannello con le quattro voci richieste.
+- Il clic animi l'icona e apra il pannello con le cinque voci richieste.
 - Un secondo clic, Esc e un clic fuori chiudano il pannello.
 - Un clic dentro il pannello lo lasci aperto; Esc lo chiuda senza spostare esplicitamente il focus.
 - Il pannello copra logo e titolo, lasciando la X visibile sullo stesso sfondo del menu.
-- Le quattro voci non mostrino bordi divisori e abbiano testo centrato e icone visibili.
+- Le cinque voci non mostrino bordi divisori e abbiano testo centrato e icone visibili.
 - Su telefono il pannello occupi tutta la finestra e ogni coppia icona-testo sia centrata.
-- Hover e pressione mostrino gli effetti previsti; solo Progetti navighi alla sua pagina.
+- Hover e pressione mostrino gli effetti previsti; solo Home e Progetti navighino alla loro pagina.
 - Le voci si possano raggiungere con Tab solo quando il menu è aperto.
 - La favicon usi il logo dell'app e il relativo file sia caricato senza errori.
 - `aria-expanded`, `active`, `is-open` e `inert` restino coerenti dopo più aperture e chiusure.
@@ -378,7 +390,10 @@ Per i progetti controlla che:
 - Si possano aggiungere più progetti, compresi nomi con accenti o caratteri come `<` e `>`.
 - Su mobile il modulo, i nomi lunghi e il messaggio di conferma non allarghino la pagina.
 - Il modulo e il progetto appena creato compaiano salendo di pochi pixel.
-- Il cestino resti all'estremità destra di ogni voce, anche con nomi lunghi e su mobile.
+- Matita e cestino restino all'estremità destra di ogni voce, anche con nomi lunghi e su mobile.
+- La matita apra il modulo con titolo «Modifica progetto», nome e colore del progetto;
+  Salva modifiche aggiorni solo quel progetto, nella stessa posizione, anche dopo una ricarica.
+- Annulla durante una modifica non cambi nulla e Crea progetto riapra un modulo vuoto.
 - Il colore scelto nel modulo compaia nella cartella a sinistra del nome, anche dopo una ricarica.
 - Dopo Annulla o un salvataggio, il modulo torni al colore bianco; i cerchi vadano a capo su mobile.
 - Il + apra la finestrella, che si chiuda con Esc, con un clic fuori o scegliendo un colore;

@@ -24,7 +24,7 @@
     <meta name="theme-color" content="#000000">
 
     <!-- title è il nome mostrato nella scheda del browser e nei segnalibri. -->
-    <title>FocusX</title>
+    <title>Progetti</title>
 
     <!-- rel="icon" sceglie l'icona della scheda del browser: riutilizziamo il nostro logo SVG. -->
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=altri-colori-1">
+    <link rel="stylesheet" href="styles.css?v=modifica-progetto-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="progetti.js?v=altri-colori-1" defer></script>
+    <script src="progetti.js?v=modifica-progetto-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -90,12 +90,21 @@
         È dentro l'header: il CSS lo sovrappone a logo e titolo, lasciando il pulsante sopra.
         inert rende il menu chiuso non interattivo e lo esclude dai lettori di schermo.
         JavaScript rimuove questo stato quando apre il pannello.
-        ul è una lista; Progetti è un link a una pagina, le altre voci sono pulsanti.
+        ul è una lista; Home e Progetti sono link a una pagina, le altre voci sono pulsanti.
         Questi pulsanti mostrano solo un effetto alla pressione, senza destinazione.
       -->
       <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
         <ul>
           <!-- Le icone sono decorative: aria-hidden evita di ripetere il nome della voce. -->
+          <li>
+            <a class="menu-option" href="index.html">
+              <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <!-- Una casa rappresenta la pagina iniziale, quella del timer. -->
+                <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H4a1 1 0 0 1-1-1v-9.5Z"></path>
+              </svg>
+              <span>Home</span>
+            </a>
+          </li>
           <li>
             <a class="menu-option" href="progetti.html" aria-current="page">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -148,7 +157,12 @@
         </div>
 
         <!-- hidden nasconde il modulo finché l'utente non preme Crea progetto. -->
-        <form id="project-form" class="project-form" hidden>
+        <!--
+          Lo stesso modulo serve per creare e per modificare un progetto:
+          JavaScript cambia il titolo e il testo del pulsante di salvataggio.
+        -->
+        <form id="project-form" class="project-form" hidden aria-labelledby="project-form-title">
+          <h3 id="project-form-title" class="project-form-title">Nuovo progetto</h3>
           <!-- for collega l'etichetta all'input; required e maxlength validano il campo. -->
           <label for="project-name">Nome del progetto</label>
           <input id="project-name" name="nome" type="text" required maxlength="80" autocomplete="off">
@@ -211,7 +225,7 @@
           </fieldset>
 
           <div class="project-form-actions">
-            <button class="project-action project-action-primary" type="submit">Salva progetto</button>
+            <button id="save-project-button" class="project-action project-action-primary" type="submit">Salva progetto</button>
             <button id="cancel-project-button" class="project-action" type="button">Annulla</button>
           </div>
         </form>
@@ -221,8 +235,8 @@
         <ul id="project-list" class="project-list" aria-label="Progetti creati"></ul>
         <!--
           template non viene mostrato: è un modello che JavaScript copia per ogni progetto.
-          La cartella prende il colore del progetto, lo span riceve il nome
-          e il pulsante con il cestino elimina il progetto.
+          La cartella prende il colore del progetto e lo span riceve il nome.
+          A destra, la matita apre il modulo per modificarlo e il cestino lo elimina.
         -->
         <template id="project-item-template">
           <li>
@@ -231,12 +245,20 @@
               <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
             </svg>
             <span class="project-name"></span>
-            <button class="project-delete" type="button" title="Elimina progetto">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Coperchio, maniglia, contenitore e due righe verticali formano il cestino. -->
-                <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6M10 11v6M14 11v6"></path>
-              </svg>
-            </button>
+            <div class="project-item-actions">
+              <button class="project-item-action project-edit" type="button" title="Modifica progetto">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- Una matita inclinata, con la riga che separa la punta dal corpo. -->
+                  <path d="M4 20h4L19 9a2.83 2.83 0 0 0-4-4L4 16v4ZM13.5 6.5l4 4"></path>
+                </svg>
+              </button>
+              <button class="project-item-action project-delete" type="button" title="Elimina progetto">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- Coperchio, maniglia, contenitore e due righe verticali formano il cestino. -->
+                  <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6M10 11v6M14 11v6"></path>
+                </svg>
+              </button>
+            </div>
           </li>
         </template>
         <!-- role=status annuncia l'esito senza interrompere la lettura. -->

@@ -9,6 +9,8 @@ const messaggioProgetti = document.getElementById("projects-message");
 const modelloVoceProgetto = document.getElementById("project-item-template");
 const pulsanteAltriColori = document.getElementById("more-colors-button");
 const finestraAltriColori = document.getElementById("more-colors");
+const titoloModuloProgetto = document.getElementById("project-form-title");
+const pulsanteSalvaProgetto = document.getElementById("save-project-button");
 
 // Questa chiave distingue i dati di FocusX da eventuali altri dati dello stesso sito.
 const chiaveProgetti = "focusx.progetti.v1";
@@ -49,6 +51,9 @@ function salvaProgetti(elenco) {
 
 let progetti = caricaProgetti();
 
+// null quando il modulo crea un progetto; altrimenti l'id del progetto in modifica.
+let idInModifica = null;
+
 // idNuovo indica il progetto appena creato, l'unico che compare con l'animazione.
 function mostraProgetti(idNuovo) {
   // Svuotiamo l'elenco prima di ricostruirlo, evitando righe duplicate.
@@ -67,6 +72,10 @@ function mostraProgetti(idNuovo) {
       // style.color imposta il colore solo di questo elemento; l'SVG lo usa con currentColor.
       voce.querySelector(".project-icon").style.color = progetto.colore;
     }
+
+    const pulsanteModifica = voce.querySelector(".project-edit");
+    pulsanteModifica.setAttribute("aria-label", "Modifica " + progetto.nome);
+    pulsanteModifica.addEventListener("click", () => apriModificaProgetto(progetto.id));
 
     const pulsanteElimina = voce.querySelector(".project-delete");
     // Il pulsante mostra solo un'icona: aria-label dice quale progetto elimina.
@@ -90,6 +99,11 @@ function eliminaProgetto(id) {
     return;
   }
 
+  // Se il progetto eliminato era nel modulo, il modulo non ha più nulla da modificare.
+  if (id === idInModifica) {
+    chiudiModuloProgetto();
+  }
+
   progetti = elencoAggiornato;
   mostraProgetti();
   messaggioProgetti.textContent = "Progetto eliminato: " + nome + ".";
@@ -106,15 +120,46 @@ function apriModuloProgetto() {
   messaggioProgetti.textContent = "";
 }
 
+function apriModificaProgetto(id) {
+  const progetto = progetti.find(progetto => progetto.id === id);
+  if (progetto === undefined) {
+    return;
+  }
+
+  // Chiudere e riaprire azzera una creazione o una modifica lasciata a metà.
+  chiudiModuloProgetto();
+  apriModuloProgetto();
+  idInModifica = id;
+  titoloModuloProgetto.textContent = "Modifica progetto";
+  pulsanteSalvaProgetto.textContent = "Salva modifiche";
+
+  campoNomeProgetto.value = progetto.nome;
+  // Assegnare value alla lista dei radio seleziona quello con lo stesso valore.
+  // I progetti salvati prima dei colori non ne hanno uno: resta il bianco predefinito.
+  if (typeof progetto.colore === "string") {
+    moduloProgetto.elements.colore.value = progetto.colore;
+    // Se il colore è nella finestrella, il + lo mostra; altrimenti il CSS lo ignora.
+    pulsanteAltriColori.style.setProperty("--swatch", progetto.colore);
+  }
+
+  // focus porta il cursore nel campo e fa scorrere la pagina fino al modulo.
+  campoNomeProgetto.focus();
+}
+
 function chiudiModuloProgetto() {
   moduloProgetto.hidden = true;
   pulsanteNuovoProgetto.hidden = false;
   moduloProgetto.reset();
   campoNomeProgetto.setCustomValidity("");
+
+  // Il modulo torna alla creazione, pronto per il prossimo Crea progetto.
+  idInModifica = null;
+  titoloModuloProgetto.textContent = "Nuovo progetto";
+  pulsanteSalvaProgetto.textContent = "Salva progetto";
 }
 
-function creaProgetto(evento) {
-  // submit invierebbe il form e ricaricherebbe la pagina: gestiamo noi l'inserimento.
+function inviaModuloProgetto(evento) {
+  // submit invierebbe il form e ricaricherebbe la pagina: gestiamo noi il salvataggio.
   evento.preventDefault();
 
   // trim rimuove gli spazi iniziali e finali; un nome composto solo da spazi non va bene.
@@ -129,6 +174,14 @@ function creaProgetto(evento) {
   // value è quello selezionato.
   const colore = moduloProgetto.elements.colore.value;
 
+  if (idInModifica === null) {
+    creaProgetto(nome, colore);
+  } else {
+    modificaProgetto(idInModifica, nome, colore);
+  }
+}
+
+function creaProgetto(nome, colore) {
   // Ogni progetto ha un identificatore indipendente dal nome: servirà a collegare gli obiettivi.
   const nuovoProgetto = { id: crypto.randomUUID(), nome: nome, colore: colore };
   // concat crea un nuovo array, aggiungendo il progetto a quelli già presenti.
@@ -141,6 +194,30 @@ function creaProgetto(evento) {
   mostraProgetti(nuovoProgetto.id);
   chiudiModuloProgetto();
   messaggioProgetti.textContent = "Progetto creato: " + nome + ".";
+}
+
+function modificaProgetto(id, nome, colore) {
+  // map crea un nuovo array della stessa lunghezza, trasformando ogni elemento.
+  // Solo il progetto in modifica cambia; gli altri vengono copiati così come sono.
+  const elencoAggiornato = progetti.map(progetto => {
+    if (progetto.id !== id) {
+      return progetto;
+    }
+    // ...progetto copia tutte le sue proprietà; nome e colore le sostituiscono.
+    return { ...progetto, nome: nome, colore: colore };
+  });
+  if (!salvaProgetti(elencoAggiornato)) {
+    return;
+  }
+
+  progetti = elencoAggiornato;
+  mostraProgetti();
+  chiudiModuloProgetto();
+  messaggioProgetti.textContent = "Progetto modificato: " + nome + ".";
+
+  // Il focus torna alla matita dello stesso progetto, nella sua posizione nell'elenco.
+  const posizione = progetti.findIndex(progetto => progetto.id === id);
+  elencoProgetti.querySelectorAll(".project-edit")[posizione].focus();
 }
 
 function scegliAltroColore(evento) {
@@ -157,7 +234,7 @@ function cancellaErroreNome() {
 
 pulsanteNuovoProgetto.addEventListener("click", apriModuloProgetto);
 pulsanteAnnullaProgetto.addEventListener("click", chiudiModuloProgetto);
-moduloProgetto.addEventListener("submit", creaProgetto);
+moduloProgetto.addEventListener("submit", inviaModuloProgetto);
 campoNomeProgetto.addEventListener("input", cancellaErroreNome);
 // change scatta quando un radio della finestrella viene selezionato e risale fino al div.
 finestraAltriColori.addEventListener("change", scegliAltroColore);
