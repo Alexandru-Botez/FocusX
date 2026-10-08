@@ -7,6 +7,7 @@ const elencoProgetti = document.getElementById("project-list");
 const statoVuotoProgetti = document.getElementById("projects-empty");
 const messaggioProgetti = document.getElementById("projects-message");
 const modelloVoceProgetto = document.getElementById("project-item-template");
+const campoColorePersonalizzato = document.getElementById("project-custom-color");
 
 // Questa chiave distingue i dati di FocusX da eventuali altri dati dello stesso sito.
 const chiaveProgetti = "focusx.progetti.v1";
@@ -124,7 +125,8 @@ function creaProgetto(evento) {
   }
 
   // elements.colore raccoglie i radio con name="colore"; value è quello selezionato.
-  const colore = moduloProgetto.elements.colore.value;
+  // Se nessun radio è selezionato, value è "" e || sceglie il colore personalizzato.
+  const colore = moduloProgetto.elements.colore.value || campoColorePersonalizzato.value;
 
   // Ogni progetto ha un identificatore indipendente dal nome: servirà a collegare gli obiettivi.
   const nuovoProgetto = { id: crypto.randomUUID(), nome: nome, colore: colore };
@@ -140,6 +142,13 @@ function creaProgetto(evento) {
   messaggioProgetti.textContent = "Progetto creato: " + nome + ".";
 }
 
+function scegliColorePersonalizzato() {
+  // Scegliere un colore proprio deseleziona i colori predefiniti: ne vale uno solo.
+  for (const radio of moduloProgetto.elements.colore) {
+    radio.checked = false;
+  }
+}
+
 function cancellaErroreNome() {
   // Un errore personalizzato va azzerato quando l'utente corregge il campo.
   campoNomeProgetto.setCustomValidity("");
@@ -149,4 +158,6 @@ pulsanteNuovoProgetto.addEventListener("click", apriModuloProgetto);
 pulsanteAnnullaProgetto.addEventListener("click", chiudiModuloProgetto);
 moduloProgetto.addEventListener("submit", creaProgetto);
 campoNomeProgetto.addEventListener("input", cancellaErroreNome);
+// input scatta a ogni cambio nel selettore, anche mentre si sposta il cursore sui colori.
+campoColorePersonalizzato.addEventListener("input", scegliColorePersonalizzato);
 mostraProgetti();

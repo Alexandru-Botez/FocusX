@@ -929,6 +929,53 @@ button:disabled {
   outline-offset: 6px;
 }
 
+/*
+  Il colore personalizzato è un cerchio arcobaleno: conic-gradient fa girare
+  i colori attorno al centro, come in una ruota dei colori.
+*/
+.project-colors input[type="color"] {
+  padding: 0;
+  border: 0;
+  background: conic-gradient(#ff6b6b, #ffd43b, #69db7c, #4dabf7, #b197fc, #f783ac, #ff6b6b);
+}
+
+/*
+  Dentro type="color" il browser disegna un riquadro con il colore scelto.
+  Questi pseudo-elementi lo rendono un cerchio pieno; -webkit- vale per Chrome, Edge
+  e Safari, -moz- per Firefox. Stanno in regole separate: un browser scarta l'intera
+  regola se contiene un selettore che non conosce.
+*/
+.project-colors input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.project-colors input[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+
+.project-colors input[type="color"]::-moz-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+
+/*
+  Finché un colore predefinito è selezionato, il riquadro è trasparente e si vede l'arcobaleno.
+  :has legge lo stato dai radio, senza bisogno di una classe aggiunta da JavaScript.
+*/
+.project-colors:has(input[type="radio"]:checked) input[type="color"]::-webkit-color-swatch {
+  opacity: 0;
+}
+
+.project-colors:has(input[type="radio"]:checked) input[type="color"]::-moz-color-swatch {
+  opacity: 0;
+}
+
+/* Nessun radio selezionato significa colore personalizzato: riceve lo stesso doppio anello. */
+.project-colors:not(:has(input[type="radio"]:checked)) input[type="color"] {
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--text);
+}
+
 .project-list {
   display: grid;
   gap: 12px;

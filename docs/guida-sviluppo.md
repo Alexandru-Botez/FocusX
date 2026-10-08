@@ -262,6 +262,15 @@ Il CSS toglie il pallino nativo con `appearance: none` e colora ogni cerchio con
 Il bianco ha `checked` nell'HTML: è il colore predefinito, che `reset()` ripristina.
 Per aggiungere un colore basta un nuovo radio con `value` e `--swatch` uguali.
 
+L'ultimo cerchio, `#project-custom-color`, è un `input type="color"`: apre il selettore
+di colore del browser. Ha un `name` diverso dai radio, quindi non fa parte della loro scelta.
+Al suo evento `input`, `scegliColorePersonalizzato()` deseleziona tutti i radio.
+In `creaProgetto`, `elements.colore.value` vale `""` se nessun radio è selezionato:
+l'operatore `||` sceglie allora il valore del selettore personalizzato.
+Il CSS usa `:has()` per leggere lo stato: con un radio selezionato il riquadro del colore
+è trasparente e si vede l'arcobaleno (`conic-gradient`); senza, mostra il colore scelto
+e riceve il doppio anello. `reset()` riporta il selettore al suo `value` iniziale.
+
 Un progetto ha la forma `{ id, nome, colore }`. L'id viene generato con
 [`crypto.randomUUID()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID)
 e servirà a collegare gli obiettivi; il nome può coincidere con quello di un altro progetto.
@@ -370,6 +379,8 @@ Per i progetti controlla che:
 - Il cestino resti all'estremità destra di ogni voce, anche con nomi lunghi e su mobile.
 - Il colore scelto nel modulo compaia nella cartella a sinistra del nome, anche dopo una ricarica.
 - Dopo Annulla o un salvataggio, il modulo torni al colore bianco; i cerchi vadano a capo su mobile.
+- Il cerchio arcobaleno apra il selettore; il colore scelto sostituisca l'arcobaleno, riceva l'anello
+  e venga salvato; un clic su un colore predefinito riporti l'arcobaleno.
 - Al passaggio del mouse il cestino diventi rosso; il clic elimini solo quel progetto,
   anche dopo una ricarica, senza animare di nuovo le altre voci.
 - Non compaiano errori JavaScript né nella pagina Progetti né nel timer.
