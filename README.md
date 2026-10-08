@@ -27,7 +27,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 ### Progetti
 
 - Una pagina dedicata, raggiungibile dal menu.
-- Crea progetto apre un modulo per il nome e il colore; Salva progetto aggiunge la voce all'elenco.
+- Crea progetto apre un modulo per il nome e il colore; Salva progetto aggiunge la voce in cima all'elenco.
 - Dodici colori principali; il pulsante + apre una finestrella con altri dodici colori.
   Tutti sono abbastanza chiari da vedersi bene sullo sfondo scuro.
 - Una cartella del colore scelto compare a sinistra del nome di ogni progetto.

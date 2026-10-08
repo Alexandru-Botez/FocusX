@@ -273,6 +273,7 @@ Con `:has()` il CSS colora il + e gli dà il doppio anello solo se è selezionat
 della finestrella; dopo `reset()` torna un + tratteggiato.
 Tutti i colori hanno un contrasto di circa 4,5:1 o più con lo sfondo delle schede.
 
+Il nuovo progetto va in cima all'elenco: `creaProgetto` crea `[nuovoProgetto, ...progetti]`.
 Un progetto ha la forma `{ id, nome, colore }`. L'id viene generato con
 [`crypto.randomUUID()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID)
 e servirà a collegare gli obiettivi; il nome può coincidere con quello di un altro progetto.

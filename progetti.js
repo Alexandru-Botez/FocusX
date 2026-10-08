@@ -202,8 +202,9 @@ function inviaModuloProgetto(evento) {
 function creaProgetto(nome, colore) {
   // Ogni progetto ha un identificatore indipendente dal nome: servirà a collegare gli obiettivi.
   const nuovoProgetto = { id: crypto.randomUUID(), nome: nome, colore: colore };
-  // concat crea un nuovo array, aggiungendo il progetto a quelli già presenti.
-  const elencoAggiornato = progetti.concat(nuovoProgetto);
+  // Le parentesi quadre creano un nuovo array: prima il nuovo progetto, poi con ...progetti
+  // tutti quelli già presenti. Così il progetto appena creato è sempre il primo della lista.
+  const elencoAggiornato = [nuovoProgetto, ...progetti];
   if (!salvaProgetti(elencoAggiornato)) {
     return;
   }
