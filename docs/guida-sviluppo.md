@@ -300,6 +300,11 @@ in cui solo quel progetto cambia, copiato con `{ ...progetto, nome, colore }`: l
 lo stesso e le altre proprietà, come i futuri obiettivi, non vanno perse.
 `chiudiModuloProgetto()` riporta il modulo alla creazione; se elimini il progetto
 che stai modificando, il modulo si chiude.
+Durante una modifica, il progetto non compare nell'elenco, perché è già nel modulo.
+Ogni `li` ha un attributo `data-id`, scritto con `voce.dataset.id`;
+`nascondiVoceInModifica()` dà `hidden` alla voce con l'id uguale a `idInModifica`.
+La chiamano `apriModificaProgetto`, `chiudiModuloProgetto` e `mostraProgetti`,
+così la voce resta nascosta anche quando l'elenco viene ricostruito.
 
 `caricaProgetti()` e `salvaProgetti(elenco)` concentrano l'accesso a
 [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
@@ -394,6 +399,7 @@ Per i progetti controlla che:
 - La matita apra il modulo con titolo «Modifica progetto», nome e colore del progetto;
   Salva modifiche aggiorni solo quel progetto, nella stessa posizione, anche dopo una ricarica.
 - Annulla durante una modifica non cambi nulla e Crea progetto riapra un modulo vuoto.
+- Durante una modifica il progetto sparisca dall'elenco e ricompaia dopo Annulla o il salvataggio.
 - Il colore scelto nel modulo compaia nella cartella a sinistra del nome, anche dopo una ricarica.
 - Dopo Annulla o un salvataggio, il modulo torni al colore bianco; i cerchi vadano a capo su mobile.
 - Il + apra la finestrella, che si chiuda con Esc, con un clic fuori o scegliendo un colore;

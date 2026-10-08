@@ -63,6 +63,8 @@ function mostraProgetti(idNuovo) {
   for (const progetto of progetti) {
     // cloneNode(true) copia il li del template insieme a tutto il suo contenuto.
     const voce = modelloVoceProgetto.content.firstElementChild.cloneNode(true);
+    // dataset.id scrive l'attributo data-id: la voce ricorda a quale progetto appartiene.
+    voce.dataset.id = progetto.id;
     // textContent mostra il nome come testo, anche se contiene caratteri come < o >.
     voce.querySelector(".project-name").textContent = progetto.nome;
     voce.classList.toggle("is-new", progetto.id === idNuovo);
@@ -82,6 +84,17 @@ function mostraProgetti(idNuovo) {
     pulsanteElimina.setAttribute("aria-label", "Elimina " + progetto.nome);
     pulsanteElimina.addEventListener("click", () => eliminaProgetto(progetto.id));
     elencoProgetti.append(voce);
+  }
+
+  // Anche dopo una ricostruzione, il progetto in modifica resta nascosto.
+  nascondiVoceInModifica();
+}
+
+function nascondiVoceInModifica() {
+  // children sono le voci li dell'elenco. Solo quella del progetto in modifica
+  // riceve hidden; con idInModifica uguale a null nessuna voce corrisponde e tutte si vedono.
+  for (const voce of elencoProgetti.children) {
+    voce.hidden = voce.dataset.id === idInModifica;
   }
 }
 
@@ -133,6 +146,9 @@ function apriModificaProgetto(id) {
   titoloModuloProgetto.textContent = "Modifica progetto";
   pulsanteSalvaProgetto.textContent = "Salva modifiche";
 
+  // Il progetto compare già nel modulo: nell'elenco sarebbe un doppione.
+  nascondiVoceInModifica();
+
   campoNomeProgetto.value = progetto.nome;
   // Assegnare value alla lista dei radio seleziona quello con lo stesso valore.
   // I progetti salvati prima dei colori non ne hanno uno: resta il bianco predefinito.
@@ -154,6 +170,8 @@ function chiudiModuloProgetto() {
 
   // Il modulo torna alla creazione, pronto per il prossimo Crea progetto.
   idInModifica = null;
+  // Il progetto che era in modifica torna visibile nell'elenco.
+  nascondiVoceInModifica();
   titoloModuloProgetto.textContent = "Nuovo progetto";
   pulsanteSalvaProgetto.textContent = "Salva progetto";
 }
