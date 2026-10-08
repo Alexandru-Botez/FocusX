@@ -69,11 +69,8 @@ function mostraProgetti(idNuovo) {
     voce.querySelector(".project-name").textContent = progetto.nome;
     voce.classList.toggle("is-new", progetto.id === idNuovo);
 
-    // I progetti salvati prima dei colori non hanno colore: la cartella resta bianca, come da CSS.
-    if (typeof progetto.colore === "string") {
-      // style.color imposta il colore solo di questo elemento; l'SVG lo usa con currentColor.
-      voce.querySelector(".project-icon").style.color = progetto.colore;
-    }
+    // style.color imposta il colore solo di questo elemento; l'SVG lo usa con currentColor.
+    voce.querySelector(".project-icon").style.color = progetto.colore;
 
     const pulsanteModifica = voce.querySelector(".project-edit");
     pulsanteModifica.setAttribute("aria-label", "Modifica " + progetto.nome);
@@ -131,6 +128,23 @@ function apriModuloProgetto() {
   moduloProgetto.hidden = false;
   pulsanteNuovoProgetto.hidden = true;
   messaggioProgetti.textContent = "";
+  segnaColoriUsati();
+}
+
+function segnaColoriUsati() {
+  // I colori degli altri progetti: quello in modifica è escluso, il suo colore resta "libero".
+  const coloriUsati = progetti
+    .filter(progetto => progetto.id !== idInModifica)
+    .map(progetto => progetto.colore);
+
+  for (const radio of moduloProgetto.elements.colore) {
+    // includes controlla se il colore del cerchio è nell'elenco dei colori usati.
+    const usato = coloriUsati.includes(radio.value);
+    // La classe mostra il puntino; il colore resta comunque selezionabile.
+    radio.classList.toggle("is-used", usato);
+    // title resta il nome del colore; aria-label avvisa anche chi usa un lettore di schermo.
+    radio.setAttribute("aria-label", usato ? radio.title + ", già usato" : radio.title);
+  }
 }
 
 function apriModificaProgetto(id) {
@@ -143,6 +157,8 @@ function apriModificaProgetto(id) {
   chiudiModuloProgetto();
   apriModuloProgetto();
   idInModifica = id;
+  // Ora che il progetto è in modifica, il suo colore non conta più come usato.
+  segnaColoriUsati();
   titoloModuloProgetto.textContent = "Modifica progetto";
   pulsanteSalvaProgetto.textContent = "Salva modifiche";
 
@@ -151,12 +167,9 @@ function apriModificaProgetto(id) {
 
   campoNomeProgetto.value = progetto.nome;
   // Assegnare value alla lista dei radio seleziona quello con lo stesso valore.
-  // I progetti salvati prima dei colori non ne hanno uno: resta il bianco predefinito.
-  if (typeof progetto.colore === "string") {
-    moduloProgetto.elements.colore.value = progetto.colore;
-    // Se il colore è nella finestrella, il + lo mostra; altrimenti il CSS lo ignora.
-    pulsanteAltriColori.style.setProperty("--swatch", progetto.colore);
-  }
+  moduloProgetto.elements.colore.value = progetto.colore;
+  // Se il colore è nella finestrella, il + lo mostra; altrimenti il CSS lo ignora.
+  pulsanteAltriColori.style.setProperty("--swatch", progetto.colore);
 
   // focus porta il cursore nel campo e fa scorrere la pagina fino al modulo.
   campoNomeProgetto.focus();

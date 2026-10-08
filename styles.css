@@ -924,6 +924,15 @@ button:disabled {
     transform var(--transition-fast) ease;
 }
 
+/*
+  Un colore già usato da un altro progetto mostra un puntino scuro al centro.
+  radial-gradient disegna un cerchio pieno fino a 4px dal centro, poi trasparente:
+  sotto si vede lo sfondo var(--swatch) della regola precedente.
+*/
+.project-colors input.is-used {
+  background-image: radial-gradient(circle, var(--background) 4px, transparent 4.5px);
+}
+
 @media (hover: hover) {
   .project-colors input:hover {
     transform: scale(1.1);
@@ -1037,8 +1046,6 @@ button:disabled {
   height: 22px;
   /* Non si restringe quando il nome è lungo. */
   flex-shrink: 0;
-  /* Bianco predefinito, per i progetti salvati prima dell'arrivo dei colori. */
-  color: var(--text);
   fill: currentColor;
 }
 

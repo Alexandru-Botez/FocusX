@@ -273,6 +273,12 @@ Con `:has()` il CSS colora il + e gli dà il doppio anello solo se è selezionat
 della finestrella; dopo `reset()` torna un + tratteggiato.
 Tutti i colori hanno un contrasto di circa 4,5:1 o più con lo sfondo delle schede.
 
+All'apertura del modulo, `segnaColoriUsati()` raccoglie con `filter` e `map` i colori
+degli altri progetti (escluso quello in modifica)
+e, con `includes`, dà la classe `is-used` ai cerchi di quei colori. Il CSS disegna
+un puntino scuro al centro con `radial-gradient`; il colore resta selezionabile.
+L'`aria-label` diventa, per esempio, «Azzurro, già usato», mentre `title` resta il nome.
+
 Il nuovo progetto va in cima all'elenco: `creaProgetto` crea `[nuovoProgetto, ...progetti]`.
 Un progetto ha la forma `{ id, nome, colore }`. L'id viene generato con
 [`crypto.randomUUID()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID)
@@ -281,8 +287,7 @@ e servirà a collegare gli obiettivi; il nome può coincidere con quello di un a
 `template#project-item-template` e usando `textContent`, così i nomi sono testo e non HTML
 da eseguire. Solo la voce con `idNuovo` riceve la classe `is-new` e compare con l'animazione.
 La cartella `.project-icon` a sinistra del nome riceve il colore con `style.color`
-e l'SVG lo usa tramite `fill: currentColor`. I progetti salvati prima dei colori
-non hanno `colore`: la cartella resta bianca, il colore predefinito del CSS.
+e l'SVG lo usa tramite `fill: currentColor`.
 
 Ogni voce ha a destra un pulsante `.project-delete` con l'icona del cestino:
 il suo `aria-label` contiene il nome del progetto. Il clic chiama `eliminaProgetto(id)`,
@@ -401,6 +406,8 @@ Per i progetti controlla che:
   Salva modifiche aggiorni solo quel progetto, nella stessa posizione, anche dopo una ricarica.
 - Annulla durante una modifica non cambi nulla e Crea progetto riapra un modulo vuoto.
 - Durante una modifica il progetto sparisca dall'elenco e ricompaia dopo Annulla o il salvataggio.
+- I colori degli altri progetti abbiano il puntino, anche nella finestrella; in modifica
+  il colore del progetto stesso non lo abbia.
 - Il colore scelto nel modulo compaia nella cartella a sinistra del nome, anche dopo una ricarica.
 - Dopo Annulla o un salvataggio, il modulo torni al colore bianco; i cerchi vadano a capo su mobile.
 - Il + apra la finestrella, che si chiuda con Esc, con un clic fuori o scegliendo un colore;

@@ -30,6 +30,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Crea progetto apre un modulo per il nome e il colore; Salva progetto aggiunge la voce in cima all'elenco.
 - Dodici colori principali; il pulsante + apre una finestrella con altri dodici colori.
   Tutti sono abbastanza chiari da vedersi bene sullo sfondo scuro.
+- Un puntino segnala i colori già usati da altri progetti; restano comunque selezionabili.
 - Una cartella del colore scelto compare a sinistra del nome di ogni progetto.
 - La matita a destra di ogni progetto riapre il modulo per cambiarne nome e colore.
 - Il cestino accanto lo elimina; al passaggio del mouse diventa rosso.
