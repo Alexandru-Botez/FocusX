@@ -27,7 +27,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 ### Progetti
 
 - Una pagina dedicata, raggiungibile dal menu.
-- Crea progetto apre un modulo per il nome; Salva progetto aggiunge la voce all'elenco.
+- Crea progetto apre un modulo per il nome e il colore; Salva progetto aggiunge la voce all'elenco.
+- Una cartella del colore scelto compare a sinistra del nome di ogni progetto.
 - Il cestino a destra di ogni progetto lo elimina; al passaggio del mouse diventa rosso.
 - I progetti restano dopo una ricarica: sono salvati in `localStorage`, nel browser
   e all'indirizzo usati, e non vengono sincronizzati tra dispositivi.
@@ -46,7 +47,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Nel menu soltanto Progetti apre una pagina: Obiettivi, Statistica e Impostazioni
   non hanno ancora una destinazione.
 - Cambiare pagina interrompe il timer: tornando si riparte da `25:00`.
-- I progetti hanno solo un nome: non si possono modificare e l'eliminazione non chiede conferma.
+- I progetti hanno solo nome e colore: non si possono modificare e l'eliminazione non chiede conferma.
 
 ## Avvio locale
 

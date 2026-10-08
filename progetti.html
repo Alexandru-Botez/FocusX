@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=elimina-progetto-1">
+    <link rel="stylesheet" href="styles.css?v=colori-progetto-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="progetti.js?v=elimina-progetto-1" defer></script>
+    <script src="progetti.js?v=colori-progetto-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -154,6 +154,26 @@
           <!-- for collega l'etichetta all'input; required e maxlength validano il campo. -->
           <label for="project-name">Nome del progetto</label>
           <input id="project-name" name="nome" type="text" required maxlength="80" autocomplete="off">
+
+          <!--
+            fieldset raggruppa i controlli collegati; legend è il nome del gruppo.
+            I radio con lo stesso name formano una scelta unica: se ne seleziona uno solo.
+            value è il colore salvato; --swatch, una variabile CSS, colora il cerchio.
+            aria-label e title danno un nome al colore, perché il cerchio non contiene testo.
+            checked sceglie il colore predefinito, che Annulla e reset() ripristinano.
+          -->
+          <fieldset class="project-colors">
+            <legend>Colore</legend>
+            <input type="radio" name="colore" value="#f5f5f5" style="--swatch: #f5f5f5" aria-label="Bianco" title="Bianco" checked>
+            <input type="radio" name="colore" value="#ff6b6b" style="--swatch: #ff6b6b" aria-label="Rosso" title="Rosso">
+            <input type="radio" name="colore" value="#ffa94d" style="--swatch: #ffa94d" aria-label="Arancione" title="Arancione">
+            <input type="radio" name="colore" value="#ffd43b" style="--swatch: #ffd43b" aria-label="Giallo" title="Giallo">
+            <input type="radio" name="colore" value="#69db7c" style="--swatch: #69db7c" aria-label="Verde" title="Verde">
+            <input type="radio" name="colore" value="#4dabf7" style="--swatch: #4dabf7" aria-label="Azzurro" title="Azzurro">
+            <input type="radio" name="colore" value="#b197fc" style="--swatch: #b197fc" aria-label="Viola" title="Viola">
+            <input type="radio" name="colore" value="#f783ac" style="--swatch: #f783ac" aria-label="Rosa" title="Rosa">
+          </fieldset>
+
           <div class="project-form-actions">
             <button class="project-action project-action-primary" type="submit">Salva progetto</button>
             <button id="cancel-project-button" class="project-action" type="button">Annulla</button>
@@ -165,10 +185,15 @@
         <ul id="project-list" class="project-list" aria-label="Progetti creati"></ul>
         <!--
           template non viene mostrato: è un modello che JavaScript copia per ogni progetto.
-          Lo span riceve il nome; il pulsante con il cestino elimina il progetto.
+          La cartella prende il colore del progetto, lo span riceve il nome
+          e il pulsante con il cestino elimina il progetto.
         -->
         <template id="project-item-template">
           <li>
+            <svg class="project-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!-- La stessa cartella della voce Progetti nel menu, qui piena. -->
+              <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+            </svg>
             <span class="project-name"></span>
             <button class="project-delete" type="button" title="Elimina progetto">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

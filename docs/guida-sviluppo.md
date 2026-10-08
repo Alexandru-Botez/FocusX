@@ -9,7 +9,7 @@ FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa
 e Reset lo ferma riportando il tempo a 25 minuti.
 Il timer ricomincia automaticamente da 25 minuti quando i secondi rimanenti arrivano a zero.
 Gli obiettivi sono ancora da sviluppare.
-La pagina Progetti consente di creare ed eliminare progetti con nome, salvati nel browser.
+La pagina Progetti consente di creare ed eliminare progetti con nome e colore, salvati nel browser.
 Non c'è ancora una suite di test automatici nel repository.
 
 ## Responsabilità dei file
@@ -254,12 +254,23 @@ e ammette al massimo 80 caratteri. L'evento `submit` chiama `creaProgetto(evento
 `preventDefault()` evita la ricarica e `trim()` rimuove gli spazi alle estremità.
 Un nome composto solo da spazi viene rifiutato. Annulla chiude e svuota il modulo.
 
-Un progetto ha la forma `{ id, nome }`. L'id viene generato con
+Sotto il nome, il `fieldset.project-colors` contiene otto `input type="radio"` con
+`name="colore"`: avendo lo stesso `name`, se ne può selezionare uno solo, anche con le frecce.
+Il `value` di ciascuno è il colore esadecimale salvato; `aria-label` e `title` ne danno il nome.
+Il CSS toglie il pallino nativo con `appearance: none` e colora ogni cerchio con la variabile
+`--swatch`, scritta nell'attributo `style`. Il radio `:checked` ha un doppio anello.
+Il bianco ha `checked` nell'HTML: è il colore predefinito, che `reset()` ripristina.
+Per aggiungere un colore basta un nuovo radio con `value` e `--swatch` uguali.
+
+Un progetto ha la forma `{ id, nome, colore }`. L'id viene generato con
 [`crypto.randomUUID()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID)
 e servirà a collegare gli obiettivi; il nome può coincidere con quello di un altro progetto.
 `mostraProgetti(idNuovo)` ricostruisce `#project-list` copiando il `li` del
 `template#project-item-template` e usando `textContent`, così i nomi sono testo e non HTML
 da eseguire. Solo la voce con `idNuovo` riceve la classe `is-new` e compare con l'animazione.
+La cartella `.project-icon` a sinistra del nome riceve il colore con `style.color`
+e l'SVG lo usa tramite `fill: currentColor`. I progetti salvati prima dei colori
+non hanno `colore`: la cartella resta bianca, il colore predefinito del CSS.
 
 Ogni voce ha a destra un pulsante `.project-delete` con l'icona del cestino:
 il suo `aria-label` contiene il nome del progetto. Il clic chiama `eliminaProgetto(id)`,
@@ -357,6 +368,8 @@ Per i progetti controlla che:
 - Su mobile il modulo, i nomi lunghi e il messaggio di conferma non allarghino la pagina.
 - Il modulo e il progetto appena creato compaiano salendo di pochi pixel.
 - Il cestino resti all'estremità destra di ogni voce, anche con nomi lunghi e su mobile.
+- Il colore scelto nel modulo compaia nella cartella a sinistra del nome, anche dopo una ricarica.
+- Dopo Annulla o un salvataggio, il modulo torni al colore bianco; i cerchi vadano a capo su mobile.
 - Al passaggio del mouse il cestino diventi rosso; il clic elimini solo quel progetto,
   anche dopo una ricarica, senza animare di nuovo le altre voci.
 - Non compaiano errori JavaScript né nella pagina Progetti né nel timer.

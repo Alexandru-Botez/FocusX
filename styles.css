@@ -843,13 +843,15 @@ button:disabled {
   animation: compari 250ms var(--ease-out) both;
 }
 
-/* L'etichetta è un'informazione secondaria rispetto al valore scritto nel campo. */
-.project-form label {
+/* Etichetta e legenda sono informazioni secondarie rispetto ai valori scelti. */
+.project-form label,
+.project-colors legend {
   color: var(--muted);
   font-size: 0.875rem;
 }
 
-.project-form input {
+/* [type="text"] seleziona solo il campo del nome: i radio dei colori hanno regole proprie. */
+.project-form input[type="text"] {
   /* min-width: 0 permette al campo di restringersi senza allargare la pagina. */
   min-width: 0;
   width: 100%;
@@ -863,16 +865,68 @@ button:disabled {
 }
 
 @media (hover: hover) {
-  .project-form input:hover {
+  .project-form input[type="text"]:hover {
     border-color: var(--border-strong);
   }
 }
 
 /* Con il focus il bordo diventa bianco e si unisce al contorno, senza lasciare una riga grigia. */
-.project-form input:focus-visible {
+.project-form input[type="text"]:focus-visible {
   border-color: var(--text);
   outline-offset: 0;
   outline-width: 1px;
+}
+
+/* Il fieldset perde il bordo e gli spazi predefiniti; i cerchi vanno a capo se serve. */
+.project-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+/* La legenda occupa una riga intera, sopra i cerchi, come l'etichetta sopra il nome. */
+.project-colors legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+.project-colors input {
+  /* appearance: none toglie il pallino nativo del radio: lo disegniamo noi. */
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  border-radius: 50%;
+  /* var(--swatch) legge il colore scritto nell'attributo style di ciascun radio. */
+  background-color: var(--swatch);
+  cursor: pointer;
+  transition: box-shadow var(--transition-fast) ease,
+    transform var(--transition-fast) ease;
+}
+
+@media (hover: hover) {
+  .project-colors input:hover {
+    transform: scale(1.1);
+  }
+}
+
+/*
+  :checked è il radio selezionato. box-shadow disegna due anelli senza occupare spazio:
+  uno del colore della scheda, che separa, e uno bianco più esterno, che evidenzia.
+*/
+.project-colors input:checked {
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--text);
+}
+
+/* Da tastiera il contorno compare più lontano, oltre l'anello della selezione. */
+.project-colors input:focus-visible {
+  outline-offset: 6px;
 }
 
 .project-list {
@@ -892,6 +946,17 @@ button:disabled {
   border: 1px solid var(--border);
   border-radius: 12px;
   background-color: var(--surface);
+}
+
+/* La cartella ha il colore del progetto: JavaScript imposta color, l'SVG usa currentColor. */
+.project-icon {
+  width: 22px;
+  height: 22px;
+  /* Non si restringe quando il nome è lungo. */
+  flex-shrink: 0;
+  /* Bianco predefinito, per i progetti salvati prima dell'arrivo dei colori. */
+  color: var(--text);
+  fill: currentColor;
 }
 
 .project-name {
@@ -1029,7 +1094,8 @@ button:disabled {
   #timer-status,
   #timer-status.is-hidden,
   .brand-link,
-  .project-form input {
+  .project-form input[type="text"],
+  .project-colors input {
     transition: none;
   }
 
@@ -1040,7 +1106,8 @@ button:disabled {
   }
 
   button:active:not(:disabled),
-  .projects-section .project-action:active:not(:disabled) {
+  .projects-section .project-action:active:not(:disabled),
+  .project-colors input:hover {
     transform: none;
   }
 

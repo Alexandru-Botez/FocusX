@@ -60,6 +60,12 @@ function mostraProgetti(idNuovo) {
     voce.querySelector(".project-name").textContent = progetto.nome;
     voce.classList.toggle("is-new", progetto.id === idNuovo);
 
+    // I progetti salvati prima dei colori non hanno colore: la cartella resta bianca, come da CSS.
+    if (typeof progetto.colore === "string") {
+      // style.color imposta il colore solo di questo elemento; l'SVG lo usa con currentColor.
+      voce.querySelector(".project-icon").style.color = progetto.colore;
+    }
+
     const pulsanteElimina = voce.querySelector(".project-delete");
     // Il pulsante mostra solo un'icona: aria-label dice quale progetto elimina.
     pulsanteElimina.setAttribute("aria-label", "Elimina " + progetto.nome);
@@ -117,8 +123,11 @@ function creaProgetto(evento) {
     return;
   }
 
+  // elements.colore raccoglie i radio con name="colore"; value è quello selezionato.
+  const colore = moduloProgetto.elements.colore.value;
+
   // Ogni progetto ha un identificatore indipendente dal nome: servirà a collegare gli obiettivi.
-  const nuovoProgetto = { id: crypto.randomUUID(), nome: nome };
+  const nuovoProgetto = { id: crypto.randomUUID(), nome: nome, colore: colore };
   // concat crea un nuovo array, aggiungendo il progetto a quelli già presenti.
   const elencoAggiornato = progetti.concat(nuovoProgetto);
   if (!salvaProgetti(elencoAggiornato)) {
