@@ -261,6 +261,9 @@ h1 {
   /* Rimuove i pallini e i margini predefiniti della lista. */
   list-style: none;
   margin: 0;
+  /* 8px tra le voci: la pagina corrente e la voce sotto il mouse restano separate. */
+  display: grid;
+  gap: 8px;
   /* Lascia liberi i primi pixel per la X; le voci iniziano sotto l'altezza dell'header. */
   padding: calc(var(--header-height) + 12px) 0 12px;
 }
@@ -925,55 +928,77 @@ button:disabled {
 }
 
 /* Da tastiera il contorno compare più lontano, oltre l'anello della selezione. */
-.project-colors input:focus-visible {
+.project-colors input:focus-visible,
+.project-colors .more-colors-button:focus-visible {
   outline-offset: 6px;
 }
 
 /*
-  Il colore personalizzato è un cerchio arcobaleno: conic-gradient fa girare
-  i colori attorno al centro, come in una ruota dei colori.
+  Il pulsante + ha la stessa misura dei cerchi; il bordo tratteggiato indica
+  che non è un colore, ma apre altre scelte.
 */
-.project-colors input[type="color"] {
-  padding: 0;
-  border: 0;
-  background: conic-gradient(#ff6b6b, #ffd43b, #69db7c, #4dabf7, #b197fc, #f783ac, #ff6b6b);
+.project-colors .more-colors-button {
+  width: 32px;
+  height: 32px;
+  border-style: dashed;
+  border-color: var(--border-strong);
+}
+
+.project-colors .more-colors-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+@media (hover: hover) {
+  .project-colors .more-colors-button:hover:not(:disabled) {
+    transform: scale(1.1);
+  }
 }
 
 /*
-  Dentro type="color" il browser disegna un riquadro con il colore scelto.
-  Questi pseudo-elementi lo rendono un cerchio pieno; -webkit- vale per Chrome, Edge
-  e Safari, -moz- per Firefox. Stanno in regole separate: un browser scarta l'intera
-  regola se contiene un selettore che non conosce.
+  Quando è selezionato un colore della finestrella, il + ne prende il colore
+  (JavaScript scrive --swatch sul pulsante) e riceve il doppio anello della selezione.
+  Il + diventa scuro e resta visibile: il pulsante riapre comunque la finestrella.
 */
-.project-colors input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-.project-colors input[type="color"]::-webkit-color-swatch {
-  border: 0;
-  border-radius: 50%;
-}
-
-.project-colors input[type="color"]::-moz-color-swatch {
-  border: 0;
-  border-radius: 50%;
-}
-
-/*
-  Finché un colore predefinito è selezionato, il riquadro è trasparente e si vede l'arcobaleno.
-  :has legge lo stato dai radio, senza bisogno di una classe aggiunta da JavaScript.
-*/
-.project-colors:has(input[type="radio"]:checked) input[type="color"]::-webkit-color-swatch {
-  opacity: 0;
-}
-
-.project-colors:has(input[type="radio"]:checked) input[type="color"]::-moz-color-swatch {
-  opacity: 0;
-}
-
-/* Nessun radio selezionato significa colore personalizzato: riceve lo stesso doppio anello. */
-.project-colors:not(:has(input[type="radio"]:checked)) input[type="color"] {
+.project-colors:has(.more-colors input:checked) .more-colors-button {
+  background-color: var(--swatch);
+  border-color: transparent;
+  color: var(--background);
   box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--text);
+}
+
+/*
+  [popover] riceve dal browser alcuni stili predefiniti: posizione fissa, centrata
+  nella finestra, con bordo e sfondo di sistema. Li adattiamo al tema dell'app.
+*/
+.more-colors {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background-color: var(--surface);
+  color: var(--text);
+}
+
+/* ::backdrop è lo strato dietro la finestrella aperta: scurisce la pagina come il menu. */
+.more-colors::backdrop {
+  background-color: rgb(0 0 0 / 0.6);
+}
+
+.more-colors-title {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Sei colonne da 32px: i dodici colori formano due righe. */
+.more-colors-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 32px);
+  gap: 12px;
 }
 
 .project-list {
@@ -1154,7 +1179,8 @@ button:disabled {
 
   button:active:not(:disabled),
   .projects-section .project-action:active:not(:disabled),
-  .project-colors input:hover {
+  .project-colors input:hover,
+  .project-colors .more-colors-button:hover:not(:disabled) {
     transform: none;
   }
 

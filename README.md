@@ -28,7 +28,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 - Una pagina dedicata, raggiungibile dal menu.
 - Crea progetto apre un modulo per il nome e il colore; Salva progetto aggiunge la voce all'elenco.
-- Oltre agli otto colori predefiniti, il cerchio arcobaleno apre il selettore di colore del browser.
+- Dodici colori principali; il pulsante + apre una finestrella con altri dodici colori.
+  Tutti sono abbastanza chiari da vedersi bene sullo sfondo scuro.
 - Una cartella del colore scelto compare a sinistra del nome di ogni progetto.
 - Il cestino a destra di ogni progetto lo elimina; al passaggio del mouse diventa rosso.
 - I progetti restano dopo una ricarica: sono salvati in `localStorage`, nel browser

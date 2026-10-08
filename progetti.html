@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=colore-personalizzato-1">
+    <link rel="stylesheet" href="styles.css?v=altri-colori-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="progetti.js?v=colore-personalizzato-1" defer></script>
+    <script src="progetti.js?v=altri-colori-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -128,11 +128,9 @@
           <li>
             <button class="menu-option" type="button">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Tre cursori regolabili rappresentano le impostazioni. -->
-                <path d="M5 3v4m0 6v8M12 3v10m0 6v2M19 3v4m0 6v8"></path>
-                <circle cx="5" cy="10" r="3"></circle>
-                <circle cx="12" cy="16" r="3"></circle>
-                <circle cx="19" cy="10" r="3"></circle>
+                <!-- Un ingranaggio con otto denti rappresenta le impostazioni. -->
+                <path d="M19.2 10.27L21.91 10.67V13.33L19.2 13.73A7.4 7.4 0 0 1 18.31 15.87L19.95 18.07L18.07 19.95L15.87 18.31A7.4 7.4 0 0 1 13.73 19.2L13.33 21.91H10.67L10.27 19.2A7.4 7.4 0 0 1 8.13 18.31L5.93 19.95L4.05 18.07L5.69 15.87A7.4 7.4 0 0 1 4.8 13.73L2.09 13.33V10.67L4.8 10.27A7.4 7.4 0 0 1 5.69 8.13L4.05 5.93L5.93 4.05L8.13 5.69A7.4 7.4 0 0 1 10.27 4.8L10.67 2.09H13.33L13.73 4.8A7.4 7.4 0 0 1 15.87 5.69L18.07 4.05L19.95 5.93L18.31 8.13A7.4 7.4 0 0 1 19.2 10.27Z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
               </svg>
               <span>Impostazioni</span>
             </button>
@@ -168,16 +166,48 @@
             <input type="radio" name="colore" value="#ff6b6b" style="--swatch: #ff6b6b" aria-label="Rosso" title="Rosso">
             <input type="radio" name="colore" value="#ffa94d" style="--swatch: #ffa94d" aria-label="Arancione" title="Arancione">
             <input type="radio" name="colore" value="#ffd43b" style="--swatch: #ffd43b" aria-label="Giallo" title="Giallo">
+            <input type="radio" name="colore" value="#a9e34b" style="--swatch: #a9e34b" aria-label="Lime" title="Lime">
             <input type="radio" name="colore" value="#69db7c" style="--swatch: #69db7c" aria-label="Verde" title="Verde">
+            <input type="radio" name="colore" value="#38d9a9" style="--swatch: #38d9a9" aria-label="Verde acqua" title="Verde acqua">
+            <input type="radio" name="colore" value="#3bc9db" style="--swatch: #3bc9db" aria-label="Ciano" title="Ciano">
             <input type="radio" name="colore" value="#4dabf7" style="--swatch: #4dabf7" aria-label="Azzurro" title="Azzurro">
+            <input type="radio" name="colore" value="#748ffc" style="--swatch: #748ffc" aria-label="Indaco" title="Indaco">
             <input type="radio" name="colore" value="#b197fc" style="--swatch: #b197fc" aria-label="Viola" title="Viola">
             <input type="radio" name="colore" value="#f783ac" style="--swatch: #f783ac" aria-label="Rosa" title="Rosa">
+
             <!--
-              type="color" apre il selettore di colore del browser: è il colore personalizzato.
-              Ha un name diverso, quindi non fa parte della scelta dei radio.
-              value è il colore da cui parte il selettore la prima volta.
+              popovertarget collega il pulsante + alla finestrella con id="more-colors":
+              il browser la apre e la chiude al clic, senza JavaScript.
+              type="button" evita che il pulsante invii il modulo.
             -->
-            <input id="project-custom-color" type="color" name="colorePersonalizzato" value="#f5f5f5" aria-label="Colore personalizzato" title="Colore personalizzato">
+            <button id="more-colors-button" class="more-colors-button" type="button" popovertarget="more-colors" aria-label="Altri colori" title="Altri colori">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+            </button>
+
+            <!--
+              popover rende il div una finestrella sopra la pagina, nascosta finché non viene aperta.
+              Si chiude con Esc o con un clic fuori. I radio dentro hanno lo stesso name="colore":
+              fanno parte della stessa scelta dei dodici colori principali.
+            -->
+            <div id="more-colors" class="more-colors" popover>
+              <p class="more-colors-title">Altri colori</p>
+              <div class="more-colors-grid">
+                <input type="radio" name="colore" value="#f03e3e" style="--swatch: #f03e3e" aria-label="Rosso intenso" title="Rosso intenso">
+                <input type="radio" name="colore" value="#f76707" style="--swatch: #f76707" aria-label="Arancione intenso" title="Arancione intenso">
+                <input type="radio" name="colore" value="#f59f00" style="--swatch: #f59f00" aria-label="Ambra" title="Ambra">
+                <input type="radio" name="colore" value="#74b816" style="--swatch: #74b816" aria-label="Erba" title="Erba">
+                <input type="radio" name="colore" value="#37b24d" style="--swatch: #37b24d" aria-label="Verde intenso" title="Verde intenso">
+                <input type="radio" name="colore" value="#0ca678" style="--swatch: #0ca678" aria-label="Smeraldo" title="Smeraldo">
+                <input type="radio" name="colore" value="#1098ad" style="--swatch: #1098ad" aria-label="Petrolio" title="Petrolio">
+                <input type="radio" name="colore" value="#228be6" style="--swatch: #228be6" aria-label="Blu" title="Blu">
+                <input type="radio" name="colore" value="#5c7cfa" style="--swatch: #5c7cfa" aria-label="Indaco intenso" title="Indaco intenso">
+                <input type="radio" name="colore" value="#845ef7" style="--swatch: #845ef7" aria-label="Viola intenso" title="Viola intenso">
+                <input type="radio" name="colore" value="#be4bdb" style="--swatch: #be4bdb" aria-label="Uva" title="Uva">
+                <input type="radio" name="colore" value="#e64980" style="--swatch: #e64980" aria-label="Lampone" title="Lampone">
+              </div>
+            </div>
           </fieldset>
 
           <div class="project-form-actions">

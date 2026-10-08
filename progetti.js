@@ -7,7 +7,8 @@ const elencoProgetti = document.getElementById("project-list");
 const statoVuotoProgetti = document.getElementById("projects-empty");
 const messaggioProgetti = document.getElementById("projects-message");
 const modelloVoceProgetto = document.getElementById("project-item-template");
-const campoColorePersonalizzato = document.getElementById("project-custom-color");
+const pulsanteAltriColori = document.getElementById("more-colors-button");
+const finestraAltriColori = document.getElementById("more-colors");
 
 // Questa chiave distingue i dati di FocusX da eventuali altri dati dello stesso sito.
 const chiaveProgetti = "focusx.progetti.v1";
@@ -124,9 +125,9 @@ function creaProgetto(evento) {
     return;
   }
 
-  // elements.colore raccoglie i radio con name="colore"; value è quello selezionato.
-  // Se nessun radio è selezionato, value è "" e || sceglie il colore personalizzato.
-  const colore = moduloProgetto.elements.colore.value || campoColorePersonalizzato.value;
+  // elements.colore raccoglie i radio con name="colore", anche quelli della finestrella;
+  // value è quello selezionato.
+  const colore = moduloProgetto.elements.colore.value;
 
   // Ogni progetto ha un identificatore indipendente dal nome: servirà a collegare gli obiettivi.
   const nuovoProgetto = { id: crypto.randomUUID(), nome: nome, colore: colore };
@@ -142,11 +143,11 @@ function creaProgetto(evento) {
   messaggioProgetti.textContent = "Progetto creato: " + nome + ".";
 }
 
-function scegliColorePersonalizzato() {
-  // Scegliere un colore proprio deseleziona i colori predefiniti: ne vale uno solo.
-  for (const radio of moduloProgetto.elements.colore) {
-    radio.checked = false;
-  }
+function scegliAltroColore(evento) {
+  // evento.target è il radio appena selezionato: il + ne mostra il colore tramite --swatch.
+  pulsanteAltriColori.style.setProperty("--swatch", evento.target.value);
+  // hidePopover chiude la finestrella, perché la scelta è fatta.
+  finestraAltriColori.hidePopover();
 }
 
 function cancellaErroreNome() {
@@ -158,6 +159,6 @@ pulsanteNuovoProgetto.addEventListener("click", apriModuloProgetto);
 pulsanteAnnullaProgetto.addEventListener("click", chiudiModuloProgetto);
 moduloProgetto.addEventListener("submit", creaProgetto);
 campoNomeProgetto.addEventListener("input", cancellaErroreNome);
-// input scatta a ogni cambio nel selettore, anche mentre si sposta il cursore sui colori.
-campoColorePersonalizzato.addEventListener("input", scegliColorePersonalizzato);
+// change scatta quando un radio della finestrella viene selezionato e risale fino al div.
+finestraAltriColori.addEventListener("change", scegliAltroColore);
 mostraProgetti();

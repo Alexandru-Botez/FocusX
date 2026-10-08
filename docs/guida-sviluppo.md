@@ -47,7 +47,7 @@ Gli identificatori da conoscere sono:
 | --- | --- | --- |
 | `#menu-button` | Pulsante Menu | Collega il clic al cambio di stato dell'icona e del pannello. |
 | `#sidebar-menu` | Pannello laterale | Contiene le voci Progetti, Obiettivi, Statistica e Impostazioni. |
-| `.menu-icon` | Icone delle voci | Cartella, bersaglio, grafico a barre e cursori delle impostazioni. |
+| `.menu-icon` | Icone delle voci | Cartella, bersaglio, grafico a barre e ingranaggio delle impostazioni. |
 | `.menu-option` | Pulsanti delle voci | Feedback di hover e pressione, utilizzabile anche con la tastiera. |
 | `.brand-logo` | Immagine del logo | Dimensione e comportamento del logo nell'intestazione. |
 | `#timer` | Paragrafo con `25:00` | Visualizzazione del tempo, aggiornata da JavaScript. |
@@ -115,7 +115,7 @@ con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 | Dissolvenza dello status | `#timer-status` anima `opacity`; `visibility` cambia alla fine, conservando lo spazio. |
 | Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
 | Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 200 millisecondi. |
-| Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`. |
+| Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`; 8px separano le voci. |
 | Ingresso dei contenuti | L'animazione `compari` fa salire di 8 pixel la sezione, il modulo e il progetto appena creato (`li.is-new`). |
 | Cambio di pagina | `@view-transition` chiede una dissolvenza di 200 millisecondi fra Timer e Progetti. |
 | Selezione e barre | `::selection` inverte bianco e nero; `scrollbar-color` scurisce le barre di scorrimento. |
@@ -254,7 +254,7 @@ e ammette al massimo 80 caratteri. L'evento `submit` chiama `creaProgetto(evento
 `preventDefault()` evita la ricarica e `trim()` rimuove gli spazi alle estremità.
 Un nome composto solo da spazi viene rifiutato. Annulla chiude e svuota il modulo.
 
-Sotto il nome, il `fieldset.project-colors` contiene otto `input type="radio"` con
+Sotto il nome, il `fieldset.project-colors` contiene dodici `input type="radio"` con
 `name="colore"`: avendo lo stesso `name`, se ne può selezionare uno solo, anche con le frecce.
 Il `value` di ciascuno è il colore esadecimale salvato; `aria-label` e `title` ne danno il nome.
 Il CSS toglie il pallino nativo con `appearance: none` e colora ogni cerchio con la variabile
@@ -262,14 +262,16 @@ Il CSS toglie il pallino nativo con `appearance: none` e colora ogni cerchio con
 Il bianco ha `checked` nell'HTML: è il colore predefinito, che `reset()` ripristina.
 Per aggiungere un colore basta un nuovo radio con `value` e `--swatch` uguali.
 
-L'ultimo cerchio, `#project-custom-color`, è un `input type="color"`: apre il selettore
-di colore del browser. Ha un `name` diverso dai radio, quindi non fa parte della loro scelta.
-Al suo evento `input`, `scegliColorePersonalizzato()` deseleziona tutti i radio.
-In `creaProgetto`, `elements.colore.value` vale `""` se nessun radio è selezionato:
-l'operatore `||` sceglie allora il valore del selettore personalizzato.
-Il CSS usa `:has()` per leggere lo stato: con un radio selezionato il riquadro del colore
-è trasparente e si vede l'arcobaleno (`conic-gradient`); senza, mostra il colore scelto
-e riceve il doppio anello. `reset()` riporta il selettore al suo `value` iniziale.
+Il tredicesimo cerchio, `#more-colors-button`, mostra un + e apre `#more-colors`
+tramite l'attributo [`popovertarget`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover):
+il browser gestisce apertura, chiusura con Esc o clic fuori e ritorno del focus.
+La finestrella contiene altri dodici radio con lo stesso `name="colore"`, quindi la scelta
+resta una sola e `creaProgetto` legge il colore sempre da `elements.colore.value`.
+All'evento `change` della finestrella, `scegliAltroColore(evento)` scrive il colore scelto
+nella variabile `--swatch` del pulsante + e chiude la finestrella con `hidePopover()`.
+Con `:has()` il CSS colora il + e gli dà il doppio anello solo se è selezionato un colore
+della finestrella; dopo `reset()` torna un + tratteggiato.
+Tutti i colori hanno un contrasto di circa 4,5:1 o più con lo sfondo delle schede.
 
 Un progetto ha la forma `{ id, nome, colore }`. L'id viene generato con
 [`crypto.randomUUID()`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID)
@@ -379,8 +381,8 @@ Per i progetti controlla che:
 - Il cestino resti all'estremità destra di ogni voce, anche con nomi lunghi e su mobile.
 - Il colore scelto nel modulo compaia nella cartella a sinistra del nome, anche dopo una ricarica.
 - Dopo Annulla o un salvataggio, il modulo torni al colore bianco; i cerchi vadano a capo su mobile.
-- Il cerchio arcobaleno apra il selettore; il colore scelto sostituisca l'arcobaleno, riceva l'anello
-  e venga salvato; un clic su un colore predefinito riporti l'arcobaleno.
+- Il + apra la finestrella, che si chiuda con Esc, con un clic fuori o scegliendo un colore;
+  il + prenda il colore scelto con l'anello, e il colore venga salvato nel progetto.
 - Al passaggio del mouse il cestino diventi rosso; il clic elimini solo quel progetto,
   anche dopo una ricarica, senza animare di nuovo le altre voci.
 - Non compaiano errori JavaScript né nella pagina Progetti né nel timer.
