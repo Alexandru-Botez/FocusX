@@ -1147,6 +1147,32 @@ button:disabled {
   min-width: 0;
 }
 
+/* Il contenitore fa da riferimento per la cartella, posizionata dentro il campo a sinistra. */
+.goal-project-picker {
+  position: relative;
+}
+
+/*
+  La cartella sta sopra il select, centrata in verticale: top 50% la porta a metà altezza
+  e translateY(-50%) la risale di metà della sua altezza.
+  pointer-events: none lascia passare i clic al select, che si apre anche cliccando sull'icona.
+*/
+.goal-project-picker-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  fill: currentColor;
+  pointer-events: none;
+}
+
+/* Spazio a sinistra del testo per la cartella: 12px di margine + 18px di icona + 10px. */
+.goal-project-picker select {
+  padding-left: 40px;
+}
+
 .flame-picker {
   margin: 0;
   padding: 0;

@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=obiettivi-4">
+    <link rel="stylesheet" href="styles.css?v=icona-progetto-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="obiettivi.js?v=obiettivi-2" defer></script>
+    <script src="obiettivi.js?v=icona-progetto-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -185,8 +185,18 @@
           <div class="goal-form-row">
             <div class="goal-field">
               <label for="goal-project">Progetto</label>
-              <!-- select è un menu a tendina: JavaScript crea un option per ogni progetto. -->
-              <select id="goal-project" name="progetto" required></select>
+              <!--
+                select è un menu a tendina: JavaScript crea un option per ogni progetto.
+                Le voci di un select possono contenere solo testo: la cartella colorata
+                è un svg a parte, sovrapposto a sinistra del campo, che JavaScript colora
+                con il colore del progetto scelto.
+              -->
+              <div class="goal-project-picker">
+                <svg id="goal-project-icon" class="goal-project-picker-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+                </svg>
+                <select id="goal-project" name="progetto" required></select>
+              </div>
             </div>
             <div class="goal-field">
               <label for="goal-date">Data prevista</label>

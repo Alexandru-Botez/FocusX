@@ -41,6 +41,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 - Una pagina dedicata, raggiungibile dal menu; per creare un obiettivo serve almeno un progetto.
 - Crea obiettivo apre un modulo con nome, progetto, data prevista (facoltativa) e tempo previsto.
+  Nel campo del progetto, la cartella a sinistra del nome prende il colore del progetto scelto.
 - Il tempo si sceglie in fiammine, da 1 a 8: per ora ogni fiammina vale 25 minuti.
 - Ogni obiettivo mostra il nome e il colore del suo progetto, la data, le fiammine e il tempo totale.
 - Tre stati: non completato, in corso e completato. I pulsanti "play" e "spunta" mettono

@@ -345,6 +345,11 @@ scelta con `.flame-option:has(input:checked) ~ .flame-option`. `minutiPerFiammin
 `formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` del modulo
 e nelle voci.
 
+Le voci di un `select` possono contenere solo testo, quindi la cartella colorata del progetto
+scelto è un `svg` a parte (`#goal-project-icon`), posizionato dentro il campo a sinistra;
+`pointer-events: none` lascia arrivare i clic al `select`. `aggiornaIconaProgetto()` la colora
+all'apertura del modulo e a ogni evento `change` del menu a tendina.
+
 `mostraObiettivi(idNuovo)` copia il `template#goal-item-template`. Nella voce restano visibili
 solo tante fiammine quante quelle scelte (`toggleAttribute("hidden")`, perché gli `svg` non hanno
 la proprietà `hidden`). La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
@@ -456,6 +461,7 @@ Per gli obiettivi controlla che:
 
 - Senza progetti compaia l'avviso con il link alla pagina Progetti, al posto di Crea obiettivo.
 - Il menu a tendina elenchi tutti i progetti e un nome vuoto non venga accettato.
+- La cartella nel campo del progetto abbia il colore del progetto scelto e cambi con la scelta.
 - Le fiammine si accendano fino a quella scelta e il testo mostri il tempo, per esempio «3 fiammine · 1 h 15 min».
 - Le otto fiammine stiano in una riga anche su un viewport di 375 pixel.
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.

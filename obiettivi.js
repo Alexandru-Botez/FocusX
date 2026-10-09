@@ -4,6 +4,7 @@ const avvisoSenzaProgetti = document.getElementById("goals-no-projects");
 const moduloObiettivo = document.getElementById("goal-form");
 const campoNomeObiettivo = document.getElementById("goal-name");
 const sceltaProgetto = document.getElementById("goal-project");
+const iconaProgettoScelto = document.getElementById("goal-project-icon");
 const campoData = document.getElementById("goal-date");
 const testoFiammine = document.getElementById("goal-flames-output");
 const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
@@ -214,6 +215,14 @@ function aggiornaTestoFiammine() {
   testoFiammine.textContent = fiammine + parola + " · " + formattaTempo(fiammine);
 }
 
+function aggiornaIconaProgetto() {
+  // value del select è l'id del progetto scelto: cerchiamo il progetto per leggerne il colore.
+  const progetto = progetti.find(progetto => progetto.id === sceltaProgetto.value);
+  if (progetto !== undefined) {
+    iconaProgettoScelto.style.color = progetto.colore;
+  }
+}
+
 function apriModuloObiettivo() {
   // Il menu a tendina riceve un option per ogni progetto: value è l'id, il testo è il nome.
   sceltaProgetto.replaceChildren();
@@ -221,6 +230,8 @@ function apriModuloObiettivo() {
     // new Option(testo, valore) crea un elemento option già pronto.
     sceltaProgetto.append(new Option(progetto.nome, progetto.id));
   }
+  // Il primo progetto è già selezionato: la cartella prende subito il suo colore.
+  aggiornaIconaProgetto();
 
   moduloObiettivo.hidden = false;
   pulsanteNuovoObiettivo.hidden = true;
@@ -284,6 +295,8 @@ pulsanteNuovoObiettivo.addEventListener("click", apriModuloObiettivo);
 pulsanteAnnullaObiettivo.addEventListener("click", chiudiModuloObiettivo);
 moduloObiettivo.addEventListener("submit", creaObiettivo);
 campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
+// change scatta quando l'utente sceglie un altro progetto nel menu a tendina.
+sceltaProgetto.addEventListener("change", aggiornaIconaProgetto);
 // change risale dai radio delle fiammine fino al form.
 moduloObiettivo.addEventListener("change", aggiornaTestoFiammine);
 mostraObiettivi();
