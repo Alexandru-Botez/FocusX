@@ -1,13 +1,13 @@
 # FocusX
 
-FocusX è un timer Pomodoro per lo studio, in bianco e nero, con una pagina per organizzare i progetti.
+FocusX è un timer Pomodoro per lo studio, in bianco e nero, con pagine per organizzare progetti e obiettivi.
 
 È un progetto didattico: usa soltanto HTML, CSS e JavaScript, senza librerie né compilazione,
 e ogni file è commentato riga per riga per chi sta imparando lo sviluppo web e Git.
 
 ## Stato del progetto
 
-Il timer, la creazione e l'eliminazione dei progetti funzionano. Obiettivi, statistiche e impostazioni
+Il timer, i progetti e la prima versione degli obiettivi funzionano. Statistiche e impostazioni
 sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare).
 
 ### Timer
@@ -37,6 +37,17 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - I progetti restano dopo una ricarica: sono salvati in `localStorage`, nel browser
   e all'indirizzo usati, e non vengono sincronizzati tra dispositivi.
 
+### Obiettivi
+
+- Una pagina dedicata, raggiungibile dal menu; per creare un obiettivo serve almeno un progetto.
+- Crea obiettivo apre un modulo con nome, progetto, data prevista (facoltativa) e tempo previsto.
+- Il tempo si sceglie in fiammine, da 1 a 8: per ora ogni fiammina vale 25 minuti.
+- Ogni obiettivo mostra il nome e il colore del suo progetto, la data, le fiammine e il tempo totale.
+- Tre stati: non completato, in corso e completato. I pulsanti "play" e "spunta" mettono
+  l'obiettivo in corso o lo completano; premuti di nuovo, lo riportano a non completato.
+- Una data già passata diventa rossa finché l'obiettivo non è completato.
+- Anche gli obiettivi sono salvati in `localStorage`, con una chiave separata dai progetti.
+
 ### Interfaccia
 
 - Tema scuro in bianco e nero, adattato agli schermi piccoli.
@@ -48,10 +59,11 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 ### Limiti attuali
 
-- Nel menu soltanto Home e Progetti aprono una pagina: Obiettivi, Statistica e Impostazioni
-  non hanno ancora una destinazione.
+- Nel menu Statistica e Impostazioni non hanno ancora una destinazione.
 - Cambiare pagina interrompe il timer: tornando si riparte da `25:00`.
 - I progetti hanno solo nome e colore, e l'eliminazione non chiede conferma.
+- Gli obiettivi non si possono ancora modificare né eliminare. Eliminando un progetto,
+  i suoi obiettivi restano e mostrano «Progetto eliminato».
 
 ## Avvio locale
 
@@ -85,10 +97,12 @@ FocusX/
 ├── README.md
 ├── index.html              Pagina del timer
 ├── progetti.html           Pagina dei progetti
-├── styles.css              Stile di entrambe le pagine
+├── obiettivi.html          Pagina degli obiettivi
+├── styles.css              Stile di tutte le pagine
 ├── script.js               Timer: avvio, pausa, reset e ripartenza
-├── menu.js                 Menu laterale, condiviso dalle due pagine
+├── menu.js                 Menu laterale, condiviso da tutte le pagine
 ├── progetti.js             Creazione, eliminazione e salvataggio dei progetti
+├── obiettivi.js            Creazione, stati e salvataggio degli obiettivi
 ├── assets/
 │   ├── focusx-mark.svg     Logo e favicon
 │   └── fonts/
@@ -107,7 +121,7 @@ FocusX/
 ## Funzioni da sviluppare
 
 - [ ] Segnalazione della fine della sessione.
-- [ ] Inserimento e completamento degli obiettivi di studio.
+- [ ] Modifica ed eliminazione degli obiettivi.
 - [ ] Continuità del timer nel passaggio da una pagina all'altra.
 - [ ] Backend e database per il salvataggio dei progetti online.
 

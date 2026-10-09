@@ -8,8 +8,8 @@ Per scaricarlo e avviarlo, parti dal [README](../README.md).
 FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa lo ferma
 e Reset lo ferma riportando il tempo a 25 minuti.
 Il timer ricomincia automaticamente da 25 minuti quando i secondi rimanenti arrivano a zero.
-Gli obiettivi sono ancora da sviluppare.
 La pagina Progetti consente di creare ed eliminare progetti con nome e colore, salvati nel browser.
+La pagina Obiettivi consente di creare obiettivi legati a un progetto e di cambiarne lo stato.
 Non c'è ancora una suite di test automatici nel repository.
 
 ## Responsabilità dei file
@@ -19,9 +19,11 @@ Non c'è ancora una suite di test automatici nel repository.
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
 | [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
 | [script.js](../script.js) | Comportamento del timer nella pagina principale. |
-| [menu.js](../menu.js) | Apertura e chiusura del menu, condivise dalle due pagine. |
+| [menu.js](../menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
 | [progetti.html](../progetti.html) | Pagina Progetti, modulo, lista e modello di una voce. |
 | [progetti.js](../progetti.js) | Creazione, eliminazione, visualizzazione e salvataggio locale dei progetti. |
+| [obiettivi.html](../obiettivi.html) | Pagina Obiettivi, modulo con le fiammine, lista e modello di una voce. |
+| [obiettivi.js](../obiettivi.js) | Creazione, stati, visualizzazione e salvataggio locale degli obiettivi. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto con fiamma bianca e occhi neri inclinati e concentrati. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app e le voci del menu. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
@@ -35,8 +37,8 @@ Il tag `title` imposta il nome della scheda del browser: «Home» per il timer, 
 L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il titolo principale `h1`.
 Il pannello `nav`, dentro l'header, contiene le cinque voci della navigazione.
 Ogni `li` contiene un `button.menu-option` con un'icona SVG decorativa e uno `span` con il testo.
-Le voci Home e Progetti usano invece un `a.menu-option` con `href="index.html"` e
-`href="progetti.html"` per navigare; nella pagina aperta la voce ha `aria-current="page"`. Il nome FocusX è un link a `index.html`.
+Le voci Home, Progetti e Obiettivi usano invece un `a.menu-option` con `href="index.html"`,
+`href="progetti.html"` e `href="obiettivi.html"` per navigare; nella pagina aperta la voce ha `aria-current="page"`. Il nome FocusX è un link a `index.html`.
 Nel `head`, un `link` con `rel="icon"` riutilizza il logo SVG come favicon della scheda.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
@@ -240,14 +242,14 @@ Vedi il [riferimento MDN su inert](https://developer.mozilla.org/en-US/docs/Web/
 `chiudiMenuFuori(evento)` controlla il bersaglio del clic con `contains()`:
 chiude solo se il clic è fuori sia dal pulsante sia dal pannello.
 `gestisciTastoMenu(evento)` riconosce Esc e chiude senza chiamare `focus()`.
-Home e Progetti sono collegamenti alle loro pagine; le altre tre voci sono pulsanti
+Home, Progetti e Obiettivi sono collegamenti alle loro pagine; le altre due voci sono pulsanti
 con solo feedback visivo, in attesa delle rispettive sezioni.
 
 ## Prima versione dei progetti
 
 `progetti.html` carica `menu.js` e `progetti.js`, mentre `index.html` carica
 `menu.js` e `script.js`. Non carichiamo il timer dove i suoi elementi non sono presenti.
-L'header è attualmente ripetuto nei due file HTML: quando lo modifichi, aggiorna entrambi.
+L'header è attualmente ripetuto nei tre file HTML: quando lo modifichi, aggiornali tutti.
 
 Il pulsante Crea progetto mostra `#project-form`. Il campo `#project-name` è obbligatorio
 e ammette al massimo 80 caratteri. L'evento `submit` chiama `inviaModuloProgetto(evento)`:
@@ -320,8 +322,42 @@ Se l'archivio non è leggibile, la creazione viene disabilitata per non sovrascr
 se il salvataggio fallisce, il modulo mantiene il nome e mostra un messaggio.
 Queste funzioni potranno essere adattate alle richieste verso un futuro backend.
 
-Per ora i progetti non hanno obiettivi. Il cambio di pagina
-interrompe il timer: tornando a `index.html`, il tempo riparte dallo stato iniziale.
+Il cambio di pagina interrompe il timer: tornando a `index.html`, il tempo riparte dallo stato iniziale.
+
+## Prima versione degli obiettivi
+
+`obiettivi.html` carica `menu.js` e `obiettivi.js` e riutilizza le classi di layout,
+modulo e pulsanti della pagina Progetti (`.projects-section`, `.project-form`, `.project-action`,
+`.project-item-action`), così le due pagine restano coerenti.
+
+Un obiettivo ha la forma `{ id, nome, progettoId, data, fiammine, stato }` ed è salvato
+con la chiave `focusx.obiettivi.v1`. Del progetto salva solo l'id: nome e colore si leggono
+da `focusx.progetti.v1` a ogni visualizzazione, quindi restano aggiornati se il progetto cambia.
+Se il progetto non esiste più, la voce mostra «Progetto eliminato».
+Senza progetti, il pulsante Crea obiettivo è nascosto e un avviso porta alla pagina Progetti.
+
+Il modulo contiene il nome, un `select` con un `option` per progetto (creato da
+`apriModuloObiettivo()` con `new Option(nome, id)`), un `input type="date"` facoltativo
+e otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
+`<use href="#flame-icon">`, che richiama un unico `symbol` definito all'inizio del `body`.
+Il radio è invisibile ma resta usabile con Tab e frecce; il CSS spegne le fiammine dopo quella
+scelta con `.flame-option:has(input:checked) ~ .flame-option`. `minutiPerFiammina` vale 25:
+`formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` del modulo
+e nelle voci.
+
+`mostraObiettivi(idNuovo)` copia il `template#goal-item-template`. Nella voce restano visibili
+solo tante fiammine quante quelle scelte (`toggleAttribute("hidden")`, perché gli `svg` non hanno
+la proprietà `hidden`). La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
+come mezzanotte locale, e diventa rossa (`is-late`) se è passata e l'obiettivo non è completato:
+`dataDiOggi()` produce lo stesso formato `AAAA-MM-GG`, così le date si confrontano come testo.
+
+Gli stati sono `non-completato`, `in-corso` e `completato`; `nomiStati` associa a ognuno
+il testo da mostrare. I pulsanti `.goal-start` e `.goal-complete` chiamano `cambiaStato(id, stato)`:
+premere il pulsante dello stato attuale riporta l'obiettivo a `non-completato`.
+`cambiaStato` aggiorna solo la voce interessata con `applicaStato(voce, obiettivo)`,
+che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `data-stato`:
+in corso il bordo è azzurro e il puntino della pillola pulsa; completato il nome viene barrato
+da uno sfondo che passa da 0% a 100% di larghezza.
 
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
 La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
@@ -415,6 +451,17 @@ Per i progetti controlla che:
 - Al passaggio del mouse il cestino diventi rosso; il clic elimini solo quel progetto,
   anche dopo una ricarica, senza animare di nuovo le altre voci.
 - Non compaiano errori JavaScript né nella pagina Progetti né nel timer.
+
+Per gli obiettivi controlla che:
+
+- Senza progetti compaia l'avviso con il link alla pagina Progetti, al posto di Crea obiettivo.
+- Il menu a tendina elenchi tutti i progetti e un nome vuoto non venga accettato.
+- Le fiammine si accendano fino a quella scelta e il testo mostri il tempo, per esempio «3 fiammine · 1 h 15 min».
+- Le otto fiammine stiano in una riga anche su un viewport di 375 pixel.
+- Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
+- Senza data la voce non mostri il calendario; una data passata sia rossa finché non è completato.
+- Play e spunta cambino lo stato, anche dopo una ricarica; premuti di nuovo, tornino a non completato.
+- Rinominando o ricolorando un progetto, i suoi obiettivi si aggiornino.
 
 Per il timer attuale controlla anche che:
 

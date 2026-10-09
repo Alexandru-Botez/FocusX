@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=senza-vecchi-1">
+    <link rel="stylesheet" href="styles.css?v=obiettivi-4">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -90,7 +90,7 @@
         È dentro l'header: il CSS lo sovrappone a logo e titolo, lasciando il pulsante sopra.
         inert rende il menu chiuso non interattivo e lo esclude dai lettori di schermo.
         JavaScript rimuove questo stato quando apre il pannello.
-        ul è una lista; Home e Progetti sono link a una pagina, le altre voci sono pulsanti.
+        ul è una lista; Home, Progetti e Obiettivi sono link a una pagina, le altre voci sono pulsanti.
         Questi pulsanti mostrano solo un effetto alla pressione, senza destinazione.
       -->
       <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
@@ -115,7 +115,7 @@
             </a>
           </li>
           <li>
-            <button class="menu-option" type="button">
+            <a class="menu-option" href="obiettivi.html">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <!-- Un bersaglio rappresenta gli obiettivi. -->
                 <circle cx="12" cy="12" r="9"></circle>
@@ -123,7 +123,7 @@
                 <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"></circle>
               </svg>
               <span>Obiettivi</span>
-            </button>
+            </a>
           </li>
           <li>
             <button class="menu-option" type="button">
