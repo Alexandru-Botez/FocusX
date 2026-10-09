@@ -7,6 +7,13 @@ const sceltaProgetto = document.getElementById("goal-project");
 const iconaProgettoScelto = document.getElementById("goal-project-icon");
 const campoData = document.getElementById("goal-date");
 const testoFiammine = document.getElementById("goal-flames-output");
+const radioPiuFiammine = document.getElementById("goal-flames-more");
+const segnoPiuFiammine = document.getElementById("goal-flames-more-badge");
+const finestrellaFiammine = document.getElementById("goal-flames-panel");
+const campoNumeroFiammine = document.getElementById("goal-flames-number");
+const iconaFinestrella = document.getElementById("goal-flames-panel-icon");
+const pulsanteMenoFiammine = document.getElementById("goal-flames-less");
+const pulsantePiuFiammine = document.getElementById("goal-flames-plus");
 const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
 const elencoObiettivi = document.getElementById("goal-list");
 const statoVuotoObiettivi = document.getElementById("goals-empty");
@@ -19,6 +26,13 @@ const chiaveProgetti = "focusx.progetti.v1";
 
 // Per ora ogni fiammina vale 25 minuti: cambiando questo numero cambia tutto il calcolo.
 const minutiPerFiammina = 25;
+// Le prime otto fiammine si cliccano direttamente; dalla nona si sceglie nella finestrella.
+const fiammineVisibili = 8;
+// Il limite è di tempo, non di fiammine: al massimo 16 ore, per la previsione
+// e in futuro anche per il tempo trascorso. Math.floor tiene solo le fiammine intere
+// che ci stanno: con 25 minuti sono 38 (15 h 50 min), perché 39 supererebbero le 16 ore.
+const oreMassime = 16;
+const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
 
 // Un oggetto usato come dizionario: a ogni stato salvato associa il testo da mostrare.
 const nomiStati = {
@@ -61,6 +75,8 @@ function caricaObiettivi() {
       && typeof obiettivo.progettoId === "string"
       && typeof obiettivo.data === "string"
       && Number.isInteger(obiettivo.fiammine)
+      && obiettivo.fiammine >= 1
+      && obiettivo.fiammine <= fiammineMassime
       // in controlla che lo stato sia una delle chiavi di nomiStati.
       && obiettivo.stato in nomiStati);
     if (!valido) {
@@ -98,6 +114,12 @@ function formattaTempo(fiammine) {
     return minuti + " min";
   }
   return resto === 0 ? ore + " h" : ore + " h " + resto + " min";
+}
+
+function formattaNumeroFiammine(fiammine) {
+  // Il numero con al massimo un decimale e la virgola italiana: 12 → "12", 12.4 → "12,4".
+  // Oggi le fiammine sono intere; il decimale servirà per il tempo trascorso "in corso".
+  return fiammine.toLocaleString("it-IT", { maximumFractionDigits: 1 });
 }
 
 function formattaData(testo) {
@@ -159,13 +181,18 @@ function mostraObiettivi(idNuovo) {
       testoData.textContent = formattaData(obiettivo.data);
     }
 
-    // Nel modello ci sono otto fiammine: restano visibili solo le prime, quante ne servono.
+    // Fino a otto fiammine si vedono tutte; oltre, una sola fiammina seguita dal numero: 🔥12.
+    const tante = obiettivo.fiammine > fiammineVisibili;
+    const fiammineDaMostrare = tante ? 1 : obiettivo.fiammine;
     const fiammine = voce.querySelectorAll(".goal-flame-icons svg");
     fiammine.forEach((fiammina, posizione) => {
       // Gli svg non hanno la proprietà hidden degli elementi HTML: toggleAttribute
       // aggiunge l'attributo hidden quando la condizione è vera e lo toglie quando è falsa.
-      fiammina.toggleAttribute("hidden", posizione >= obiettivo.fiammine);
+      fiammina.toggleAttribute("hidden", posizione >= fiammineDaMostrare);
     });
+    const numeroFiammine = voce.querySelector(".goal-flames-count");
+    numeroFiammine.hidden = !tante;
+    numeroFiammine.textContent = formattaNumeroFiammine(obiettivo.fiammine);
     voce.querySelector(".goal-minutes").textContent = formattaTempo(obiettivo.fiammine);
 
     applicaStato(voce, obiettivo);
@@ -213,6 +240,116 @@ function aggiornaTestoFiammine() {
   const fiammine = Number(moduloObiettivo.elements.fiammine.value);
   const parola = fiammine === 1 ? " fiammina" : " fiammine";
   testoFiammine.textContent = fiammine + parola + " · " + formattaTempo(fiammine);
+  // Sulla nona fiammina: "+" finché non è scelta, poi quante fiammine ci sono oltre le otto.
+  segnoPiuFiammine.textContent = radioPiuFiammine.checked ? "+" + (fiammine - fiammineVisibili) : "+";
+}
+
+function impostaPiuFiammine(fiammine) {
+  // Il value della nona fiammina diventa il numero scelto: elements.fiammine.value lo leggerà.
+  radioPiuFiammine.value = String(fiammine);
+  radioPiuFiammine.setAttribute("aria-label", fiammine + " fiammine, " + formattaTempo(fiammine));
+  campoNumeroFiammine.value = fiammine;
+  // L'icona accanto al numero cresce con le fiammine: 1 con 9, fino a 1,5 al massimo.
+  // La crescita è una proporzione dell'intervallo, così resta piccola qualunque sia il limite.
+  const avanzamento = (fiammine - fiammineVisibili - 1) / (fiammineMassime - fiammineVisibili - 1);
+  iconaFinestrella.style.setProperty("--crescita", 1 + avanzamento * 0.5);
+  // − e + si disabilitano ai due estremi: non si scende sotto 9 né si supera il massimo.
+  pulsanteMenoFiammine.disabled = fiammine <= fiammineVisibili + 1;
+  pulsantePiuFiammine.disabled = fiammine >= fiammineMassime;
+  aggiornaTestoFiammine();
+}
+
+function cambiaPiuFiammine(differenza) {
+  // differenza vale -1 per il pulsante − e +1 per il pulsante +.
+  const fiammine = Number(radioPiuFiammine.value) + differenza;
+  if (fiammine <= fiammineVisibili || fiammine > fiammineMassime) {
+    return;
+  }
+  radioPiuFiammine.checked = true;
+  impostaPiuFiammine(fiammine);
+
+  // animate esegue una breve animazione da JavaScript: l'icona fa un guizzo a ogni clic.
+  // matchMedia legge la stessa preferenza del CSS: niente animazione per chi riduce il movimento.
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    iconaFinestrella.animate(
+      [{ translate: "0 0" }, { translate: "0 -3px" }, { translate: "0 0" }],
+      { duration: 250, easing: "ease-out" }
+    );
+  }
+}
+
+function scriviNumeroFiammine() {
+  // replace con /\D/g toglie tutto ciò che non è una cifra: "1a2" diventa "12".
+  campoNumeroFiammine.value = campoNumeroFiammine.value.replace(/\D/g, "");
+  const fiammine = Number(campoNumeroFiammine.value);
+  // Mentre si scrive "12", per un attimo il campo contiene "1": lo applichiamo solo
+  // quando è un numero valido. Gli altri casi li sistema confermaNumeroFiammine.
+  if (fiammine > fiammineVisibili && fiammine <= fiammineMassime) {
+    radioPiuFiammine.checked = true;
+    impostaPiuFiammine(fiammine);
+  }
+}
+
+function confermaNumeroFiammine() {
+  // Quando si esce dal campo o si preme Invio, un numero fuori dai limiti viene corretto:
+  // sotto 9 diventa 9, oltre il massimo diventa il massimo. Un campo vuoto torna al valore scelto.
+  const scritto = Number(campoNumeroFiammine.value);
+  let fiammine = Number(radioPiuFiammine.value);
+  if (campoNumeroFiammine.value !== "") {
+    fiammine = Math.min(Math.max(scritto, fiammineVisibili + 1), fiammineMassime);
+  }
+  radioPiuFiammine.checked = true;
+  impostaPiuFiammine(fiammine);
+}
+
+function gestisciTastiNumeroFiammine(evento) {
+  // Invio dentro un campo invierebbe il modulo: qui conferma soltanto il numero.
+  if (evento.key === "Enter") {
+    evento.preventDefault();
+    confermaNumeroFiammine();
+  }
+}
+
+function alternaFinestrellaFiammine(evento) {
+  // Il clic sulla nona fiammina la seleziona e apre la finestrella; un secondo clic la chiude.
+  finestrellaFiammine.hidden = !finestrellaFiammine.hidden;
+  // Con il mouse o il dito (detail > 0) il cursore va subito nel numero, già selezionato:
+  // basta scrivere. Con le frecce della tastiera detail è 0 e il focus resta sulle fiammine.
+  if (!finestrellaFiammine.hidden && evento.detail > 0) {
+    campoNumeroFiammine.focus();
+    campoNumeroFiammine.select();
+  }
+}
+
+function chiudiFinestrellaFiammine() {
+  finestrellaFiammine.hidden = true;
+}
+
+function gestisciSceltaFiammine(evento) {
+  // Scegliendo una delle prime otto fiammine, la finestrella non serve più
+  // e la nona fiammina torna a 9: riaprendola si riparte da lì.
+  if (evento.target.name === "fiammine" && evento.target !== radioPiuFiammine) {
+    chiudiFinestrellaFiammine();
+    impostaPiuFiammine(fiammineVisibili + 1);
+  }
+  aggiornaTestoFiammine();
+}
+
+function chiudiFinestrellaFuori(evento) {
+  // Come per il menu: chiudiamo solo se il clic è fuori dalla finestrella e dalla nona fiammina.
+  if (!finestrellaFiammine.hidden
+      && !finestrellaFiammine.contains(evento.target)
+      && !radioPiuFiammine.parentElement.contains(evento.target)) {
+    chiudiFinestrellaFiammine();
+  }
+}
+
+function chiudiFinestrellaConEsc(evento) {
+  if (evento.key === "Escape" && !finestrellaFiammine.hidden) {
+    chiudiFinestrellaFiammine();
+    // Il focus torna sulla nona fiammina, da cui la finestrella si era aperta.
+    radioPiuFiammine.focus();
+  }
 }
 
 function aggiornaIconaProgetto() {
@@ -244,7 +381,9 @@ function chiudiModuloObiettivo() {
   pulsanteNuovoObiettivo.hidden = false;
   // reset riporta nome e data vuoti e la scelta su una fiammina, come scritto nell'HTML.
   moduloObiettivo.reset();
-  aggiornaTestoFiammine();
+  // reset non riporta il value della nona fiammina, cambiato da JavaScript: lo facciamo noi.
+  chiudiFinestrellaFiammine();
+  impostaPiuFiammine(fiammineVisibili + 1);
   campoNomeObiettivo.setCustomValidity("");
 }
 
@@ -298,5 +437,16 @@ campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
 // change scatta quando l'utente sceglie un altro progetto nel menu a tendina.
 sceltaProgetto.addEventListener("change", aggiornaIconaProgetto);
 // change risale dai radio delle fiammine fino al form.
-moduloObiettivo.addEventListener("change", aggiornaTestoFiammine);
+moduloObiettivo.addEventListener("change", gestisciSceltaFiammine);
+radioPiuFiammine.addEventListener("click", alternaFinestrellaFiammine);
+pulsanteMenoFiammine.addEventListener("click", () => cambiaPiuFiammine(-1));
+pulsantePiuFiammine.addEventListener("click", () => cambiaPiuFiammine(1));
+// Il massimo dipende da minutiPerFiammina: lo scriviamo qui invece che nell'HTML.
+campoNumeroFiammine.setAttribute("aria-label", "Numero di fiammine, da " + (fiammineVisibili + 1) + " a " + fiammineMassime);
+// input scatta a ogni cifra scritta; change quando si esce dal campo dopo averlo cambiato.
+campoNumeroFiammine.addEventListener("input", scriviNumeroFiammine);
+campoNumeroFiammine.addEventListener("change", confermaNumeroFiammine);
+campoNumeroFiammine.addEventListener("keydown", gestisciTastiNumeroFiammine);
+document.addEventListener("click", chiudiFinestrellaFuori);
+document.addEventListener("keydown", chiudiFinestrellaConEsc);
 mostraObiettivi();

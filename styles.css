@@ -1190,8 +1190,12 @@ button:disabled {
 .flame-options {
   /* clear: both porta le fiammine sotto la legenda, che è un elemento float. */
   clear: both;
+  /* relative fa da riferimento per la finestrella delle fiammine in più. */
+  position: relative;
   display: flex;
   flex-wrap: wrap;
+  /* fit-content: largo quanto le nove fiammine, così la finestrella si apre subito dopo. */
+  width: fit-content;
 }
 
 /*
@@ -1260,6 +1264,108 @@ button:disabled {
   50% {
     transform: scale(1.25) translateY(-2px);
   }
+}
+
+/* Il + sulla nona fiammina è una piccola pillola bianca nell'angolo in basso a destra. */
+.flame-more-badge {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  background-color: var(--text);
+  color: var(--background);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  /* I clic passano al radio sotto, come se la pillola non ci fosse. */
+  pointer-events: none;
+}
+
+/*
+  La finestrella si apre a destra della nona fiammina, centrata in verticale.
+  z-index la tiene sopra gli elementi del modulo che stanno sotto.
+*/
+.flame-panel {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--background);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.6);
+  animation: apri-finestrella 160ms var(--ease-out);
+}
+
+/* scale è separato da transform: la finestrella si ingrandisce senza perdere il translateY. */
+@keyframes apri-finestrella {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
+/* Più specifico di button: due cerchietti da 26px invece dei cerchi da 56px del timer. */
+.flame-panel .flame-step {
+  width: 26px;
+  height: 26px;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.flame-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  /* Larghezza fissa: passando da 9 a 10 la finestrella non cambia misura. */
+  min-width: 44px;
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+  Il numero si può scrivere: è un campo senza bordo, largo due cifre, che sembra testo.
+  .flame-count e [type="text"] servono a superare .project-form input[type="text"],
+  che darebbe al campo larghezza piena, padding e bordo del campo nome.
+*/
+.flame-panel .flame-count input[type="text"] {
+  width: 3ch;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background-color: transparent;
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  transition: border-color var(--transition-fast) ease;
+}
+
+/* Una riga sotto il numero suggerisce che si può scrivere, al passaggio del mouse e da tastiera. */
+.flame-panel .flame-count input[type="text"]:hover,
+.flame-panel .flame-count input[type="text"]:focus-visible {
+  border-bottom-color: var(--text);
+  outline: none;
+}
+
+/* L'icona cresce con --crescita, scritto da JavaScript a ogni clic su − o +. */
+.flame-count-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  color: var(--flame);
+  transform: scale(var(--crescita, 1));
+  transition: transform var(--transition-fast) var(--ease-out);
 }
 
 .flame-output {
@@ -1378,6 +1484,14 @@ button:disabled {
   white-space: nowrap;
 }
 
+/* Il numero accanto alla fiammina, quando sono più di otto: 🔥12, nello stesso arancione. */
+.goal-flames-count {
+  margin-left: -3px;
+  color: var(--flame);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 .goal-flame-icons svg {
   width: 15px;
   height: 15px;
@@ -1462,6 +1576,26 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  /* Su telefono nove fiammine da 28px stanno in una riga. */
+  .flame-picker .flame-option {
+    width: 28px;
+    height: 28px;
+  }
+
+  .flame-option svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* A destra non c'è spazio: la finestrella si apre sopra la nona fiammina. */
+  .flame-panel {
+    left: auto;
+    right: 0;
+    top: auto;
+    bottom: calc(100% + 6px);
+    transform: none;
+  }
+
   :root {
     /* Su mobile il padding verticale scende a 24px: 44 + 24 + 24 = 92. */
     --header-height: 92px;
@@ -1541,6 +1675,7 @@ button:disabled {
   .project-form select,
   .project-colors input,
   .flame-picker .flame-option,
+  .flame-count-icon,
   .goal,
   .goal-name,
   .goal-state {
@@ -1552,6 +1687,7 @@ button:disabled {
   .project-list li.is-new,
   .goal.is-new,
   .flame-option svg,
+  .flame-panel,
   .goal-state::before,
   .goal.is-updated [aria-pressed="true"] svg {
     animation: none !important;

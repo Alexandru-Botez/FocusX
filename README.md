@@ -42,7 +42,11 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Una pagina dedicata, raggiungibile dal menu; per creare un obiettivo serve almeno un progetto.
 - Crea obiettivo apre un modulo con nome, progetto, data prevista (facoltativa) e tempo previsto.
   Nel campo del progetto, la cartella a sinistra del nome prende il colore del progetto scelto.
-- Il tempo si sceglie in fiammine, da 1 a 8: per ora ogni fiammina vale 25 minuti.
+- Il tempo si sceglie in fiammine intere: per ora ogni fiammina vale 25 minuti.
+  Le prime otto si cliccano; la nona, con il +, apre una finestrella con − e +
+  per sceglierne di più, fino a 16 ore (38 fiammine). Il numero nella finestrella
+  si può anche scrivere direttamente. Nell'elenco, oltre le otto,
+  la voce mostra una sola fiammina seguita dal numero, per esempio 🔥12.
 - Ogni obiettivo mostra il nome e il colore del suo progetto, la data, le fiammine e il tempo totale.
 - Tre stati: non completato, in corso e completato. I pulsanti "play" e "spunta" mettono
   l'obiettivo in corso o lo completano; premuti di nuovo, lo riportano a non completato.

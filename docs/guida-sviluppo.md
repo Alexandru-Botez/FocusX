@@ -350,6 +350,28 @@ scelto è un `svg` a parte (`#goal-project-icon`), posizionato dentro il campo a
 `pointer-events: none` lascia arrivare i clic al `select`. `aggiornaIconaProgetto()` la colora
 all'apertura del modulo e a ogni evento `change` del menu a tendina.
 
+Oltre le prime otto fiammine (`fiammineVisibili`), la nona `#goal-flames-more` è un radio come
+le altre, ma il suo `value` cambia: è il numero scelto, da 9 a `fiammineMassime`, quindi
+`elements.fiammine.value` funziona senza casi speciali. Il clic la seleziona e apre o chiude
+`#goal-flames-panel`, una finestrella con `−`, il numero con la sua icona e `+`.
+Il numero è un campo di testo, `#goal-flames-number` (`inputmode="numeric"`, non `type="number"`,
+così il browser non blocca mai l'invio del modulo). Aprendo la finestrella con il mouse
+(`evento.detail > 0`) il campo riceve il focus con il numero selezionato, pronto da riscrivere.
+`scriviNumeroFiammine()` toglie i caratteri non numerici con `replace(/\D/g, "")` e applica
+il numero mentre si scrive, solo se è valido; `confermaNumeroFiammine()`, all'evento `change`
+o con Invio, porta un numero fuori dai limiti a 9 o al massimo e un campo vuoto al valore
+precedente. Invio nel campo non invia il modulo: `preventDefault()` lo ferma.
+`cambiaPiuFiammine(differenza)` aggiorna il valore con `impostaPiuFiammine`, che disabilita
+`−` a 9 e `+` al massimo, fa crescere l'icona con `--crescita` e le dà un guizzo con `animate()`,
+saltato se `matchMedia` trova `prefers-reduced-motion`. Il segno sulla nona diventa «+4» per 12.
+Il limite è di tempo: `oreMassime` vale 16 e `fiammineMassime` si calcola con
+`Math.floor(oreMassime * 60 / minutiPerFiammina)`, cioè 38 fiammine con 25 minuti (15 h 50 min).
+Le 16 ore varranno anche per il tempo trascorso, quando ci sarà lo stato «in corso».
+La finestrella si chiude con Esc, con un clic fuori o scegliendo una delle prime otto,
+che riporta la nona a 9. `reset()` non ripristina un `value` cambiato da JavaScript:
+`chiudiModuloObiettivo` richiama `impostaPiuFiammine(9)`. Su telefono le fiammine sono da 28px
+e la finestrella si apre sopra la nona invece che a destra.
+
 `mostraObiettivi(idNuovo)` copia il `template#goal-item-template`. Nella voce restano visibili
 solo tante fiammine quante quelle scelte (`toggleAttribute("hidden")`, perché gli `svg` non hanno
 la proprietà `hidden`). La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
@@ -463,7 +485,13 @@ Per gli obiettivi controlla che:
 - Il menu a tendina elenchi tutti i progetti e un nome vuoto non venga accettato.
 - La cartella nel campo del progetto abbia il colore del progetto scelto e cambi con la scelta.
 - Le fiammine si accendano fino a quella scelta e il testo mostri il tempo, per esempio «3 fiammine · 1 h 15 min».
-- Le otto fiammine stiano in una riga anche su un viewport di 375 pixel.
+- Le nove fiammine stiano in una riga anche su un viewport di 375 pixel.
+- La nona apra la finestrella; − sia disabilitato a 9 e + a 38; il testo mostri, per esempio,
+  «12 fiammine · 5 h» e la nona «+4». Esc, un clic fuori o una delle prime otto la chiudano.
+- Scrivendo nel numero della finestrella il valore cambi subito; 50 diventi 38, 3 diventi 9,
+  un campo vuoto torni al numero precedente, e Invio non salvi l'obiettivo.
+- Un obiettivo da 12 fiammine mostri nell'elenco una sola fiammina seguita da «12»;
+  fino a 8 fiammine si vedano tutte.
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
 - Senza data la voce non mostri il calendario; una data passata sia rossa finché non è completato.
 - Play e spunta cambino lo stato, anche dopo una ricarica; premuti di nuovo, tornino a non completato.
