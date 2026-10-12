@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=completa-sinistra-1">
+    <link rel="stylesheet" href="styles.css?v=modifica-obiettivo-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="obiettivi.js?v=completa-sinistra-1" defer></script>
+    <script src="obiettivi.js?v=modifica-obiettivo-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -291,7 +291,8 @@
           </fieldset>
 
           <div class="project-form-actions">
-            <button class="project-action project-action-primary" type="submit">Salva obiettivo</button>
+            <!-- L'id serve a JavaScript per cambiare il testo in "Salva modifiche" durante una modifica. -->
+            <button id="save-goal-button" class="project-action project-action-primary" type="submit">Salva obiettivo</button>
             <button id="cancel-goal-button" class="project-action" type="button">Annulla</button>
           </div>
         </form>
@@ -357,6 +358,16 @@
               </p>
             </div>
             <div class="project-item-actions">
+              <!--
+                La matita apre il modulo con i dati dell'obiettivo, come per i progetti.
+                È un'azione secondaria: il CSS la mostra discreta, senza bordo, accanto al play.
+              -->
+              <button class="project-item-action goal-edit" type="button" title="Modifica obiettivo">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- Una matita inclinata, con la riga che separa la punta dal corpo. -->
+                  <path d="M4 20h4L19 9a2.83 2.83 0 0 0-4-4L4 16v4ZM13.5 6.5l4 4"></path>
+                </svg>
+              </button>
               <!-- aria-pressed è true quando l'obiettivo è in corso. -->
               <button class="project-item-action goal-start" type="button" aria-pressed="false" title="Metti in corso">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

@@ -400,6 +400,16 @@ in corso il bordo è azzurro; completato il nome viene barrato da uno sfondo che
 da 0% a 100% di larghezza. Non c'è un'etichetta scritta dello stato: `.goal-complete` è il primo
 elemento del `li`, un cerchio a sinistra del nome (`border-radius: 50%`), e `.goal-start` sta a destra.
 
+La modifica funziona come quella dei progetti. La matita `.goal-edit`, discreta (grigia, senza bordo),
+chiama `apriModificaObiettivo(id)`: chiude e riapre il modulo, salva l'id in `idInModifica`, compila
+nome, progetto, data e fiammine e cambia titolo e pulsante in «Modifica obiettivo» e «Salva modifiche».
+Fino a 8 fiammine basta `elements.fiammine.value = String(n)`; oltre, si seleziona la nona e si chiama
+`impostaPiuFiammine(n)`. `nascondiVoceInModifica()` nasconde la voce in modifica, anche dopo
+`mostraObiettivi`. Il submit chiama `inviaModuloObiettivo`, che raccoglie i dati e sceglie fra
+`creaObiettivo(dati)` e `modificaObiettivo(id, dati)`; quest'ultima usa `map` e
+`{ ...obiettivo, ...dati }`, così id e stato restano gli stessi. `chiudiModuloObiettivo` riporta
+`idInModifica` a `null` e il modulo alla creazione. Dopo il salvataggio il focus torna sulla matita.
+
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
 La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
 
@@ -512,6 +522,8 @@ Per gli obiettivi controlla che:
   finché l'obiettivo non è completato.
 - Play e spunta cambino lo stato, anche dopo una ricarica; premuti di nuovo, tornino a non completato.
 - Rinominando o ricolorando un progetto, i suoi obiettivi si aggiornino.
+- La matita apra il modulo compilato, anche con più di 8 fiammine, e nasconda la voce; Annulla la
+  faccia ricomparire. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
 
 Per il timer attuale controlla anche che:
 

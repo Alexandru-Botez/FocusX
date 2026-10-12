@@ -2,6 +2,8 @@
 const pulsanteNuovoObiettivo = document.getElementById("new-goal-button");
 const avvisoSenzaProgetti = document.getElementById("goals-no-projects");
 const moduloObiettivo = document.getElementById("goal-form");
+const titoloModuloObiettivo = document.getElementById("goal-form-title");
+const pulsanteSalvaObiettivo = document.getElementById("save-goal-button");
 const campoNomeObiettivo = document.getElementById("goal-name");
 const sceltaProgetto = document.getElementById("goal-project");
 const iconaProgettoScelto = document.getElementById("goal-project-icon");
@@ -101,6 +103,8 @@ function salvaObiettivi(elenco) {
 
 const progetti = caricaProgetti();
 let obiettivi = caricaObiettivi();
+// L'id dell'obiettivo aperto nel modulo per la modifica; null quando il modulo crea un obiettivo nuovo.
+let idInModifica = null;
 
 function formattaTempo(fiammine) {
   // 2 fiammine → "50 min"; 3 fiammine → "1 h 15 min"; 8 fiammine → "3 h 20 min".
@@ -206,6 +210,10 @@ function mostraObiettivi(idNuovo) {
 
     applicaStato(voce, obiettivo);
 
+    const pulsanteModifica = voce.querySelector(".goal-edit");
+    pulsanteModifica.setAttribute("aria-label", "Modifica " + obiettivo.nome);
+    pulsanteModifica.addEventListener("click", () => apriModificaObiettivo(obiettivo.id));
+
     const pulsanteInCorso = voce.querySelector(".goal-start");
     pulsanteInCorso.setAttribute("aria-label", "Metti in corso " + obiettivo.nome);
     pulsanteInCorso.addEventListener("click", () => cambiaStato(obiettivo.id, "in-corso"));
@@ -215,6 +223,16 @@ function mostraObiettivi(idNuovo) {
     pulsanteCompleta.addEventListener("click", () => cambiaStato(obiettivo.id, "completato"));
 
     elencoObiettivi.append(voce);
+  }
+  // Anche dopo una ricostruzione, l'obiettivo in modifica resta nascosto.
+  nascondiVoceInModifica();
+}
+
+function nascondiVoceInModifica() {
+  // Come nei progetti: solo la voce dell'obiettivo in modifica riceve hidden,
+  // perché i suoi dati sono già nel modulo. Con idInModifica uguale a null si vedono tutte.
+  for (const voce of elencoObiettivi.children) {
+    voce.hidden = voce.dataset.id === idInModifica;
   }
 }
 
@@ -384,6 +402,44 @@ function apriModuloObiettivo() {
   campoNomeObiettivo.focus();
 }
 
+function apriModificaObiettivo(id) {
+  const obiettivo = obiettivi.find(obiettivo => obiettivo.id === id);
+  if (obiettivo === undefined) {
+    return;
+  }
+
+  // Chiudere e riaprire azzera una creazione o una modifica lasciata a metà
+  // e riempie il menu dei progetti.
+  chiudiModuloObiettivo();
+  apriModuloObiettivo();
+  idInModifica = id;
+
+  // Il modulo si riempie con i dati dell'obiettivo.
+  campoNomeObiettivo.value = obiettivo.nome;
+  // Se il progetto è stato eliminato, nel menu non c'è: il select resta vuoto
+  // e required chiede di sceglierne un altro prima di salvare.
+  sceltaProgetto.value = obiettivo.progettoId;
+  aggiornaIconaProgetto();
+  campoData.value = obiettivo.data;
+
+  if (obiettivo.fiammine > fiammineVisibili) {
+    // Oltre otto il radio con quel valore non esiste: si sceglie la nona fiammina
+    // e impostaPiuFiammine le dà il numero giusto, come farebbero − e +.
+    radioPiuFiammine.checked = true;
+    impostaPiuFiammine(obiettivo.fiammine);
+  } else {
+    // Scrivere value su un gruppo di radio seleziona quello con quel valore.
+    moduloObiettivo.elements.fiammine.value = String(obiettivo.fiammine);
+    aggiornaTestoFiammine();
+  }
+
+  titoloModuloObiettivo.textContent = "Modifica obiettivo";
+  pulsanteSalvaObiettivo.textContent = "Salva modifiche";
+  // L'obiettivo compare già nel modulo: nell'elenco sarebbe un doppione.
+  nascondiVoceInModifica();
+  campoNomeObiettivo.focus();
+}
+
 function chiudiModuloObiettivo() {
   moduloObiettivo.hidden = true;
   pulsanteNuovoObiettivo.hidden = false;
@@ -393,9 +449,16 @@ function chiudiModuloObiettivo() {
   chiudiFinestrellaFiammine();
   impostaPiuFiammine(fiammineVisibili + 1);
   campoNomeObiettivo.setCustomValidity("");
+
+  // Il modulo torna alla creazione e l'obiettivo che era in modifica ricompare nell'elenco.
+  idInModifica = null;
+  nascondiVoceInModifica();
+  titoloModuloObiettivo.textContent = "Nuovo obiettivo";
+  pulsanteSalvaObiettivo.textContent = "Salva obiettivo";
 }
 
-function creaObiettivo(evento) {
+function inviaModuloObiettivo(evento) {
+  // submit invierebbe il form e ricaricherebbe la pagina: gestiamo noi il salvataggio.
   evento.preventDefault();
 
   const nome = campoNomeObiettivo.value.trim();
@@ -405,16 +468,26 @@ function creaObiettivo(evento) {
     return;
   }
 
-  const nuovoObiettivo = {
-    id: crypto.randomUUID(),
+  // I dati scritti nel modulo, uguali per la creazione e per la modifica.
+  const dati = {
     nome: nome,
     progettoId: sceltaProgetto.value,
     // required nell'HTML garantisce che qui la data ci sia sempre.
     data: campoData.value,
-    fiammine: Number(moduloObiettivo.elements.fiammine.value),
-    // Ogni obiettivo nasce "non completato".
-    stato: "non-completato"
+    fiammine: Number(moduloObiettivo.elements.fiammine.value)
   };
+
+  if (idInModifica === null) {
+    creaObiettivo(dati);
+  } else {
+    modificaObiettivo(idInModifica, dati);
+  }
+}
+
+function creaObiettivo(dati) {
+  // ...dati copia nome, progetto, data e fiammine; aggiungiamo l'id e lo stato.
+  // Ogni obiettivo nasce "non completato".
+  const nuovoObiettivo = { id: crypto.randomUUID(), ...dati, stato: "non-completato" };
 
   // Come per i progetti, il nuovo obiettivo va in cima alla lista.
   const elencoAggiornato = [nuovoObiettivo, ...obiettivi];
@@ -425,7 +498,26 @@ function creaObiettivo(evento) {
   obiettivi = elencoAggiornato;
   mostraObiettivi(nuovoObiettivo.id);
   chiudiModuloObiettivo();
-  messaggioObiettivi.textContent = "Obiettivo creato: " + nome + ".";
+  messaggioObiettivi.textContent = "Obiettivo creato: " + dati.nome + ".";
+}
+
+function modificaObiettivo(id, dati) {
+  // map copia l'elenco: solo l'obiettivo in modifica riceve i dati nuovi.
+  // ...obiettivo tiene id e stato; ...dati, scritto dopo, sostituisce gli altri campi.
+  const elencoAggiornato = obiettivi.map(obiettivo =>
+    obiettivo.id === id ? { ...obiettivo, ...dati } : obiettivo);
+  if (!salvaObiettivi(elencoAggiornato)) {
+    return;
+  }
+
+  obiettivi = elencoAggiornato;
+  mostraObiettivi();
+  chiudiModuloObiettivo();
+  messaggioObiettivi.textContent = "Obiettivo modificato: " + dati.nome + ".";
+
+  // Il focus torna alla matita dello stesso obiettivo, nella sua posizione nell'elenco.
+  const posizione = obiettivi.findIndex(obiettivo => obiettivo.id === id);
+  elencoObiettivi.querySelectorAll(".goal-edit")[posizione].focus();
 }
 
 function cancellaErroreNome() {
@@ -440,7 +532,7 @@ if (progetti.length === 0) {
 
 pulsanteNuovoObiettivo.addEventListener("click", apriModuloObiettivo);
 pulsanteAnnullaObiettivo.addEventListener("click", chiudiModuloObiettivo);
-moduloObiettivo.addEventListener("submit", creaObiettivo);
+moduloObiettivo.addEventListener("submit", inviaModuloObiettivo);
 campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
 // change scatta quando l'utente sceglie un altro progetto nel menu a tendina.
 sceltaProgetto.addEventListener("change", aggiornaIconaProgetto);

@@ -1599,6 +1599,28 @@ button:disabled {
   height: 18px;
 }
 
+/*
+  La matita è un'azione secondaria: senza bordo né sfondo e in grigio, così non compete
+  con il play. Al passaggio del mouse riceve bordo e sfondo dalla regola button:hover,
+  che ha una specificità più alta, e il testo diventa chiaro.
+*/
+.goal-list .goal-edit {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--muted);
+}
+
+@media (hover: hover) {
+  .goal-list .goal-edit:hover {
+    color: var(--text);
+  }
+}
+
+/* Anche da tastiera la matita torna ben visibile quando riceve il focus. */
+.goal-list .goal-edit:focus-visible {
+  color: var(--text);
+}
+
 /* Il pulsante dello stato attuale si riempie del colore di quello stato. */
 .goal-list .goal-start[aria-pressed="true"] {
   background-color: var(--goal-progress);
