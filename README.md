@@ -57,6 +57,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   lo riportano a non completato. Lo stato si riconosce dai pulsanti, dal bordo e dalle fiammine.
 - La matita accanto al play apre lo stesso modulo con i dati dell'obiettivo, per modificare
   nome, progetto, data e fiammine; lo stato non cambia. Durante la modifica la voce è nascosta.
+- Nel modulo di modifica, il pulsante rosso Elimina cancella l'obiettivo.
 - Una data già passata diventa rossa finché l'obiettivo non è completato.
 - Anche gli obiettivi sono salvati in `localStorage`, con una chiave separata dai progetti.
 

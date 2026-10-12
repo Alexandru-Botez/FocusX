@@ -410,6 +410,13 @@ Fino a 8 fiammine basta `elements.fiammine.value = String(n)`; oltre, si selezio
 `{ ...obiettivo, ...dati }`, così id e stato restano gli stessi. `chiudiModuloObiettivo` riporta
 `idInModifica` a `null` e il modulo alla creazione. Dopo il salvataggio il focus torna sulla matita.
 
+Per eliminare un obiettivo si apre la sua modifica: il pulsante `#delete-goal-button` è `hidden` in
+creazione e visibile solo in modifica, in fondo a destra (`margin-left: auto`) e rosso al passaggio
+del mouse. Serve un passaggio in più rispetto a un cestino nella lista, così un clic sbagliato non
+cancella niente e la scheda resta con due soli pulsanti. `eliminaObiettivo()` toglie l'obiettivo
+in `idInModifica` con `filter`, salva, chiude il modulo, ridisegna la lista e sposta il focus su
+Crea obiettivo.
+
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
 La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
 
@@ -524,6 +531,8 @@ Per gli obiettivi controlla che:
 - Rinominando o ricolorando un progetto, i suoi obiettivi si aggiornino.
 - La matita apra il modulo compilato, anche con più di 8 fiammine, e nasconda la voce; Annulla la
   faccia ricomparire. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
+- Elimina si veda solo in modifica e cancelli l'obiettivo, anche dopo una ricarica; eliminando l'ultimo
+  ricompaia «Non hai ancora creato obiettivi».
 
 Per il timer attuale controlla anche che:
 

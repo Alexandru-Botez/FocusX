@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=modifica-obiettivo-1">
+    <link rel="stylesheet" href="styles.css?v=elimina-obiettivo-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="obiettivi.js?v=modifica-obiettivo-1" defer></script>
+    <script src="obiettivi.js?v=elimina-obiettivo-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -294,6 +294,17 @@
             <!-- L'id serve a JavaScript per cambiare il testo in "Salva modifiche" durante una modifica. -->
             <button id="save-goal-button" class="project-action project-action-primary" type="submit">Salva obiettivo</button>
             <button id="cancel-goal-button" class="project-action" type="button">Annulla</button>
+            <!--
+              Elimina compare solo durante una modifica: si raggiunge dalla matita, in due passaggi,
+              così un clic sbagliato nella lista non cancella niente. hidden lo nasconde in creazione.
+            -->
+            <button id="delete-goal-button" class="project-action goal-delete-action" type="button" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <!-- Coperchio, maniglia, contenitore e due righe verticali formano il cestino. -->
+                <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6M10 11v6M14 11v6"></path>
+              </svg>
+              Elimina
+            </button>
           </div>
         </form>
 

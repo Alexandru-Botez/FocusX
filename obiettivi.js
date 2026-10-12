@@ -4,6 +4,7 @@ const avvisoSenzaProgetti = document.getElementById("goals-no-projects");
 const moduloObiettivo = document.getElementById("goal-form");
 const titoloModuloObiettivo = document.getElementById("goal-form-title");
 const pulsanteSalvaObiettivo = document.getElementById("save-goal-button");
+const pulsanteEliminaObiettivo = document.getElementById("delete-goal-button");
 const campoNomeObiettivo = document.getElementById("goal-name");
 const sceltaProgetto = document.getElementById("goal-project");
 const iconaProgettoScelto = document.getElementById("goal-project-icon");
@@ -435,6 +436,8 @@ function apriModificaObiettivo(id) {
 
   titoloModuloObiettivo.textContent = "Modifica obiettivo";
   pulsanteSalvaObiettivo.textContent = "Salva modifiche";
+  // Elimina ha senso solo per un obiettivo che esiste già.
+  pulsanteEliminaObiettivo.hidden = false;
   // L'obiettivo compare già nel modulo: nell'elenco sarebbe un doppione.
   nascondiVoceInModifica();
   campoNomeObiettivo.focus();
@@ -455,6 +458,7 @@ function chiudiModuloObiettivo() {
   nascondiVoceInModifica();
   titoloModuloObiettivo.textContent = "Nuovo obiettivo";
   pulsanteSalvaObiettivo.textContent = "Salva obiettivo";
+  pulsanteEliminaObiettivo.hidden = true;
 }
 
 function inviaModuloObiettivo(evento) {
@@ -520,6 +524,28 @@ function modificaObiettivo(id, dati) {
   elencoObiettivi.querySelectorAll(".goal-edit")[posizione].focus();
 }
 
+function eliminaObiettivo() {
+  // Elimina si vede solo durante una modifica: l'obiettivo da eliminare è quello in idInModifica.
+  const obiettivo = obiettivi.find(obiettivo => obiettivo.id === idInModifica);
+  if (obiettivo === undefined) {
+    return;
+  }
+
+  // filter crea un nuovo array con tutti gli obiettivi tranne quello da eliminare.
+  const elencoAggiornato = obiettivi.filter(elemento => elemento.id !== obiettivo.id);
+  if (!salvaObiettivi(elencoAggiornato)) {
+    return;
+  }
+
+  obiettivi = elencoAggiornato;
+  // Prima chiudiamo il modulo, che riporta idInModifica a null; poi ridisegniamo la lista.
+  chiudiModuloObiettivo();
+  mostraObiettivi();
+  messaggioObiettivi.textContent = "Obiettivo eliminato: " + obiettivo.nome + ".";
+  // Il pulsante premuto è sparito insieme al modulo: il focus va su Crea obiettivo.
+  pulsanteNuovoObiettivo.focus();
+}
+
 function cancellaErroreNome() {
   campoNomeObiettivo.setCustomValidity("");
 }
@@ -532,6 +558,7 @@ if (progetti.length === 0) {
 
 pulsanteNuovoObiettivo.addEventListener("click", apriModuloObiettivo);
 pulsanteAnnullaObiettivo.addEventListener("click", chiudiModuloObiettivo);
+pulsanteEliminaObiettivo.addEventListener("click", eliminaObiettivo);
 moduloObiettivo.addEventListener("submit", inviaModuloObiettivo);
 campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
 // change scatta quando l'utente sceglie un altro progetto nel menu a tendina.

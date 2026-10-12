@@ -1600,6 +1600,35 @@ button:disabled {
 }
 
 /*
+  Elimina sta in fondo a destra nel modulo di modifica: margin-left: auto prende tutto
+  lo spazio libero a sinistra e lo spinge lontano da Salva. Il testo è rosso, come il cestino
+  dei progetti; al passaggio del mouse il pulsante si riempie di rosso.
+*/
+.projects-section .goal-delete-action {
+  gap: 8px;
+  margin-left: auto;
+  color: var(--reset-hover);
+}
+
+.projects-section .goal-delete-action svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (hover: hover) {
+  .projects-section .goal-delete-action:hover:not(:disabled) {
+    background-color: var(--reset-hover);
+    border-color: var(--reset-hover);
+    color: var(--background);
+  }
+}
+
+/*
   La matita è un'azione secondaria: senza bordo né sfondo e in grigio, così non compete
   con il play. Al passaggio del mouse riceve bordo e sfondo dalla regola button:hover,
   che ha una specificità più alta, e il testo diventa chiaro.
