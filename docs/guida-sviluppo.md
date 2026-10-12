@@ -381,7 +381,8 @@ la proprietà `hidden`). Ogni fiammina ha tre aspetti, decisi da `applicaStato` 
 - `is-current`, la fiammina da completare quando l'obiettivo è in corso: si colora con
   `--goal-progress`, ha un riempimento leggero con `color-mix` e si anima con `@keyframes tremola`,
   che oscilla dalla base grazie a `transform-origin: 50% 90%`;
-- `is-done`, se è fatta: piena di arancione, con un alone `filter: drop-shadow`, senza animazione.
+- `is-done`, se è fatta: piena, con un alone `filter: drop-shadow` dello stesso colore, senza animazione.
+  È arancione da completato e azzurra (`--goal-progress`) mentre l'obiettivo è in corso.
 
 Le prime `fiammineFatte` sono fatte e quella in posizione `fiammineFatte` è da completare.
 Il tempo lavorato non è ancora misurato: `fiammineFatte` vale tutte le fiammine per un obiettivo

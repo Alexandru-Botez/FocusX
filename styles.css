@@ -1552,13 +1552,23 @@ button:disabled {
 }
 
 /*
-  Una fiammina fatta è piena e accesa: arancione pieno e un leggero alone.
+  Una fiammina fatta è piena e accesa: colore pieno e un leggero alone dello stesso colore.
   drop-shadow segue la forma della fiammina, non il suo riquadro come box-shadow.
+  currentColor è il colore della fiammina: arancione, o azzurro con la regola qui sotto.
   Niente animazione: il lavoro è finito.
 */
 .goal-flame-icons svg.is-done {
   fill: currentColor;
-  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--flame) 55%, transparent));
+  filter: drop-shadow(0 0 3px color-mix(in srgb, currentColor 55%, transparent));
+}
+
+/*
+  Mentre l'obiettivo è in corso, anche le fiammine già fatte sono azzurre, piene:
+  si distinguono da quella da completare, azzurra ma quasi vuota e tremolante.
+  Da completato tornano arancioni.
+*/
+.goal[data-stato="in-corso"] .goal-flame-icons svg.is-done {
+  color: var(--goal-progress);
 }
 
 /* L'etichetta dello stato è una piccola pillola con il bordo arrotondato. */
