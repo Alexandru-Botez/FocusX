@@ -79,11 +79,19 @@ function caricaObiettivi() {
       && obiettivo.fiammine >= 1
       && obiettivo.fiammine <= fiammineMassime
       // includes controlla che lo stato sia uno di quelli dell'array statiValidi.
-      && statiValidi.includes(obiettivo.stato));
+      && statiValidi.includes(obiettivo.stato)
+      // I minuti lavorati possono avere decimali (12,5 = 12 min 30 s), ma non superano le 16 ore.
+      // Gli obiettivi salvati prima di questo campo non lo hanno: undefined va bene, vale 0.
+      && (obiettivo.minutiLavorati === undefined
+        || (typeof obiettivo.minutiLavorati === "number"
+          && obiettivo.minutiLavorati >= 0
+          && obiettivo.minutiLavorati <= oreMassime * 60)));
     if (!valido) {
       throw new Error("Archivio obiettivi non valido");
     }
-    return archivio;
+    // minutiLavorati: 0 è il valore di partenza; ...obiettivo, scritto dopo,
+    // lo sostituisce con quello salvato quando c'è.
+    return archivio.map(obiettivo => ({ minutiLavorati: 0, ...obiettivo }));
   } catch {
     // Come per i progetti, non sovrascriviamo un archivio illeggibile.
     pulsanteNuovoObiettivo.disabled = true;
@@ -146,7 +154,13 @@ function applicaStato(voce, obiettivo) {
   // data-stato sul li decide l'aspetto nel CSS: bordo, nome barrato, colori dei pulsanti.
   voce.dataset.stato = obiettivo.stato;
   voce.querySelector(".goal-start").setAttribute("aria-pressed", String(obiettivo.stato === "in-corso"));
-  voce.querySelector(".goal-complete").setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
+  const pulsanteCompleta = voce.querySelector(".goal-complete");
+  pulsanteCompleta.setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
+  // Senza tempo lavorato non si può completare. Un obiettivo già completato resta
+  // cliccabile, così si può sempre riaprire.
+  const senzaTempo = obiettivo.minutiLavorati === 0 && obiettivo.stato !== "completato";
+  pulsanteCompleta.disabled = senzaTempo;
+  pulsanteCompleta.title = senzaTempo ? "Lavora sull'obiettivo prima di completarlo" : "Segna come completato";
 
   // Le date nel formato "2026-10-12" si possono confrontare come testo: "minore" vuol dire prima.
   const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
@@ -245,19 +259,36 @@ function cambiaStato(id, statoScelto) {
 
   // Premere di nuovo il pulsante dello stato attuale riporta l'obiettivo a "non completato".
   const nuovoStato = obiettivo.stato === statoScelto ? "non-completato" : statoScelto;
-  const elencoAggiornato = obiettivi.map(elemento =>
-    elemento.id === id ? { ...elemento, stato: nuovoStato } : elemento);
+  // Il cerchio è disattivato senza tempo lavorato; il controllo resta anche qui, per sicurezza.
+  if (nuovoStato === "completato" && obiettivo.minutiLavorati === 0) {
+    return;
+  }
+
+  const elencoAggiornato = obiettivi.map(elemento => {
+    if (elemento.id === id) {
+      return { ...elemento, stato: nuovoStato };
+    }
+    // Un solo obiettivo alla volta può essere in corso: quello che lo era si ferma.
+    if (nuovoStato === "in-corso" && elemento.stato === "in-corso") {
+      return { ...elemento, stato: "non-completato" };
+    }
+    return elemento;
+  });
   if (!salvaObiettivi(elencoAggiornato)) {
     return;
   }
   obiettivi = elencoAggiornato;
 
-  // Aggiorniamo solo la voce cambiata: le altre non si muovono e il focus resta sul pulsante.
+  // Aggiorniamo solo le voci cambiate: quella cliccata e, se c'era, quella che si è fermata.
+  // Le altre non si muovono e il focus resta sul pulsante.
   for (const voce of elencoObiettivi.children) {
+    const aggiornato = obiettivi.find(elemento => elemento.id === voce.dataset.id);
+    if (voce.dataset.stato !== aggiornato.stato) {
+      applicaStato(voce, aggiornato);
+    }
+    // is-updated abilita la piccola animazione dei pulsanti, solo dopo un clic.
     if (voce.dataset.id === id) {
-      // is-updated abilita la piccola animazione dei pulsanti, solo dopo un clic.
       voce.classList.add("is-updated");
-      applicaStato(voce, { ...obiettivo, stato: nuovoStato });
     }
   }
 }
@@ -489,9 +520,9 @@ function inviaModuloObiettivo(evento) {
 }
 
 function creaObiettivo(dati) {
-  // ...dati copia nome, progetto, data e fiammine; aggiungiamo l'id e lo stato.
-  // Ogni obiettivo nasce "non completato".
-  const nuovoObiettivo = { id: crypto.randomUUID(), ...dati, stato: "non-completato" };
+  // ...dati copia nome, progetto, data e fiammine; aggiungiamo id, stato e tempo.
+  // Ogni obiettivo nasce "non completato" e senza minuti lavorati.
+  const nuovoObiettivo = { id: crypto.randomUUID(), ...dati, stato: "non-completato", minutiLavorati: 0 };
 
   // Come per i progetti, il nuovo obiettivo va in cima alla lista.
   const elencoAggiornato = [nuovoObiettivo, ...obiettivi];

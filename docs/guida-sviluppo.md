@@ -331,7 +331,7 @@ Il cambio di pagina interrompe il timer: tornando a `index.html`, il tempo ripar
 modulo e pulsanti della pagina Progetti (`.projects-section`, `.project-form`, `.project-action`,
 `.project-item-action`), così le due pagine restano coerenti.
 
-Un obiettivo ha la forma `{ id, nome, progettoId, data, fiammine, stato }` ed è salvato
+Un obiettivo ha la forma `{ id, nome, progettoId, data, fiammine, stato, minutiLavorati }` ed è salvato
 con la chiave `focusx.obiettivi.v1`. Del progetto salva solo l'id: nome e colore si leggono
 da `focusx.progetti.v1` a ogni visualizzazione, quindi restano aggiornati se il progetto cambia.
 Se il progetto non esiste più, la voce mostra «Progetto eliminato».
@@ -394,6 +394,15 @@ come mezzanotte locale, e diventa rossa (`is-late`) se è passata e l'obiettivo 
 Gli stati sono `non-completato`, `in-corso` e `completato`, elencati nell'array `statiValidi`:
 `caricaObiettivi` usa `statiValidi.includes(stato)` per controllare l'archivio. I pulsanti `.goal-start` e `.goal-complete` chiamano `cambiaStato(id, stato)`:
 premere il pulsante dello stato attuale riporta l'obiettivo a `non-completato`.
+Un solo obiettivo alla volta può essere in corso: nel `map` di `cambiaStato`, se il nuovo stato è
+`in-corso`, l'obiettivo che lo era torna `non-completato`; poi il ciclo sulle voci richiama
+`applicaStato` solo su quelle il cui `data-stato` è diverso dal nuovo stato.
+
+`minutiLavorati` è il tempo lavorato (anche con decimali, al massimo `oreMassime * 60`).
+Il timer non lo misura ancora, quindi vale 0: `creaObiettivo` lo imposta a 0 e `caricaObiettivi`
+dà 0 agli obiettivi salvati prima che esistesse, con `{ minutiLavorati: 0, ...obiettivo }`.
+`applicaStato` disattiva il cerchio (`disabled`) quando i minuti sono 0 e l'obiettivo non è
+completato; un obiettivo completato si può sempre riaprire. `cambiaStato` ripete il controllo.
 `cambiaStato` aggiorna solo la voce interessata con `applicaStato(voce, obiettivo)`,
 che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `data-stato`:
 in corso il bordo è azzurro; completato il nome viene barrato da uno sfondo che passa
@@ -531,6 +540,9 @@ Per gli obiettivi controlla che:
 - Rinominando o ricolorando un progetto, i suoi obiettivi si aggiornino.
 - La matita apra il modulo compilato, anche con più di 8 fiammine, e nasconda la voce; Annulla la
   faccia ricomparire. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
+- Mettendo in corso un obiettivo, quello che era in corso torni non completato.
+- Con 0 minuti lavorati il cerchio sia disattivato; un obiettivo già completato si possa riaprire,
+  e poi il cerchio si disattivi.
 - Elimina si veda solo in modifica e cancelli l'obiettivo, anche dopo una ricarica; eliminando l'ultimo
   ricompaia «Non hai ancora creato obiettivi».
 
