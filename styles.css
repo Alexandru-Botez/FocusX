@@ -1438,7 +1438,7 @@ button:disabled {
   transition: background-size 400ms var(--ease-out), color 300ms ease;
 }
 
-/* Progetto, data e tempo in una riga di dettagli grigi, che va a capo se serve. */
+/* Tempo, data e progetto in una riga di dettagli grigi, che va a capo se serve. */
 .goal-details {
   display: flex;
   flex-wrap: wrap;

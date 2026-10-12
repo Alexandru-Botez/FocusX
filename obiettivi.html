@@ -308,20 +308,7 @@
             <div class="goal-main">
               <p class="goal-title"><span class="goal-name"></span></p>
               <p class="goal-details">
-                <span class="goal-project">
-                  <svg class="goal-project-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
-                  </svg>
-                  <span class="goal-project-name"></span>
-                </span>
-                <span class="goal-date">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <!-- Un calendario: il riquadro, la riga dei giorni e i due anelli in alto. -->
-                    <path d="M4 6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6ZM4 10h16M8 3v4M16 3v4"></path>
-                  </svg>
-                  <!-- time indica una data leggibile anche dalle macchine, tramite datetime. -->
-                  <time class="goal-date-text"></time>
-                </span>
+                <!-- Prima il tempo previsto (fiammine e minuti), poi la data e il progetto. -->
                 <span class="goal-flames">
                   <!--
                     Otto fiammine: JavaScript nasconde quelle oltre il tempo previsto.
@@ -341,6 +328,20 @@
                   </span>
                   <span class="goal-flames-count"></span>
                   <span class="goal-minutes"></span>
+                </span>
+                <span class="goal-date">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <!-- Un calendario: il riquadro, la riga dei giorni e i due anelli in alto. -->
+                    <path d="M4 6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6ZM4 10h16M8 3v4M16 3v4"></path>
+                  </svg>
+                  <!-- time indica una data leggibile anche dalle macchine, tramite datetime. -->
+                  <time class="goal-date-text"></time>
+                </span>
+                <span class="goal-project">
+                  <svg class="goal-project-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+                  </svg>
+                  <span class="goal-project-name"></span>
                 </span>
               </p>
               <span class="goal-state"></span>

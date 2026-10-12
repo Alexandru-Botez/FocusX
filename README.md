@@ -47,7 +47,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   per sceglierne di più, fino a 16 ore (38 fiammine). Il numero nella finestrella
   si può anche scrivere direttamente. Nell'elenco, oltre le otto,
   la voce mostra una sola fiammina seguita dal numero, per esempio 🔥12.
-- Ogni obiettivo mostra il nome e il colore del suo progetto, la data, le fiammine e il tempo totale.
+- Ogni obiettivo mostra, sotto il nome, le fiammine con il tempo totale, la data e il suo progetto con il colore.
   Ogni fiammina ha tre aspetti: vuota (solo contorno) se è da fare, azzurra e tremolante
   se è quella da completare mentre l'obiettivo è in corso, piena e accesa quando è fatta:
   azzurra mentre l'obiettivo è in corso, arancione quando è completato.
