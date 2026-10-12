@@ -1516,7 +1516,39 @@ button:disabled {
   stroke: currentColor;
   stroke-width: 1.75;
   stroke-linejoin: round;
-  transition: fill 400ms var(--ease-out);
+  transition: fill 400ms var(--ease-out), color 300ms ease;
+}
+
+/*
+  La fiammina da completare, quando l'obiettivo è in corso: prende l'azzurro di "in corso"
+  e un riempimento leggero. color-mix mescola l'azzurro con il trasparente: 30% di colore.
+  transform-origin in basso la fa oscillare dalla base, come una fiamma vera.
+*/
+.goal-flame-icons svg.is-current {
+  color: var(--goal-progress);
+  fill: color-mix(in srgb, currentColor 30%, transparent);
+  transform-origin: 50% 90%;
+  animation: tremola 1.4s ease-in-out infinite;
+}
+
+/* Si allunga e si piega un po' a sinistra e a destra, poi torna com'era: e ricomincia. */
+@keyframes tremola {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  25% {
+    transform: scale(1.1, 1.18) rotate(-5deg);
+  }
+
+  50% {
+    transform: scale(0.96, 1.04) rotate(3deg);
+  }
+
+  75% {
+    transform: scale(1.06, 1.12) rotate(-2deg);
+  }
 }
 
 /* Quando l'obiettivo è completato, il tempo è tutto fatto: le fiammine si riempiono. */
@@ -1717,6 +1749,7 @@ button:disabled {
   .flame-option svg,
   .flame-panel,
   .goal-state::before,
+  .goal-flame-icons svg.is-current,
   .goal.is-updated [aria-pressed="true"] svg {
     animation: none !important;
   }
