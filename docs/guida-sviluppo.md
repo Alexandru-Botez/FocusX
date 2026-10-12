@@ -376,12 +376,17 @@ e la finestrella si apre sopra la nona invece che a destra.
 
 `mostraObiettivi(idNuovo)` copia il `template#goal-item-template`. Nella voce restano visibili
 solo tante fiammine quante quelle scelte (`toggleAttribute("hidden")`, perché gli `svg` non hanno
-la proprietà `hidden`). Sono vuote (`fill: transparent` e `stroke: currentColor`), perché il tempo
-previsto non è ancora lavorato, e si riempiono con `.goal[data-stato="completato"]`: in futuro
-lo stato «in corso» le riempirà in parte. In corso, `applicaStato` dà la classe `is-current`
-alla fiammina da completare, in posizione `fiammineFatte` (per ora sempre 0, la prima):
-il CSS la colora con `--goal-progress` e la anima con `@keyframes tremola`, che oscilla dalla base
-grazie a `transform-origin: 50% 90%`. La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
+la proprietà `hidden`). Ogni fiammina ha tre aspetti, decisi da `applicaStato` con due classi:
+- vuota, se è da fare: `fill: transparent` e `stroke: currentColor`, solo il contorno arancione;
+- `is-current`, la fiammina da completare quando l'obiettivo è in corso: si colora con
+  `--goal-progress`, ha un riempimento leggero con `color-mix` e si anima con `@keyframes tremola`,
+  che oscilla dalla base grazie a `transform-origin: 50% 90%`;
+- `is-done`, se è fatta: piena di arancione, con un alone `filter: drop-shadow`, senza animazione.
+
+Le prime `fiammineFatte` sono fatte e quella in posizione `fiammineFatte` è da completare.
+Il tempo lavorato non è ancora misurato: `fiammineFatte` vale tutte le fiammine per un obiettivo
+completato e 0 negli altri casi. Oltre otto fiammine se ne vede una sola: è fatta solo quando lo sono
+tutte, altrimenti è lei quella da completare. La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
 come mezzanotte locale, e diventa rossa (`is-late`) se è passata e l'obiettivo non è completato:
 `dataDiOggi()` produce lo stesso formato `AAAA-MM-GG`, così le date si confrontano come testo.
 
@@ -498,8 +503,8 @@ Per gli obiettivi controlla che:
 - Scrivendo nel numero della finestrella il valore cambi subito; 50 diventi 38, 3 diventi 9,
   un campo vuoto torni al numero precedente, e Invio non salvi l'obiettivo.
 - Un obiettivo da 12 fiammine mostri nell'elenco una sola fiammina seguita da «12»;
-  fino a 8 fiammine si vedano tutte. Le fiammine siano vuote e si riempiano solo da completato;
-  in corso la prima diventi azzurra e tremoli, e torni normale togliendo lo stato.
+  fino a 8 fiammine si vedano tutte. Le fiammine siano vuote; in corso la prima diventi azzurra
+  e tremoli; da completato siano tutte piene e accese, senza animazione.
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
 - Senza data il modulo non venga inviato e il browser segnali il campo; una data passata sia rossa
   finché l'obiettivo non è completato.

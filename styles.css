@@ -1516,7 +1516,7 @@ button:disabled {
   stroke: currentColor;
   stroke-width: 1.75;
   stroke-linejoin: round;
-  transition: fill 400ms var(--ease-out), color 300ms ease;
+  transition: fill 400ms var(--ease-out), color 300ms ease, filter 400ms ease;
 }
 
 /*
@@ -1551,9 +1551,14 @@ button:disabled {
   }
 }
 
-/* Quando l'obiettivo è completato, il tempo è tutto fatto: le fiammine si riempiono. */
-.goal[data-stato="completato"] .goal-flame-icons svg {
+/*
+  Una fiammina fatta è piena e accesa: arancione pieno e un leggero alone.
+  drop-shadow segue la forma della fiammina, non il suo riquadro come box-shadow.
+  Niente animazione: il lavoro è finito.
+*/
+.goal-flame-icons svg.is-done {
   fill: currentColor;
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--flame) 55%, transparent));
 }
 
 /* L'etichetta dello stato è una piccola pillola con il bordo arrotondato. */

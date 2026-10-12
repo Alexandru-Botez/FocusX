@@ -48,8 +48,9 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   si può anche scrivere direttamente. Nell'elenco, oltre le otto,
   la voce mostra una sola fiammina seguita dal numero, per esempio 🔥12.
 - Ogni obiettivo mostra il nome e il colore del suo progetto, la data, le fiammine e il tempo totale.
-  Le fiammine sono vuote, solo contorno, finché l'obiettivo non è completato: allora si riempiono.
-  Quando è in corso, la fiammina da completare diventa azzurra e tremola come una fiamma.
+  Ogni fiammina ha tre aspetti: vuota (solo contorno) se è da fare, azzurra e tremolante
+  se è quella da completare mentre l'obiettivo è in corso, piena e accesa quando è fatta.
+  Per ora sono fatte tutte quando l'obiettivo è completato.
 - Tre stati: non completato, in corso e completato. I pulsanti "play" e "spunta" mettono
   l'obiettivo in corso o lo completano; premuti di nuovo, lo riportano a non completato.
 - Una data già passata diventa rossa finché l'obiettivo non è completato.

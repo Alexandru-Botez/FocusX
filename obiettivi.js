@@ -152,13 +152,20 @@ function applicaStato(voce, obiettivo) {
   const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
   voce.querySelector(".goal-date").classList.toggle("is-late", inRitardo);
 
-  // Quando l'obiettivo è in corso, la fiammina da completare ha la classe is-current:
-  // il CSS la colora di azzurro e la fa tremolare. È quella subito dopo le fiammine già fatte;
-  // il tempo lavorato non lo misuriamo ancora, quindi per ora è sempre la prima.
-  const fiammineFatte = 0;
+  // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
+  // azzurra e tremolante) o is-done (fatta, piena e accesa). Il tempo lavorato non lo misuriamo
+  // ancora: un obiettivo completato ha tutte le fiammine fatte, gli altri nessuna.
+  const fiammineFatte = obiettivo.stato === "completato" ? obiettivo.fiammine : 0;
+  // Oltre otto si vede una sola fiammina, che le rappresenta tutte: è fatta solo quando
+  // lo sono tutte, e altrimenti è lei quella da completare.
+  const tante = obiettivo.fiammine > fiammineVisibili;
+  const posizioneDaCompletare = tante ? 0 : fiammineFatte;
   voce.querySelectorAll(".goal-flame-icons svg").forEach((fiammina, posizione) => {
+    const fatta = tante ? fiammineFatte === obiettivo.fiammine : posizione < fiammineFatte;
     // Come hidden, anche classList funziona sugli svg.
-    fiammina.classList.toggle("is-current", obiettivo.stato === "in-corso" && posizione === fiammineFatte);
+    fiammina.classList.toggle("is-done", fatta);
+    fiammina.classList.toggle("is-current",
+      obiettivo.stato === "in-corso" && !fatta && posizione === posizioneDaCompletare);
   });
 }
 
