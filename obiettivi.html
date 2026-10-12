@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="obiettivi.js?v=numero-fiammine-1" defer></script>
+    <script src="obiettivi.js?v=data-obbligatoria-2" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -200,8 +200,12 @@
             </div>
             <div class="goal-field">
               <label for="goal-date">Data prevista</label>
-              <!-- type="date" mostra il calendario del browser; il valore ha la forma 2026-10-12. -->
-              <input id="goal-date" name="data" type="date">
+              <!--
+                type="date" mostra il calendario del browser; il valore ha la forma 2026-10-12.
+                required la rende obbligatoria: senza data il browser non invia il modulo
+                e mostra un avviso sul campo, come per il nome.
+              -->
+              <input id="goal-date" name="data" type="date" required>
             </div>
           </div>
 

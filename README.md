@@ -40,7 +40,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 ### Obiettivi
 
 - Una pagina dedicata, raggiungibile dal menu; per creare un obiettivo serve almeno un progetto.
-- Crea obiettivo apre un modulo con nome, progetto, data prevista (facoltativa) e tempo previsto.
+- Crea obiettivo apre un modulo con nome, progetto, data prevista (obbligatoria) e tempo previsto.
   Nel campo del progetto, la cartella a sinistra del nome prende il colore del progetto scelto.
 - Il tempo si sceglie in fiammine intere: per ora ogni fiammina vale 25 minuti.
   Le prime otto si cliccano; la nona, con il +, apre una finestrella con − e +

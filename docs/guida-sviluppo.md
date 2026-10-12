@@ -337,7 +337,8 @@ Se il progetto non esiste più, la voce mostra «Progetto eliminato».
 Senza progetti, il pulsante Crea obiettivo è nascosto e un avviso porta alla pagina Progetti.
 
 Il modulo contiene il nome, un `select` con un `option` per progetto (creato da
-`apriModuloObiettivo()` con `new Option(nome, id)`), un `input type="date"` facoltativo
+`apriModuloObiettivo()` con `new Option(nome, id)`), un `input type="date"` obbligatorio
+(`required`: senza data il browser blocca l'invio, come per il nome)
 e otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
 `<use href="#flame-icon">`, che richiama un unico `symbol` definito all'inizio del `body`.
 Il radio è invisibile ma resta usabile con Tab e frecce; il CSS spegne le fiammine dopo quella
@@ -493,7 +494,8 @@ Per gli obiettivi controlla che:
 - Un obiettivo da 12 fiammine mostri nell'elenco una sola fiammina seguita da «12»;
   fino a 8 fiammine si vedano tutte.
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
-- Senza data la voce non mostri il calendario; una data passata sia rossa finché non è completato.
+- Senza data il modulo non venga inviato e il browser segnali il campo; una data passata sia rossa
+  finché l'obiettivo non è completato.
 - Play e spunta cambino lo stato, anche dopo una ricarica; premuti di nuovo, tornino a non completato.
 - Rinominando o ricolorando un progetto, i suoi obiettivi si aggiornino.
 

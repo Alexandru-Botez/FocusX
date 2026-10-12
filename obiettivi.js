@@ -74,6 +74,8 @@ function caricaObiettivi() {
       && typeof obiettivo.nome === "string"
       && typeof obiettivo.progettoId === "string"
       && typeof obiettivo.data === "string"
+      // La data è obbligatoria: un testo vuoto non è valido.
+      && obiettivo.data !== ""
       && Number.isInteger(obiettivo.fiammine)
       && obiettivo.fiammine >= 1
       && obiettivo.fiammine <= fiammineMassime
@@ -147,7 +149,7 @@ function applicaStato(voce, obiettivo) {
   voce.querySelector(".goal-complete").setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
 
   // Le date nel formato "2026-10-12" si possono confrontare come testo: "minore" vuol dire prima.
-  const inRitardo = obiettivo.data !== "" && obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
+  const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
   voce.querySelector(".goal-date").classList.toggle("is-late", inRitardo);
 }
 
@@ -172,14 +174,10 @@ function mostraObiettivi(idNuovo) {
       voce.querySelector(".goal-project-icon").style.color = progetto.colore;
     }
 
-    // La data è facoltativa: senza data, la sua parte resta nascosta.
-    const data = voce.querySelector(".goal-date");
-    data.hidden = obiettivo.data === "";
-    if (obiettivo.data !== "") {
-      const testoData = voce.querySelector(".goal-date-text");
-      testoData.dateTime = obiettivo.data;
-      testoData.textContent = formattaData(obiettivo.data);
-    }
+    // Ogni obiettivo ha una data: la scriviamo leggibile e, in datetime, nel formato 2026-10-12.
+    const testoData = voce.querySelector(".goal-date-text");
+    testoData.dateTime = obiettivo.data;
+    testoData.textContent = formattaData(obiettivo.data);
 
     // Fino a otto fiammine si vedono tutte; oltre, una sola fiammina seguita dal numero: 🔥12.
     const tante = obiettivo.fiammine > fiammineVisibili;
@@ -401,7 +399,7 @@ function creaObiettivo(evento) {
     id: crypto.randomUUID(),
     nome: nome,
     progettoId: sceltaProgetto.value,
-    // Il campo data vuoto vale "": la data è facoltativa.
+    // required nell'HTML garantisce che qui la data ci sia sempre.
     data: campoData.value,
     fiammine: Number(moduloObiettivo.elements.fiammine.value),
     // Ogni obiettivo nasce "non completato".
