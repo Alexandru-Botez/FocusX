@@ -1,14 +1,44 @@
-// Troviamo i controlli della pagina Obiettivi.
+// =====================================================================
+// OBIETTIVI.JS: la pagina Obiettivi (obiettivi.html)
+// Crea, mostra, modifica ed elimina gli obiettivi, ne cambia lo stato
+// e li salva nel browser. I progetti vengono soltanto letti.
+//
+// Sezioni, nell'ordine:
+//   - ELEMENTI DELLA PAGINA
+//   - IMPOSTAZIONI
+//   - SALVATAGGIO NEL BROWSER
+//   - DATI IN MEMORIA
+//   - FORMATTAZIONE DI TEMPO E DATE
+//   - ELENCO DEGLI OBIETTIVI
+//   - STATI DEGLI OBIETTIVI
+//   - SCELTA DELLE FIAMMINE
+//   - FINESTRELLA DELLE FIAMMINE
+//   - MODULO: CREARE, MODIFICARE, ELIMINARE
+//   - AVVIO DELLA PAGINA
+// =====================================================================
+
+
+// =====================================================================
+// SEZIONE ELEMENTI DELLA PAGINA
+// Gli elementi HTML che il codice legge o modifica, trovati con il loro id.
+// =====================================================================
+
+// Pulsanti e modulo.
 const pulsanteNuovoObiettivo = document.getElementById("new-goal-button");
 const avvisoSenzaProgetti = document.getElementById("goals-no-projects");
 const moduloObiettivo = document.getElementById("goal-form");
 const titoloModuloObiettivo = document.getElementById("goal-form-title");
 const pulsanteSalvaObiettivo = document.getElementById("save-goal-button");
 const pulsanteEliminaObiettivo = document.getElementById("delete-goal-button");
+const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
+
+// Campi del modulo.
 const campoNomeObiettivo = document.getElementById("goal-name");
 const sceltaProgetto = document.getElementById("goal-project");
 const iconaProgettoScelto = document.getElementById("goal-project-icon");
 const campoData = document.getElementById("goal-date");
+
+// Fiammine e finestrella.
 const testoFiammine = document.getElementById("goal-flames-output");
 const radioPiuFiammine = document.getElementById("goal-flames-more");
 const segnoPiuFiammine = document.getElementById("goal-flames-more-badge");
@@ -17,11 +47,19 @@ const campoNumeroFiammine = document.getElementById("goal-flames-number");
 const iconaFinestrella = document.getElementById("goal-flames-panel-icon");
 const pulsanteMenoFiammine = document.getElementById("goal-flames-less");
 const pulsantePiuFiammine = document.getElementById("goal-flames-plus");
-const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
+
+// Elenco e messaggi.
 const elencoObiettivi = document.getElementById("goal-list");
 const statoVuotoObiettivi = document.getElementById("goals-empty");
 const messaggioObiettivi = document.getElementById("goals-message");
 const modelloVoceObiettivo = document.getElementById("goal-item-template");
+
+
+// =====================================================================
+// SEZIONE IMPOSTAZIONI
+// Valori fissi che decidono il comportamento della pagina:
+// cambiandoli qui, cambiano ovunque.
+// =====================================================================
 
 // Gli obiettivi hanno una chiave propria; i progetti vengono soltanto letti.
 const chiaveObiettivi = "focusx.obiettivi.v1";
@@ -40,6 +78,14 @@ const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
 // Gli unici stati che un obiettivo può avere: servono a controllare l'archivio salvato.
 const statiValidi = ["non-completato", "in-corso", "completato"];
 
+
+// =====================================================================
+// SEZIONE SALVATAGGIO NEL BROWSER
+// Leggono e scrivono progetti e obiettivi in localStorage,
+// controllando che i dati salvati siano validi.
+// =====================================================================
+
+// Legge un elenco salvato in localStorage; se il testo non è un array, lancia un errore.
 function leggiElenco(chiave) {
   // Restituisce l'array salvato con quella chiave, oppure un array vuoto se non c'è ancora.
   const testoSalvato = localStorage.getItem(chiave);
@@ -54,6 +100,7 @@ function leggiElenco(chiave) {
   return elenco;
 }
 
+// Restituisce i progetti salvati, che servono per il menu e per nome e colore delle voci.
 function caricaProgetti() {
   try {
     return leggiElenco(chiaveProgetti);
@@ -63,6 +110,7 @@ function caricaProgetti() {
   }
 }
 
+// Restituisce gli obiettivi salvati, solo se ognuno ha tutti i dati giusti.
 function caricaObiettivi() {
   try {
     const archivio = leggiElenco(chiaveObiettivi);
@@ -100,6 +148,7 @@ function caricaObiettivi() {
   }
 }
 
+// Scrive l'elenco degli obiettivi nel browser; restituisce false se non ci riesce.
 function salvaObiettivi(elenco) {
   try {
     localStorage.setItem(chiaveObiettivi, JSON.stringify(elenco));
@@ -110,11 +159,24 @@ function salvaObiettivi(elenco) {
   }
 }
 
+
+// =====================================================================
+// SEZIONE DATI IN MEMORIA
+// I dati con cui lavora la pagina mentre è aperta.
+// =====================================================================
+
 const progetti = caricaProgetti();
 let obiettivi = caricaObiettivi();
 // L'id dell'obiettivo aperto nel modulo per la modifica; null quando il modulo crea un obiettivo nuovo.
 let idInModifica = null;
 
+
+// =====================================================================
+// SEZIONE FORMATTAZIONE DI TEMPO E DATE
+// Trasformano numeri e date nel testo che si legge nella pagina.
+// =====================================================================
+
+// Scrive il tempo di un certo numero di fiammine in ore e minuti.
 function formattaTempo(fiammine) {
   // 2 fiammine → "50 min"; 3 fiammine → "1 h 15 min"; 8 fiammine → "3 h 20 min".
   const minuti = fiammine * minutiPerFiammina;
@@ -127,12 +189,14 @@ function formattaTempo(fiammine) {
   return resto === 0 ? ore + " h" : ore + " h " + resto + " min";
 }
 
+// Scrive il numero di fiammine all'italiana, con al massimo un decimale.
 function formattaNumeroFiammine(fiammine) {
   // Il numero con al massimo un decimale e la virgola italiana: 12 → "12", 12.4 → "12,4".
   // Oggi le fiammine sono intere; il decimale servirà per il tempo trascorso "in corso".
   return fiammine.toLocaleString("it-IT", { maximumFractionDigits: 1 });
 }
 
+// Trasforma "2026-10-12" in una data leggibile, come "12 ott 2026".
 function formattaData(testo) {
   // "T00:00" fa leggere la data come mezzanotte locale: senza, il browser userebbe
   // l'ora di Greenwich e in alcuni fusi orari mostrerebbe il giorno prima.
@@ -141,6 +205,7 @@ function formattaData(testo) {
   return data.toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" });
 }
 
+// Restituisce la data di oggi nello stesso formato del campo data.
 function dataDiOggi() {
   // Costruiamo "2026-10-12", lo stesso formato del campo data, per poterle confrontare.
   const oggi = new Date();
@@ -150,40 +215,14 @@ function dataDiOggi() {
   return oggi.getFullYear() + "-" + mese + "-" + giorno;
 }
 
-function applicaStato(voce, obiettivo) {
-  // data-stato sul li decide l'aspetto nel CSS: bordo, nome barrato, colori dei pulsanti.
-  voce.dataset.stato = obiettivo.stato;
-  voce.querySelector(".goal-start").setAttribute("aria-pressed", String(obiettivo.stato === "in-corso"));
-  const pulsanteCompleta = voce.querySelector(".goal-complete");
-  pulsanteCompleta.setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
-  // Senza tempo lavorato non si può completare. Un obiettivo già completato resta
-  // cliccabile, così si può sempre riaprire.
-  const senzaTempo = obiettivo.minutiLavorati === 0 && obiettivo.stato !== "completato";
-  pulsanteCompleta.disabled = senzaTempo;
-  pulsanteCompleta.title = senzaTempo ? "Lavora sull'obiettivo prima di completarlo" : "Segna come completato";
 
-  // Le date nel formato "2026-10-12" si possono confrontare come testo: "minore" vuol dire prima.
-  const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
-  voce.querySelector(".goal-date").classList.toggle("is-late", inRitardo);
+// =====================================================================
+// SEZIONE ELENCO DEGLI OBIETTIVI
+// Costruisce la lista: una voce, copiata dal template, per ogni obiettivo.
+// =====================================================================
 
-  // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
-  // azzurra e tremolante) o is-done (fatta, piena e accesa). Il tempo lavorato non lo misuriamo
-  // ancora: un obiettivo completato ha tutte le fiammine fatte, gli altri nessuna.
-  const fiammineFatte = obiettivo.stato === "completato" ? obiettivo.fiammine : 0;
-  // Oltre otto si vede una sola fiammina, che le rappresenta tutte: è fatta solo quando
-  // lo sono tutte, e altrimenti è lei quella da completare.
-  const tante = obiettivo.fiammine > fiammineVisibili;
-  const posizioneDaCompletare = tante ? 0 : fiammineFatte;
-  voce.querySelectorAll(".goal-flame-icons svg").forEach((fiammina, posizione) => {
-    const fatta = tante ? fiammineFatte === obiettivo.fiammine : posizione < fiammineFatte;
-    // Come hidden, anche classList funziona sugli svg.
-    fiammina.classList.toggle("is-done", fatta);
-    fiammina.classList.toggle("is-current",
-      obiettivo.stato === "in-corso" && !fatta && posizione === posizioneDaCompletare);
-  });
-}
-
-// idNuovo indica l'obiettivo appena creato, l'unico che compare con l'animazione.
+// Ricostruisce tutta la lista; idNuovo indica l'obiettivo appena creato,
+// l'unico che compare con l'animazione.
 function mostraObiettivi(idNuovo) {
   elencoObiettivi.replaceChildren();
   statoVuotoObiettivi.hidden = obiettivi.length > 0;
@@ -243,6 +282,7 @@ function mostraObiettivi(idNuovo) {
   nascondiVoceInModifica();
 }
 
+// Nasconde dalla lista l'obiettivo aperto nel modulo; con idInModifica null le mostra tutte.
 function nascondiVoceInModifica() {
   // Come nei progetti: solo la voce dell'obiettivo in modifica riceve hidden,
   // perché i suoi dati sono già nel modulo. Con idInModifica uguale a null si vedono tutte.
@@ -251,6 +291,48 @@ function nascondiVoceInModifica() {
   }
 }
 
+
+// =====================================================================
+// SEZIONE STATI DEGLI OBIETTIVI
+// Non completato, in corso e completato: come si vedono nella voce
+// e cosa succede premendo il cerchio o il play.
+// =====================================================================
+
+// Mostra lo stato di un obiettivo nella sua voce: pulsanti, data in ritardo e fiammine.
+function applicaStato(voce, obiettivo) {
+  // data-stato sul li decide l'aspetto nel CSS: bordo, nome barrato, colori dei pulsanti.
+  voce.dataset.stato = obiettivo.stato;
+  voce.querySelector(".goal-start").setAttribute("aria-pressed", String(obiettivo.stato === "in-corso"));
+  const pulsanteCompleta = voce.querySelector(".goal-complete");
+  pulsanteCompleta.setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
+  // Senza tempo lavorato non si può completare. Un obiettivo già completato resta
+  // cliccabile, così si può sempre riaprire.
+  const senzaTempo = obiettivo.minutiLavorati === 0 && obiettivo.stato !== "completato";
+  pulsanteCompleta.disabled = senzaTempo;
+  pulsanteCompleta.title = senzaTempo ? "Lavora sull'obiettivo prima di completarlo" : "Segna come completato";
+
+  // Le date nel formato "2026-10-12" si possono confrontare come testo: "minore" vuol dire prima.
+  const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
+  voce.querySelector(".goal-date").classList.toggle("is-late", inRitardo);
+
+  // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
+  // azzurra e tremolante) o is-done (fatta, piena e accesa). Il tempo lavorato non lo misuriamo
+  // ancora: un obiettivo completato ha tutte le fiammine fatte, gli altri nessuna.
+  const fiammineFatte = obiettivo.stato === "completato" ? obiettivo.fiammine : 0;
+  // Oltre otto si vede una sola fiammina, che le rappresenta tutte: è fatta solo quando
+  // lo sono tutte, e altrimenti è lei quella da completare.
+  const tante = obiettivo.fiammine > fiammineVisibili;
+  const posizioneDaCompletare = tante ? 0 : fiammineFatte;
+  voce.querySelectorAll(".goal-flame-icons svg").forEach((fiammina, posizione) => {
+    const fatta = tante ? fiammineFatte === obiettivo.fiammine : posizione < fiammineFatte;
+    // Come hidden, anche classList funziona sugli svg.
+    fiammina.classList.toggle("is-done", fatta);
+    fiammina.classList.toggle("is-current",
+      obiettivo.stato === "in-corso" && !fatta && posizione === posizioneDaCompletare);
+  });
+}
+
+// Cambia lo stato di un obiettivo dopo un clic sul cerchio o sul play, e lo salva.
 function cambiaStato(id, statoScelto) {
   const obiettivo = obiettivi.find(obiettivo => obiettivo.id === id);
   if (obiettivo === undefined) {
@@ -293,6 +375,15 @@ function cambiaStato(id, statoScelto) {
   }
 }
 
+
+// =====================================================================
+// SEZIONE SCELTA DELLE FIAMMINE
+// Il tempo previsto nel modulo. Le prime otto fiammine sono radio da cliccare;
+// la nona, con il +, vale da 9 al massimo e si regola con − e +
+// o scrivendo il numero nella finestrella.
+// =====================================================================
+
+// Aggiorna il testo sotto le fiammine ("3 fiammine · 1 h 15 min") e il segno sulla nona.
 function aggiornaTestoFiammine() {
   // Il valore dei radio è testo: Number lo trasforma nel numero di fiammine.
   const fiammine = Number(moduloObiettivo.elements.fiammine.value);
@@ -302,6 +393,7 @@ function aggiornaTestoFiammine() {
   segnoPiuFiammine.textContent = radioPiuFiammine.checked ? "+" + (fiammine - fiammineVisibili) : "+";
 }
 
+// Dà alla nona fiammina un numero (da 9 al massimo) e aggiorna tutto ciò che lo mostra.
 function impostaPiuFiammine(fiammine) {
   // Il value della nona fiammina diventa il numero scelto: elements.fiammine.value lo leggerà.
   radioPiuFiammine.value = String(fiammine);
@@ -317,6 +409,7 @@ function impostaPiuFiammine(fiammine) {
   aggiornaTestoFiammine();
 }
 
+// Toglie o aggiunge una fiammina con i pulsanti − e + della finestrella.
 function cambiaPiuFiammine(differenza) {
   // differenza vale -1 per il pulsante − e +1 per il pulsante +.
   const fiammine = Number(radioPiuFiammine.value) + differenza;
@@ -336,6 +429,7 @@ function cambiaPiuFiammine(differenza) {
   }
 }
 
+// Mentre si scrive nel numero della finestrella: tiene solo le cifre e applica i numeri validi.
 function scriviNumeroFiammine() {
   // replace con /\D/g toglie tutto ciò che non è una cifra: "1a2" diventa "12".
   campoNumeroFiammine.value = campoNumeroFiammine.value.replace(/\D/g, "");
@@ -348,6 +442,7 @@ function scriviNumeroFiammine() {
   }
 }
 
+// Quando si esce dal numero o si preme Invio: riporta il numero dentro i limiti.
 function confermaNumeroFiammine() {
   // Quando si esce dal campo o si preme Invio, un numero fuori dai limiti viene corretto:
   // sotto 9 diventa 9, oltre il massimo diventa il massimo. Un campo vuoto torna al valore scelto.
@@ -360,6 +455,7 @@ function confermaNumeroFiammine() {
   impostaPiuFiammine(fiammine);
 }
 
+// Invio nel numero della finestrella conferma il numero invece di salvare il modulo.
 function gestisciTastiNumeroFiammine(evento) {
   // Invio dentro un campo invierebbe il modulo: qui conferma soltanto il numero.
   if (evento.key === "Enter") {
@@ -368,6 +464,25 @@ function gestisciTastiNumeroFiammine(evento) {
   }
 }
 
+// Dopo ogni scelta di fiammine aggiorna il testo; con una delle prime otto chiude la finestrella.
+function gestisciSceltaFiammine(evento) {
+  // Scegliendo una delle prime otto fiammine, la finestrella non serve più
+  // e la nona fiammina torna a 9: riaprendola si riparte da lì.
+  if (evento.target.name === "fiammine" && evento.target !== radioPiuFiammine) {
+    chiudiFinestrellaFiammine();
+    impostaPiuFiammine(fiammineVisibili + 1);
+  }
+  aggiornaTestoFiammine();
+}
+
+
+// =====================================================================
+// SEZIONE FINESTRELLA DELLE FIAMMINE
+// Apertura e chiusura del piccolo pannello accanto alla nona fiammina:
+// con un clic sulla nona, un clic fuori o il tasto Esc.
+// =====================================================================
+
+// Apre o chiude la finestrella con un clic sulla nona fiammina.
 function alternaFinestrellaFiammine(evento) {
   // Il clic sulla nona fiammina la seleziona e apre la finestrella; un secondo clic la chiude.
   finestrellaFiammine.hidden = !finestrellaFiammine.hidden;
@@ -379,20 +494,12 @@ function alternaFinestrellaFiammine(evento) {
   }
 }
 
+// Chiude la finestrella.
 function chiudiFinestrellaFiammine() {
   finestrellaFiammine.hidden = true;
 }
 
-function gestisciSceltaFiammine(evento) {
-  // Scegliendo una delle prime otto fiammine, la finestrella non serve più
-  // e la nona fiammina torna a 9: riaprendola si riparte da lì.
-  if (evento.target.name === "fiammine" && evento.target !== radioPiuFiammine) {
-    chiudiFinestrellaFiammine();
-    impostaPiuFiammine(fiammineVisibili + 1);
-  }
-  aggiornaTestoFiammine();
-}
-
+// Chiude la finestrella quando si clicca fuori da lei e dalla nona fiammina.
 function chiudiFinestrellaFuori(evento) {
   // Come per il menu: chiudiamo solo se il clic è fuori dalla finestrella e dalla nona fiammina.
   if (!finestrellaFiammine.hidden
@@ -402,6 +509,7 @@ function chiudiFinestrellaFuori(evento) {
   }
 }
 
+// Chiude la finestrella con Esc e riporta il focus sulla nona fiammina.
 function chiudiFinestrellaConEsc(evento) {
   if (evento.key === "Escape" && !finestrellaFiammine.hidden) {
     chiudiFinestrellaFiammine();
@@ -410,6 +518,14 @@ function chiudiFinestrellaConEsc(evento) {
   }
 }
 
+
+// =====================================================================
+// SEZIONE MODULO: CREARE, MODIFICARE, ELIMINARE
+// Lo stesso modulo serve per un obiettivo nuovo e per modificarne uno:
+// idInModifica dice quale dei due lavori sta facendo.
+// =====================================================================
+
+// Colora la cartella accanto al menu con il colore del progetto scelto.
 function aggiornaIconaProgetto() {
   // value del select è l'id del progetto scelto: cerchiamo il progetto per leggerne il colore.
   const progetto = progetti.find(progetto => progetto.id === sceltaProgetto.value);
@@ -418,6 +534,7 @@ function aggiornaIconaProgetto() {
   }
 }
 
+// Mostra il modulo vuoto e riempie il menu con i progetti.
 function apriModuloObiettivo() {
   // Il menu a tendina riceve un option per ogni progetto: value è l'id, il testo è il nome.
   sceltaProgetto.replaceChildren();
@@ -434,6 +551,7 @@ function apriModuloObiettivo() {
   campoNomeObiettivo.focus();
 }
 
+// Apre il modulo con i dati di un obiettivo, pronto per modificarlo.
 function apriModificaObiettivo(id) {
   const obiettivo = obiettivi.find(obiettivo => obiettivo.id === id);
   if (obiettivo === undefined) {
@@ -474,6 +592,7 @@ function apriModificaObiettivo(id) {
   campoNomeObiettivo.focus();
 }
 
+// Chiude il modulo, lo svuota e lo riporta alla creazione di un obiettivo nuovo.
 function chiudiModuloObiettivo() {
   moduloObiettivo.hidden = true;
   pulsanteNuovoObiettivo.hidden = false;
@@ -492,6 +611,7 @@ function chiudiModuloObiettivo() {
   pulsanteEliminaObiettivo.hidden = true;
 }
 
+// Al salvataggio: controlla il nome, raccoglie i dati e sceglie fra creare e modificare.
 function inviaModuloObiettivo(evento) {
   // submit invierebbe il form e ricaricherebbe la pagina: gestiamo noi il salvataggio.
   evento.preventDefault();
@@ -519,6 +639,7 @@ function inviaModuloObiettivo(evento) {
   }
 }
 
+// Aggiunge un obiettivo nuovo in cima alla lista e lo salva.
 function creaObiettivo(dati) {
   // ...dati copia nome, progetto, data e fiammine; aggiungiamo id, stato e tempo.
   // Ogni obiettivo nasce "non completato" e senza minuti lavorati.
@@ -536,6 +657,7 @@ function creaObiettivo(dati) {
   messaggioObiettivi.textContent = "Obiettivo creato: " + dati.nome + ".";
 }
 
+// Sostituisce i dati di un obiettivo esistente, tenendo id, stato e minuti lavorati.
 function modificaObiettivo(id, dati) {
   // map copia l'elenco: solo l'obiettivo in modifica riceve i dati nuovi.
   // ...obiettivo tiene id e stato; ...dati, scritto dopo, sostituisce gli altri campi.
@@ -555,6 +677,7 @@ function modificaObiettivo(id, dati) {
   elencoObiettivi.querySelectorAll(".goal-edit")[posizione].focus();
 }
 
+// Elimina l'obiettivo aperto nel modulo di modifica.
 function eliminaObiettivo() {
   // Elimina si vede solo durante una modifica: l'obiettivo da eliminare è quello in idInModifica.
   const obiettivo = obiettivi.find(obiettivo => obiettivo.id === idInModifica);
@@ -577,9 +700,17 @@ function eliminaObiettivo() {
   pulsanteNuovoObiettivo.focus();
 }
 
+// Toglie l'avviso "Inserisci un nome" appena si scrive nel campo.
 function cancellaErroreNome() {
   campoNomeObiettivo.setCustomValidity("");
 }
+
+
+// =====================================================================
+// SEZIONE AVVIO DELLA PAGINA
+// Il codice che parte subito al caricamento: collega i pulsanti
+// e i campi alle funzioni e mostra la lista.
+// =====================================================================
 
 // Senza progetti non si può scegliere a chi appartiene l'obiettivo: mostriamo l'avviso.
 if (progetti.length === 0) {
@@ -587,6 +718,7 @@ if (progetti.length === 0) {
   avvisoSenzaProgetti.hidden = false;
 }
 
+// Modulo.
 pulsanteNuovoObiettivo.addEventListener("click", apriModuloObiettivo);
 pulsanteAnnullaObiettivo.addEventListener("click", chiudiModuloObiettivo);
 pulsanteEliminaObiettivo.addEventListener("click", eliminaObiettivo);
@@ -594,6 +726,8 @@ moduloObiettivo.addEventListener("submit", inviaModuloObiettivo);
 campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
 // change scatta quando l'utente sceglie un altro progetto nel menu a tendina.
 sceltaProgetto.addEventListener("change", aggiornaIconaProgetto);
+
+// Fiammine.
 // change risale dai radio delle fiammine fino al form.
 moduloObiettivo.addEventListener("change", gestisciSceltaFiammine);
 radioPiuFiammine.addEventListener("click", alternaFinestrellaFiammine);
@@ -605,6 +739,10 @@ campoNumeroFiammine.setAttribute("aria-label", "Numero di fiammine, da " + (fiam
 campoNumeroFiammine.addEventListener("input", scriviNumeroFiammine);
 campoNumeroFiammine.addEventListener("change", confermaNumeroFiammine);
 campoNumeroFiammine.addEventListener("keydown", gestisciTastiNumeroFiammine);
+
+// Finestrella: un clic fuori o Esc la chiudono.
 document.addEventListener("click", chiudiFinestrellaFuori);
 document.addEventListener("keydown", chiudiFinestrellaConEsc);
+
+// La lista compare subito, con gli obiettivi salvati.
 mostraObiettivi();

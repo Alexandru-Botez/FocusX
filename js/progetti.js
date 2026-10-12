@@ -1,20 +1,53 @@
-// Troviamo i controlli della pagina Progetti, separati da quelli del timer.
+// =====================================================================
+// PROGETTI.JS: la pagina Progetti (progetti.html)
+// Crea, mostra, modifica ed elimina i progetti, con il loro colore,
+// e li salva nel browser.
+//
+// Sezioni, nell'ordine:
+//   - ELEMENTI DELLA PAGINA
+//   - SALVATAGGIO NEL BROWSER
+//   - DATI IN MEMORIA
+//   - ELENCO DEI PROGETTI
+//   - COLORI
+//   - MODULO: CREARE E MODIFICARE
+//   - AVVIO DELLA PAGINA
+// =====================================================================
+
+
+// =====================================================================
+// SEZIONE ELEMENTI DELLA PAGINA
+// Gli elementi HTML che il codice legge o modifica, trovati con il loro id.
+// =====================================================================
+
+// Pulsanti e modulo.
 const pulsanteNuovoProgetto = document.getElementById("new-project-button");
 const moduloProgetto = document.getElementById("project-form");
+const titoloModuloProgetto = document.getElementById("project-form-title");
 const campoNomeProgetto = document.getElementById("project-name");
+const pulsanteSalvaProgetto = document.getElementById("save-project-button");
 const pulsanteAnnullaProgetto = document.getElementById("cancel-project-button");
+
+// Colori.
+const pulsanteAltriColori = document.getElementById("more-colors-button");
+const finestraAltriColori = document.getElementById("more-colors");
+
+// Elenco e messaggi.
 const elencoProgetti = document.getElementById("project-list");
 const statoVuotoProgetti = document.getElementById("projects-empty");
 const messaggioProgetti = document.getElementById("projects-message");
 const modelloVoceProgetto = document.getElementById("project-item-template");
-const pulsanteAltriColori = document.getElementById("more-colors-button");
-const finestraAltriColori = document.getElementById("more-colors");
-const titoloModuloProgetto = document.getElementById("project-form-title");
-const pulsanteSalvaProgetto = document.getElementById("save-project-button");
+
+
+// =====================================================================
+// SEZIONE SALVATAGGIO NEL BROWSER
+// Leggono e scrivono i progetti in localStorage,
+// controllando che i dati salvati siano validi.
+// =====================================================================
 
 // Questa chiave distingue i dati di FocusX da eventuali altri dati dello stesso sito.
 const chiaveProgetti = "focusx.progetti.v1";
 
+// Restituisce i progetti salvati, solo se ognuno ha id e nome.
 function caricaProgetti() {
   try {
     // localStorage conserva testo nel browser anche dopo una ricarica della pagina.
@@ -38,6 +71,7 @@ function caricaProgetti() {
   }
 }
 
+// Scrive l'elenco dei progetti nel browser; restituisce false se non ci riesce.
 function salvaProgetti(elenco) {
   try {
     // JSON.stringify compie la conversione inversa: array e oggetti diventano testo JSON.
@@ -49,12 +83,26 @@ function salvaProgetti(elenco) {
   }
 }
 
+
+// =====================================================================
+// SEZIONE DATI IN MEMORIA
+// I dati con cui lavora la pagina mentre è aperta.
+// =====================================================================
+
 let progetti = caricaProgetti();
 
 // null quando il modulo crea un progetto; altrimenti l'id del progetto in modifica.
 let idInModifica = null;
 
-// idNuovo indica il progetto appena creato, l'unico che compare con l'animazione.
+
+// =====================================================================
+// SEZIONE ELENCO DEI PROGETTI
+// Costruisce la lista, una voce per progetto copiata dal template,
+// e gestisce il cestino che elimina un progetto.
+// =====================================================================
+
+// Ricostruisce tutta la lista; idNuovo indica il progetto appena creato,
+// l'unico che compare con l'animazione.
 function mostraProgetti(idNuovo) {
   // Svuotiamo l'elenco prima di ricostruirlo, evitando righe duplicate.
   elencoProgetti.replaceChildren();
@@ -87,6 +135,7 @@ function mostraProgetti(idNuovo) {
   nascondiVoceInModifica();
 }
 
+// Nasconde dalla lista il progetto aperto nel modulo; con idInModifica null li mostra tutti.
 function nascondiVoceInModifica() {
   // children sono le voci li dell'elenco. Solo quella del progetto in modifica
   // riceve hidden; con idInModifica uguale a null nessuna voce corrisponde e tutte si vedono.
@@ -95,6 +144,7 @@ function nascondiVoceInModifica() {
   }
 }
 
+// Elimina un progetto con il cestino e sposta il focus su un pulsante vicino.
 function eliminaProgetto(id) {
   // findIndex restituisce la posizione del progetto, servirà a spostare il focus.
   const posizione = progetti.findIndex(progetto => progetto.id === id);
@@ -124,13 +174,14 @@ function eliminaProgetto(id) {
   (prossimo || pulsanteNuovoProgetto).focus();
 }
 
-function apriModuloProgetto() {
-  moduloProgetto.hidden = false;
-  pulsanteNuovoProgetto.hidden = true;
-  messaggioProgetti.textContent = "";
-  segnaColoriUsati();
-}
 
+// =====================================================================
+// SEZIONE COLORI
+// I 12 colori del modulo, il + con altri 12 colori nella finestrella
+// e il puntino sui colori già usati da altri progetti.
+// =====================================================================
+
+// Segna con un puntino i colori già usati dagli altri progetti.
 function segnaColoriUsati() {
   // I colori degli altri progetti: quello in modifica è escluso, il suo colore resta "libero".
   const coloriUsati = progetti
@@ -147,6 +198,30 @@ function segnaColoriUsati() {
   }
 }
 
+// Quando si sceglie un colore nella finestrella, il + lo mostra e la finestrella si chiude.
+function scegliAltroColore(evento) {
+  // evento.target è il radio appena selezionato: il + ne mostra il colore tramite --swatch.
+  pulsanteAltriColori.style.setProperty("--swatch", evento.target.value);
+  // hidePopover chiude la finestrella, perché la scelta è fatta.
+  finestraAltriColori.hidePopover();
+}
+
+
+// =====================================================================
+// SEZIONE MODULO: CREARE E MODIFICARE
+// Lo stesso modulo serve per un progetto nuovo e per modificarne uno:
+// idInModifica dice quale dei due lavori sta facendo.
+// =====================================================================
+
+// Mostra il modulo vuoto per creare un progetto.
+function apriModuloProgetto() {
+  moduloProgetto.hidden = false;
+  pulsanteNuovoProgetto.hidden = true;
+  messaggioProgetti.textContent = "";
+  segnaColoriUsati();
+}
+
+// Apre il modulo con nome e colore di un progetto, pronto per modificarlo.
 function apriModificaProgetto(id) {
   const progetto = progetti.find(progetto => progetto.id === id);
   if (progetto === undefined) {
@@ -175,6 +250,7 @@ function apriModificaProgetto(id) {
   campoNomeProgetto.focus();
 }
 
+// Chiude il modulo, lo svuota e lo riporta alla creazione di un progetto nuovo.
 function chiudiModuloProgetto() {
   moduloProgetto.hidden = true;
   pulsanteNuovoProgetto.hidden = false;
@@ -189,6 +265,7 @@ function chiudiModuloProgetto() {
   pulsanteSalvaProgetto.textContent = "Salva progetto";
 }
 
+// Al salvataggio: controlla il nome, legge il colore e sceglie fra creare e modificare.
 function inviaModuloProgetto(evento) {
   // submit invierebbe il form e ricaricherebbe la pagina: gestiamo noi il salvataggio.
   evento.preventDefault();
@@ -212,6 +289,7 @@ function inviaModuloProgetto(evento) {
   }
 }
 
+// Aggiunge un progetto nuovo in cima alla lista e lo salva.
 function creaProgetto(nome, colore) {
   // Ogni progetto ha un identificatore indipendente dal nome: servirà a collegare gli obiettivi.
   const nuovoProgetto = { id: crypto.randomUUID(), nome: nome, colore: colore };
@@ -228,6 +306,7 @@ function creaProgetto(nome, colore) {
   messaggioProgetti.textContent = "Progetto creato: " + nome + ".";
 }
 
+// Cambia nome e colore di un progetto esistente e lo salva.
 function modificaProgetto(id, nome, colore) {
   // map crea un nuovo array della stessa lunghezza, trasformando ogni elemento.
   // Solo il progetto in modifica cambia; gli altri vengono copiati così come sono.
@@ -252,17 +331,18 @@ function modificaProgetto(id, nome, colore) {
   elencoProgetti.querySelectorAll(".project-edit")[posizione].focus();
 }
 
-function scegliAltroColore(evento) {
-  // evento.target è il radio appena selezionato: il + ne mostra il colore tramite --swatch.
-  pulsanteAltriColori.style.setProperty("--swatch", evento.target.value);
-  // hidePopover chiude la finestrella, perché la scelta è fatta.
-  finestraAltriColori.hidePopover();
-}
-
+// Toglie l'avviso "Inserisci un nome" appena si scrive nel campo.
 function cancellaErroreNome() {
   // Un errore personalizzato va azzerato quando l'utente corregge il campo.
   campoNomeProgetto.setCustomValidity("");
 }
+
+
+// =====================================================================
+// SEZIONE AVVIO DELLA PAGINA
+// Il codice che parte subito al caricamento: collega i pulsanti
+// e i campi alle funzioni e mostra la lista.
+// =====================================================================
 
 pulsanteNuovoProgetto.addEventListener("click", apriModuloProgetto);
 pulsanteAnnullaProgetto.addEventListener("click", chiudiModuloProgetto);
@@ -270,4 +350,6 @@ moduloProgetto.addEventListener("submit", inviaModuloProgetto);
 campoNomeProgetto.addEventListener("input", cancellaErroreNome);
 // change scatta quando un radio della finestrella viene selezionato e risale fino al div.
 finestraAltriColori.addEventListener("change", scegliAltroColore);
+
+// La lista compare subito, con i progetti salvati.
 mostraProgetti();

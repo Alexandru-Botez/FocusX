@@ -17,19 +17,24 @@ Non c'è ancora una suite di test automatici nel repository.
 | File | Responsabilità |
 | --- | --- |
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
-| [styles.css](../styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
-| [script.js](../script.js) | Comportamento del timer nella pagina principale. |
-| [menu.js](../menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
+| [css/styles.css](../css/styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
+| [js/timer.js](../js/timer.js) | Comportamento del timer nella pagina principale. |
+| [js/menu.js](../js/menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
 | [progetti.html](../progetti.html) | Pagina Progetti, modulo, lista e modello di una voce. |
-| [progetti.js](../progetti.js) | Creazione, eliminazione, visualizzazione e salvataggio locale dei progetti. |
+| [js/progetti.js](../js/progetti.js) | Creazione, modifica, eliminazione, visualizzazione e salvataggio locale dei progetti. |
 | [obiettivi.html](../obiettivi.html) | Pagina Obiettivi, modulo con le fiammine, lista e modello di una voce. |
-| [obiettivi.js](../obiettivi.js) | Creazione, stati, visualizzazione e salvataggio locale degli obiettivi. |
+| [js/obiettivi.js](../js/obiettivi.js) | Creazione, modifica, stati, visualizzazione e salvataggio locale degli obiettivi. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto con fiamma bianca e occhi neri inclinati e concentrati. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app e le voci del menu. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
 
 Il browser legge `index.html`, carica il foglio CSS e il file JavaScript collegati
 e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi dell'HTML.
+
+Le pagine HTML restano nella cartella principale, così i loro indirizzi non cambiano;
+il CSS sta in `css/`, il JavaScript in `js/`, logo e font in `assets/`.
+Dentro il CSS i percorsi partono dalla cartella del file CSS: per questo il font
+si raggiunge con `../assets/fonts/`.
 Il tag `title` imposta il nome della scheda del browser: «Home» per il timer, «Progetti» per i progetti.
 
 ## Struttura HTML
@@ -101,11 +106,11 @@ verticale dell'header, aggiorna anche questa variabile.
 Grid organizza la pagina in intestazione e contenuto e centra la sezione del timer.
 Flexbox dispone il marchio e il gruppo dei pulsanti.
 `clamp()` adatta la dimensione delle cifre alla larghezza del viewport entro due limiti.
-I commenti in `styles.css` spiegano ogni dichiarazione e le unità utilizzate.
+I commenti in `css/styles.css` spiegano ogni dichiarazione e le unità utilizzate.
 
 ## Rifiniture visive in CSS
 
-Queste rifiniture sono scritte soltanto in `styles.css`: non cambiano il comportamento
+Queste rifiniture sono scritte soltanto in `css/styles.css`: non cambiano il comportamento
 e non richiedono JavaScript. Dove serve conoscere lo stato, il CSS lo legge dall'HTML
 con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 
@@ -248,8 +253,8 @@ con solo feedback visivo, in attesa delle rispettive sezioni.
 
 ## Prima versione dei progetti
 
-`progetti.html` carica `menu.js` e `progetti.js`, mentre `index.html` carica
-`menu.js` e `script.js`. Non carichiamo il timer dove i suoi elementi non sono presenti.
+`progetti.html` carica `js/menu.js` e `js/progetti.js`, mentre `index.html` carica
+`js/menu.js` e `js/timer.js`. Non carichiamo il timer dove i suoi elementi non sono presenti.
 L'header è attualmente ripetuto nei tre file HTML: quando lo modifichi, aggiornali tutti.
 
 Il pulsante Crea progetto mostra `#project-form`. Il campo `#project-name` è obbligatorio
@@ -327,7 +332,7 @@ Il cambio di pagina interrompe il timer: tornando a `index.html`, il tempo ripar
 
 ## Prima versione degli obiettivi
 
-`obiettivi.html` carica `menu.js` e `obiettivi.js` e riutilizza le classi di layout,
+`obiettivi.html` carica `js/menu.js` e `js/obiettivi.js` e riutilizza le classi di layout,
 modulo e pulsanti della pagina Progetti (`.projects-section`, `.project-form`, `.project-action`,
 `.project-item-action`), così le due pagine restano coerenti.
 
@@ -458,6 +463,13 @@ l'elemento con `statoTimer.classList.remove("is-hidden")`. Evita annunci continu
 - In JavaScript usa nomi descrittivi in camelCase, `const` per i nomi non riassegnati
   e `let` per i valori che cambiano.
 - Scrivi commenti in italiano, vicino al codice a cui si riferiscono.
+- Ogni file JavaScript inizia con un'intestazione che dice a quale pagina serve ed elenca
+  le sue sezioni. Ogni sezione si apre con un titolo, per esempio
+  `SEZIONE SCELTA DELLE FIAMMINE`, e due righe su cosa contiene; ogni funzione ha sopra
+  una riga che dice cosa fa. Una funzione nuova va nella sezione del suo argomento.
+- Nei file JavaScript l'ordine delle sezioni è sempre: elementi della pagina, impostazioni,
+  salvataggio, dati in memoria, funzioni per argomento, avvio della pagina. Il codice che parte
+  subito (dati in memoria e avvio) deve stare dopo le costanti che usa.
 - Conserva le spiegazioni che coinvolgono più file nella cartella `docs/`.
 
 Il progetto usa tecnologie native per facilitare l'apprendimento.

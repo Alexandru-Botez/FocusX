@@ -1,7 +1,31 @@
+// =====================================================================
+// MENU.JS: il menu laterale, condiviso da tutte le pagine
+// Apre e chiude il pannello con il pulsante nell'header,
+// con un clic fuori dal pannello o con il tasto Esc.
+//
+// Sezioni, nell'ordine:
+//   - ELEMENTI DELLA PAGINA
+//   - APERTURA E CHIUSURA
+//   - AVVIO DELLA PAGINA
+// =====================================================================
+
+
+// =====================================================================
+// SEZIONE ELEMENTI DELLA PAGINA
+// Il pulsante nell'header e il pannello laterale che controlla.
+// =====================================================================
+
 // Questa parte collega l'icona nell'header al pannello laterale.
 const pulsanteMenu = document.getElementById("menu-button");
 const menuLaterale = document.getElementById("sidebar-menu");
 
+
+// =====================================================================
+// SEZIONE APERTURA E CHIUSURA
+// Le tre strade per aprire o chiudere il menu: il pulsante, un clic fuori, Esc.
+// =====================================================================
+
+// Apre il menu se è chiuso, lo chiude se è aperto.
 function alternaMenu() {
   // toggle aggiunge active se manca, oppure la rimuove se è già presente.
   // Restituisce true quando la classe è presente, false quando viene rimossa.
@@ -17,6 +41,7 @@ function alternaMenu() {
   menuLaterale.inert = !menuAperto;
 }
 
+// Chiude il menu aperto quando si clicca fuori dal pulsante e dal pannello.
 function chiudiMenuFuori(evento) {
   // contains controlla se il clic è dentro il pulsante o il pannello, anche nei loro figli.
   // && significa "e": chiudiamo soltanto se tutte e tre le condizioni sono vere.
@@ -27,12 +52,19 @@ function chiudiMenuFuori(evento) {
   }
 }
 
+// Chiude il menu aperto con il tasto Esc.
 function gestisciTastoMenu(evento) {
   // key contiene il tasto premuto. Esc chiude il menu.
   if (evento.key === "Escape" && pulsanteMenu.classList.contains("active")) {
     alternaMenu();
   }
 }
+
+
+// =====================================================================
+// SEZIONE AVVIO DELLA PAGINA
+// Collega il pulsante e la pagina alle funzioni del menu.
+// =====================================================================
 
 // Il browser genera click anche quando attiviamo il button con Invio o Spazio.
 pulsanteMenu.addEventListener("click", alternaMenu);

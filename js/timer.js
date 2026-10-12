@@ -1,3 +1,22 @@
+// =====================================================================
+// TIMER.JS: il timer della pagina Home (index.html)
+// Conta 25 minuti alla rovescia, con i pulsanti Avvia, Pausa e Reset,
+// e riparte da capo quando arriva a zero.
+//
+// Sezioni, nell'ordine:
+//   - ELEMENTI DELLA PAGINA
+//   - IMPOSTAZIONI E DATI DEL TIMER
+//   - CONTEGGIO
+//   - PULSANTI AVVIA, PAUSA E RESET
+//   - AVVIO DELLA PAGINA
+// =====================================================================
+
+
+// =====================================================================
+// SEZIONE ELEMENTI DELLA PAGINA
+// Gli elementi HTML che il codice legge o modifica, trovati con il loro id.
+// =====================================================================
+
 // const dichiara un nome che non riassegneremo.
 // getElementById trova l'elemento HTML che ha l'id indicato tra virgolette.
 const timer = document.getElementById("timer");
@@ -5,6 +24,12 @@ const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
 const pulsanteReset = document.getElementById("reset-button");
 const statoTimer = document.getElementById("timer-status");
+
+
+// =====================================================================
+// SEZIONE IMPOSTAZIONI E DATI DEL TIMER
+// La durata di una sessione e i valori che cambiano mentre il timer conta.
+// =====================================================================
 
 // Lavoriamo in secondi: 25 minuti sono 25 × 60 = 1500 secondi.
 const durataSessione = 25 * 60;
@@ -16,6 +41,13 @@ let secondiRimanenti = durataSessione;
 // null significa che, all'inizio, non c'è un intervallo attivo.
 let intervalloTimer = null;
 
+
+// =====================================================================
+// SEZIONE CONTEGGIO
+// Ogni secondo toglie un secondo e aggiorna il testo "mm:ss".
+// =====================================================================
+
+// Scrive i secondi rimanenti nel formato "25:00".
 // Una funzione raggruppa istruzioni che possiamo eseguire richiamando il suo nome.
 function aggiornaTimer() {
   // La divisione calcola i minuti; Math.floor elimina la parte decimale.
@@ -33,6 +65,7 @@ function aggiornaTimer() {
   timer.textContent = minutiFormattati + ":" + secondiFormattati;
 }
 
+// Toglie un secondo; arrivato a zero, il timer riparte da 25 minuti.
 function passaUnSecondo() {
   // Riassegniamo alla variabile il suo valore precedente meno un secondo.
   secondiRimanenti = secondiRimanenti - 1;
@@ -47,6 +80,14 @@ function passaUnSecondo() {
   aggiornaTimer();
 }
 
+
+// =====================================================================
+// SEZIONE PULSANTI AVVIA, PAUSA E RESET
+// Cosa succede premendo ciascun pulsante, e quali pulsanti
+// restano attivi in ogni momento.
+// =====================================================================
+
+// Avvia il conteggio, o lo riprende dopo una pausa.
 function avviaTimer() {
   // Se un intervallo è già attivo, return termina la funzione senza crearne un altro.
   if (intervalloTimer !== null) {
@@ -72,6 +113,7 @@ function avviaTimer() {
   intervalloTimer = setInterval(passaUnSecondo, 1000);
 }
 
+// Ferma il conteggio senza perdere i secondi rimasti.
 function pausaTimer() {
   // clearInterval ferma le chiamate periodiche usando l'identificatore salvato.
   clearInterval(intervalloTimer);
@@ -84,6 +126,7 @@ function pausaTimer() {
   pulsantePausa.disabled = true;
 }
 
+// Ferma il conteggio e riporta il timer a 25:00.
 function resetTimer() {
   // Riutilizziamo Pausa per fermare l'intervallo e rendere di nuovo disponibile Avvia.
   pausaTimer();
@@ -98,6 +141,12 @@ function resetTimer() {
   // classList.remove toglie la classe: il messaggio torna visibile senza spostare il timer.
   statoTimer.classList.remove("is-hidden");
 }
+
+
+// =====================================================================
+// SEZIONE AVVIO DELLA PAGINA
+// Il codice che parte subito al caricamento: collega i pulsanti alle funzioni.
+// =====================================================================
 
 // addEventListener collega un evento a una funzione: un clic eseguirà avviaTimer.
 // Anche qui passiamo il nome della funzione senza eseguirla subito.

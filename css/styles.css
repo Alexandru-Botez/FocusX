@@ -16,8 +16,9 @@
   /* È il nome con cui richiameremo questo font, per esempio nella regola h1. */
   font-family: "ADLaM Display";
 
-  /* Percorso relativo al CSS; format indica che il file usa il formato TrueType. */
-  src: url("assets/fonts/ADLaMDisplay-Regular.ttf") format("truetype");
+  /* Il percorso parte dalla cartella del file CSS: ../ esce da css/ ed entra in assets/.
+     format indica che il file usa il formato TrueType. */
+  src: url("../assets/fonts/ADLaMDisplay-Regular.ttf") format("truetype");
 
   /* Questo file contiene la variante normale, non quella corsiva. */
   font-style: normal;

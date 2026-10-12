@@ -115,11 +115,13 @@ FocusX/
 ├── index.html              Pagina del timer
 ├── progetti.html           Pagina dei progetti
 ├── obiettivi.html          Pagina degli obiettivi
-├── styles.css              Stile di tutte le pagine
-├── script.js               Timer: avvio, pausa, reset e ripartenza
-├── menu.js                 Menu laterale, condiviso da tutte le pagine
-├── progetti.js             Creazione, eliminazione e salvataggio dei progetti
-├── obiettivi.js            Creazione, stati e salvataggio degli obiettivi
+├── css/
+│   └── styles.css          Stile di tutte le pagine
+├── js/
+│   ├── timer.js            Timer: avvio, pausa, reset e ripartenza
+│   ├── menu.js             Menu laterale, condiviso da tutte le pagine
+│   ├── progetti.js         Creazione, modifica, eliminazione e salvataggio dei progetti
+│   └── obiettivi.js        Creazione, modifica, stati e salvataggio degli obiettivi
 ├── assets/
 │   ├── focusx-mark.svg     Logo e favicon
 │   └── fonts/

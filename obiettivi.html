@@ -34,18 +34,18 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=elimina-obiettivo-1">
+    <link rel="stylesheet" href="css/styles.css?v=struttura-1">
 
     <!--
       script collega il file JavaScript indicato da src.
       defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
       dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
       Il parametro ?v aggiorna l'URL per evitare una vecchia copia del file in cache.
-      obiettivi.js gestisce la creazione, gli stati e il salvataggio locale degli obiettivi.
-      menu.js gestisce il menu anche nelle altre pagine del sito.
+      js/obiettivi.js gestisce la creazione, gli stati e il salvataggio locale degli obiettivi.
+      js/menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
-    <script src="menu.js?v=progetti-1" defer></script>
-    <script src="obiettivi.js?v=un-solo-in-corso-1" defer></script>
+    <script src="js/menu.js?v=struttura-1" defer></script>
+    <script src="js/obiettivi.js?v=struttura-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -167,7 +167,7 @@
     </svg>
 
     <!--
-      Questa pagina carica obiettivi.js e menu.js. Riutilizza le classi di layout,
+      Questa pagina carica js/obiettivi.js e js/menu.js. Riutilizza le classi di layout,
       modulo e pulsanti della pagina Progetti, così le due pagine restano coerenti.
     -->
     <main class="projects-main">
