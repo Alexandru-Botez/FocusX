@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=numero-fiammine-1">
+    <link rel="stylesheet" href="styles.css?v=logo-home-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -80,8 +80,15 @@
         quando aggiorniamo il logo, per far richiedere al browser un nuovo URL.
         alt="" indica un'immagine decorativa: il nome dell'app è già presente nel titolo.
         width e height riservano uno spazio di 44 × 44 pixel anche prima del caricamento.
+
+        Il link intorno al logo porta a Home con un clic, come il nome FocusX.
+        Per la tastiera e i lettori di schermo basta il link del nome: tabindex="-1" toglie
+        questo link dal percorso del Tab e aria-hidden="true" lo nasconde ai lettori di schermo,
+        così lo stesso link non viene annunciato due volte.
       -->
-      <img class="brand-logo" src="assets/focusx-mark.svg?v=fiamma-concentrata-2" alt="" width="44" height="44">
+      <a class="brand-logo-link" href="index.html" tabindex="-1" aria-hidden="true">
+        <img class="brand-logo" src="assets/focusx-mark.svg?v=fiamma-concentrata-2" alt="" width="44" height="44">
+      </a>
 
       <!-- h1 è il titolo principale del documento; il CSS ne sceglie font e dimensione. -->
       <h1><a class="brand-link" href="index.html">FocusX</a></h1>

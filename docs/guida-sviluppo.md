@@ -38,7 +38,8 @@ L'intestazione `header` contiene, nell'ordine, il pulsante Menu, il logo e il ti
 Il pannello `nav`, dentro l'header, contiene le cinque voci della navigazione.
 Ogni `li` contiene un `button.menu-option` con un'icona SVG decorativa e uno `span` con il testo.
 Le voci Home, Progetti e Obiettivi usano invece un `a.menu-option` con `href="index.html"`,
-`href="progetti.html"` e `href="obiettivi.html"` per navigare; nella pagina aperta la voce ha `aria-current="page"`. Il nome FocusX è un link a `index.html`.
+`href="progetti.html"` e `href="obiettivi.html"` per navigare; nella pagina aperta la voce ha `aria-current="page"`. Il nome FocusX e il logo sono link a `index.html`; il link del logo ha `tabindex="-1"` e
+`aria-hidden="true"`, così tastiera e lettori di schermo trovano un solo link, quello del nome.
 Nel `head`, un `link` con `rel="icon"` riutilizza il logo SVG come favicon della scheda.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
 All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
