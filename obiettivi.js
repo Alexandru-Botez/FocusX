@@ -34,12 +34,8 @@ const fiammineVisibili = 8;
 const oreMassime = 16;
 const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
 
-// Un oggetto usato come dizionario: a ogni stato salvato associa il testo da mostrare.
-const nomiStati = {
-  "non-completato": "Non completato",
-  "in-corso": "In corso",
-  "completato": "Completato"
-};
+// Gli unici stati che un obiettivo può avere: servono a controllare l'archivio salvato.
+const statiValidi = ["non-completato", "in-corso", "completato"];
 
 function leggiElenco(chiave) {
   // Restituisce l'array salvato con quella chiave, oppure un array vuoto se non c'è ancora.
@@ -79,8 +75,8 @@ function caricaObiettivi() {
       && Number.isInteger(obiettivo.fiammine)
       && obiettivo.fiammine >= 1
       && obiettivo.fiammine <= fiammineMassime
-      // in controlla che lo stato sia una delle chiavi di nomiStati.
-      && obiettivo.stato in nomiStati);
+      // includes controlla che lo stato sia uno di quelli dell'array statiValidi.
+      && statiValidi.includes(obiettivo.stato));
     if (!valido) {
       throw new Error("Archivio obiettivi non valido");
     }
@@ -144,7 +140,6 @@ function dataDiOggi() {
 function applicaStato(voce, obiettivo) {
   // data-stato sul li decide l'aspetto nel CSS: bordo, nome barrato, colori dei pulsanti.
   voce.dataset.stato = obiettivo.stato;
-  voce.querySelector(".goal-state").textContent = nomiStati[obiettivo.stato];
   voce.querySelector(".goal-start").setAttribute("aria-pressed", String(obiettivo.stato === "in-corso"));
   voce.querySelector(".goal-complete").setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
 
@@ -246,7 +241,6 @@ function cambiaStato(id, statoScelto) {
       applicaStato(voce, { ...obiettivo, stato: nuovoStato });
     }
   }
-  messaggioObiettivi.textContent = obiettivo.nome + ": " + nomiStati[nuovoStato] + ".";
 }
 
 function aggiornaTestoFiammine() {

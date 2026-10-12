@@ -1398,8 +1398,9 @@ button:disabled {
 .goal {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px 12px 16px 20px;
+  gap: 14px;
+  /* Ora ci sono pulsanti a entrambi i lati: stesso spazio a sinistra e a destra. */
+  padding: 16px 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background-color: var(--surface);
@@ -1410,7 +1411,7 @@ button:disabled {
   animation: compari 300ms var(--ease-out) both;
 }
 
-/* Il contenuto testuale prende lo spazio libero; i pulsanti restano a destra. */
+/* Il contenuto testuale prende lo spazio libero, fra il cerchio a sinistra e il play a destra. */
 .goal-main {
   flex: 1;
   min-width: 0;
@@ -1571,44 +1572,9 @@ button:disabled {
   color: var(--goal-progress);
 }
 
-/* L'etichetta dello stato è una piccola pillola con il bordo arrotondato. */
-.goal-state {
-  justify-self: start;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 10px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  transition: color 300ms ease, border-color 300ms ease;
-}
-
 /* [data-stato="in-corso"] seleziona il li con quell'attributo, scritto da JavaScript. */
 .goal[data-stato="in-corso"] {
   border-color: var(--goal-progress);
-}
-
-.goal[data-stato="in-corso"] .goal-state {
-  color: var(--goal-progress);
-  border-color: currentColor;
-}
-
-/* ::before aggiunge un puntino davanti a "In corso", che pulsa piano come una spia. */
-.goal[data-stato="in-corso"] .goal-state::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: currentColor;
-  animation: pulsa 1.6s ease-in-out infinite;
-}
-
-@keyframes pulsa {
-  50% {
-    opacity: 0.25;
-  }
 }
 
 .goal[data-stato="completato"] .goal-name {
@@ -1616,9 +1582,21 @@ button:disabled {
   color: var(--muted);
 }
 
-.goal[data-stato="completato"] .goal-state {
-  color: var(--goal-done);
-  border-color: currentColor;
+/*
+  Il pulsante per completare è un cerchio, come la casella di una lista di cose da fare.
+  Ha la stessa specificità di .goal-list .project-item-action ma è scritto dopo: vince lui.
+  border-radius: 50% su un quadrato disegna un cerchio.
+*/
+.goal-list .goal-complete {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.goal-list .goal-complete svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* Il pulsante dello stato attuale si riempie del colore di quello stato. */
@@ -1752,8 +1730,7 @@ button:disabled {
   .flame-count-icon,
   .goal-flame-icons svg,
   .goal,
-  .goal-name,
-  .goal-state {
+  .goal-name {
     transition: none;
   }
 
@@ -1763,7 +1740,6 @@ button:disabled {
   .goal.is-new,
   .flame-option svg,
   .flame-panel,
-  .goal-state::before,
   .goal-flame-icons svg.is-current,
   .goal.is-updated [aria-pressed="true"] svg {
     animation: none !important;

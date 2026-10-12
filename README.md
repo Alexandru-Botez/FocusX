@@ -52,8 +52,9 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   se è quella da completare mentre l'obiettivo è in corso, piena e accesa quando è fatta:
   azzurra mentre l'obiettivo è in corso, arancione quando è completato.
   Per ora sono fatte tutte quando l'obiettivo è completato.
-- Tre stati: non completato, in corso e completato. I pulsanti "play" e "spunta" mettono
-  l'obiettivo in corso o lo completano; premuti di nuovo, lo riportano a non completato.
+- Tre stati: non completato, in corso e completato. Il cerchio a sinistra del nome
+  completa l'obiettivo e il "play" a destra lo mette in corso; premuti di nuovo,
+  lo riportano a non completato. Lo stato si riconosce dai pulsanti, dal bordo e dalle fiammine.
 - Una data già passata diventa rossa finché l'obiettivo non è completato.
 - Anche gli obiettivi sono salvati in `localStorage`, con una chiave separata dai progetti.
 

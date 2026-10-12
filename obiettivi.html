@@ -34,7 +34,7 @@
       rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
       href è il percorso del file, relativo alla cartella di questo documento.
     -->
-    <link rel="stylesheet" href="styles.css?v=fatte-blu-1">
+    <link rel="stylesheet" href="styles.css?v=completa-sinistra-1">
 
     <!--
       script collega il file JavaScript indicato da src.
@@ -45,7 +45,7 @@
       menu.js gestisce il menu anche nelle altre pagine del sito.
     -->
     <script src="menu.js?v=progetti-1" defer></script>
-    <script src="obiettivi.js?v=fiammine-fatte-1" defer></script>
+    <script src="obiettivi.js?v=completa-sinistra-1" defer></script>
   </head>
 
   <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
@@ -301,10 +301,21 @@
 
         <!--
           Modello di un obiettivo. data-stato, scritto da JavaScript sul li, decide l'aspetto:
-          non-completato, in-corso o completato. A destra, i pulsanti per cambiare stato.
+          non-completato, in-corso o completato. Lo stato si vede dai pulsanti e dal bordo,
+          senza un'etichetta scritta: a sinistra il cerchio per completare, a destra il play.
         -->
         <template id="goal-item-template">
           <li class="goal">
+            <!--
+              aria-pressed dice se il pulsante è attivo: true quando l'obiettivo è completato.
+              È il primo elemento del li, quindi sta all'estrema sinistra, prima del nome.
+            -->
+            <button class="project-item-action goal-complete" type="button" aria-pressed="false" title="Segna come completato">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <!-- Il segno di spunta: obiettivo raggiunto. -->
+                <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+              </svg>
+            </button>
             <div class="goal-main">
               <p class="goal-title"><span class="goal-name"></span></p>
               <p class="goal-details">
@@ -344,20 +355,13 @@
                   <span class="goal-project-name"></span>
                 </span>
               </p>
-              <span class="goal-state"></span>
             </div>
             <div class="project-item-actions">
-              <!-- aria-pressed dice se il pulsante è attivo: true quando l'obiettivo è in quello stato. -->
+              <!-- aria-pressed è true quando l'obiettivo è in corso. -->
               <button class="project-item-action goal-start" type="button" aria-pressed="false" title="Metti in corso">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <!-- Il triangolo di "play": iniziare a lavorare sull'obiettivo. -->
                   <path d="M8 5.5v13l10-6.5-10-6.5Z"></path>
-                </svg>
-              </button>
-              <button class="project-item-action goal-complete" type="button" aria-pressed="false" title="Segna come completato">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <!-- Il segno di spunta: obiettivo raggiunto. -->
-                  <path d="M5 12.5l4.5 4.5L19 7.5"></path>
                 </svg>
               </button>
             </div>

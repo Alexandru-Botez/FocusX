@@ -391,13 +391,14 @@ tutte, altrimenti è lei quella da completare. La data è mostrata con `formatta
 come mezzanotte locale, e diventa rossa (`is-late`) se è passata e l'obiettivo non è completato:
 `dataDiOggi()` produce lo stesso formato `AAAA-MM-GG`, così le date si confrontano come testo.
 
-Gli stati sono `non-completato`, `in-corso` e `completato`; `nomiStati` associa a ognuno
-il testo da mostrare. I pulsanti `.goal-start` e `.goal-complete` chiamano `cambiaStato(id, stato)`:
+Gli stati sono `non-completato`, `in-corso` e `completato`, elencati nell'array `statiValidi`:
+`caricaObiettivi` usa `statiValidi.includes(stato)` per controllare l'archivio. I pulsanti `.goal-start` e `.goal-complete` chiamano `cambiaStato(id, stato)`:
 premere il pulsante dello stato attuale riporta l'obiettivo a `non-completato`.
 `cambiaStato` aggiorna solo la voce interessata con `applicaStato(voce, obiettivo)`,
 che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `data-stato`:
-in corso il bordo è azzurro e il puntino della pillola pulsa; completato il nome viene barrato
-da uno sfondo che passa da 0% a 100% di larghezza.
+in corso il bordo è azzurro; completato il nome viene barrato da uno sfondo che passa
+da 0% a 100% di larghezza. Non c'è un'etichetta scritta dello stato: `.goal-complete` è il primo
+elemento del `li`, un cerchio a sinistra del nome (`border-radius: 50%`), e `.goal-start` sta a destra.
 
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
 La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
