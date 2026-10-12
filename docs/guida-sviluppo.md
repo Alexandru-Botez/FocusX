@@ -470,6 +470,15 @@ l'elemento con `statoTimer.classList.remove("is-hidden")`. Evita annunci continu
 - Nei file JavaScript l'ordine delle sezioni è sempre: elementi della pagina, impostazioni,
   salvataggio, dati in memoria, funzioni per argomento, avvio della pagina. Il codice che parte
   subito (dati in memoria e avvio) deve stare dopo le costanti che usa.
+- Anche i file HTML iniziano con un'intestazione (pagina, file collegati, elenco delle sezioni)
+  e hanno un commento `SEZIONE ...` prima di ogni parte: head, intestazione e menu, poi le parti
+  della pagina. Nell'HTML l'ordine degli elementi è quello della pagina, quindi le sezioni
+  seguono quell'ordine. Dove serve, il titolo indica la sezione del file JavaScript che usa
+  quella parte, per esempio «JavaScript: sezione MODULO di js/obiettivi.js».
+- L'intestazione e il menu sono uguali nei tre file HTML, commenti compresi: cambia solo
+  la voce con `aria-current="page"`.
+- Nei file HTML i commenti spiegano le scelte del progetto (perché un attributo c'è, cosa
+  ci fa JavaScript), non cosa fa un tag o un attributo in generale: per quello c'è MDN.
 - Conserva le spiegazioni che coinvolgono più file nella cartella `docs/`.
 
 Il progetto usa tecnologie native per facilitare l'apprendimento.

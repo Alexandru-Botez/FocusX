@@ -1,66 +1,51 @@
 <!DOCTYPE html>
 <!--
-  DOCTYPE indica che il documento usa HTML moderno (HTML5).
-  Questi blocchi sono commenti: servono a chi legge il codice e non appaiono nella pagina.
-  I tag delimitano gli elementi; gli attributi ne specificano le caratteristiche.
-  L'indentazione mostra quali elementi sono contenuti dentro altri elementi.
+  =====================================================================
+  OBIETTIVI.HTML: la pagina Obiettivi, per creare, modificare ed eliminare gli obiettivi.
+  Stile: css/styles.css. Comportamento: js/menu.js e js/obiettivi.js.
+
+  Sezioni, nell'ordine:
+    - HEAD: informazioni sulla pagina e file collegati
+    - INTESTAZIONE E MENU, uguale in tutte le pagine
+    - ICONE: il disegno della fiammina, scritto una volta sola
+    - TITOLO E PULSANTE CREA
+    - MODULO DELL'OBIETTIVO: nome, progetto e data
+    - SCELTA DELLE FIAMMINE, dentro il modulo
+    - ELENCO DEGLI OBIETTIVI
+    - MESSAGGI
+  =====================================================================
 -->
-
-<!-- html contiene l'intero documento; lang="it" indica la lingua a browser e lettori di schermo. -->
 <html lang="it">
-  <!-- head contiene le informazioni sulla pagina e i collegamenti alle sue risorse. -->
+  <!-- =================================================================
+       SEZIONE HEAD
+       Informazioni sulla pagina e file collegati.
+       Il parametro ?v nei percorsi cambia a ogni modifica di un file,
+       così il browser non usa una vecchia copia salvata.
+       ================================================================= -->
   <head>
-    <!-- UTF-8 permette di interpretare correttamente lettere accentate e altri caratteri. -->
     <meta charset="UTF-8">
-
-    <!--
-      Il viewport è l'area in cui il browser mostra la pagina.
-      width=device-width usa la larghezza del dispositivo in pixel CSS.
-      initial-scale=1.0 imposta lo zoom iniziale al 100%, utile soprattutto sui telefoni.
-    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- theme-color colora di nero la barra del browser su mobile, in continuità con la pagina. -->
     <meta name="theme-color" content="#000000">
-
-    <!-- title è il nome mostrato nella scheda del browser e nei segnalibri. -->
     <title>Obiettivi</title>
-
-    <!-- rel="icon" sceglie l'icona della scheda del browser: riutilizziamo il nostro logo SVG. -->
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-
-    <!--
-      link collega una risorsa esterna al documento.
-      rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
-      href è il percorso del file, relativo alla cartella di questo documento.
-    -->
     <link rel="stylesheet" href="css/styles.css?v=struttura-1">
-
-    <!--
-      script collega il file JavaScript indicato da src.
-      defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
-      dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
-      Il parametro ?v aggiorna l'URL per evitare una vecchia copia del file in cache.
-      js/obiettivi.js gestisce la creazione, gli stati e il salvataggio locale degli obiettivi.
-      js/menu.js gestisce il menu anche nelle altre pagine del sito.
-    -->
     <script src="js/menu.js?v=struttura-1" defer></script>
     <script src="js/obiettivi.js?v=struttura-1" defer></script>
   </head>
 
-  <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
   <body>
-    <!-- header è l'intestazione della pagina: raggruppa pulsante Menu, logo e nome dell'app. -->
+    <!-- =================================================================
+         SEZIONE INTESTAZIONE E MENU
+         Pulsante del menu, logo, nome dell'app e pannello del menu.
+         È uguale in tutte e tre le pagine: cambia solo la voce con
+         aria-current="page", quella della pagina aperta.
+         Se la modifichi, aggiorna tutti e tre i file HTML.
+         JavaScript: js/menu.js.
+         ================================================================= -->
     <header>
-      <!--
-        Questo button integra l'icona SVG fornita e funziona anche con Invio e Spazio.
-        aria-label dà un nome all'icona; aria-expanded indica se il menu è aperto.
-        aria-controls contiene l'id del pannello controllato da questo pulsante.
-      -->
+      <!-- Quando il menu si apre, l'icona a tre linee si trasforma in una X dentro un cerchio. -->
       <button id="menu-button" type="button" aria-label="Menu" aria-expanded="false" aria-controls="sidebar-menu" title="Menu">
-        <!-- viewBox conserva le coordinate originali; il CSS ridimensiona e anima il disegno. -->
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
-          <!-- currentColor riprende il bianco del pulsante; round arrotonda le estremità. -->
           <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round">
             <!-- L'ordine dei sei path è importante: il CSS li seleziona con nth-child. -->
             <path d="M72 82.286h28.75"></path>
@@ -74,39 +59,28 @@
       </button>
 
       <!--
-        img mostra il logo vettoriale: SVG può essere ingrandito senza perdere nitidezza.
-        class="brand-logo" collega questo elemento al selettore .brand-logo nel CSS.
-        src indica il file; ?v=fiamma-concentrata-2 è una versione che possiamo cambiare
-        quando aggiorniamo il logo, per far richiedere al browser un nuovo URL.
-        alt="" indica un'immagine decorativa: il nome dell'app è già presente nel titolo.
-        width e height riservano uno spazio di 44 × 44 pixel anche prima del caricamento.
-
-        Il link intorno al logo porta a Home con un clic, come il nome FocusX.
-        Per la tastiera e i lettori di schermo basta il link del nome: tabindex="-1" toglie
-        questo link dal percorso del Tab e aria-hidden="true" lo nasconde ai lettori di schermo,
-        così lo stesso link non viene annunciato due volte.
+        Il logo è un link a Home, come il nome FocusX accanto. Per la tastiera e i lettori
+        di schermo basta il link del nome: tabindex="-1" e aria-hidden="true" evitano
+        che lo stesso link venga raggiunto e annunciato due volte.
       -->
       <a class="brand-logo-link" href="index.html" tabindex="-1" aria-hidden="true">
         <img class="brand-logo" src="assets/focusx-mark.svg?v=fiamma-concentrata-2" alt="" width="44" height="44">
       </a>
 
-      <!-- h1 è il titolo principale del documento; il CSS ne sceglie font e dimensione. -->
       <h1><a class="brand-link" href="index.html">FocusX</a></h1>
+
       <!--
-        nav identifica il pannello destinato alla navigazione.
-        È dentro l'header: il CSS lo sovrappone a logo e titolo, lasciando il pulsante sopra.
-        inert rende il menu chiuso non interattivo e lo esclude dai lettori di schermo.
-        JavaScript rimuove questo stato quando apre il pannello.
-        ul è una lista; Home, Progetti e Obiettivi sono link a una pagina, le altre voci sono pulsanti.
-        Questi pulsanti mostrano solo un effetto alla pressione, senza destinazione.
+        Il pannello del menu. Il CSS lo sovrappone a logo e titolo, lasciando sopra il pulsante.
+        inert lo rende non interattivo finché è chiuso: js/menu.js lo toglie quando si apre.
+        Statistica e Impostazioni per ora sono pulsanti senza destinazione:
+        le loro pagine non esistono ancora.
       -->
       <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
         <ul>
-          <!-- Le icone sono decorative: aria-hidden evita di ripetere il nome della voce. -->
           <li>
             <a class="menu-option" href="index.html">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Una casa rappresenta la pagina iniziale, quella del timer. -->
+                <!-- Una casa: la pagina iniziale, quella del timer. -->
                 <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H4a1 1 0 0 1-1-1v-9.5Z"></path>
               </svg>
               <span>Home</span>
@@ -115,7 +89,7 @@
           <li>
             <a class="menu-option" href="progetti.html">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Una cartella rappresenta i progetti. -->
+                <!-- Una cartella: i progetti. -->
                 <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
               </svg>
               <span>Progetti</span>
@@ -124,7 +98,7 @@
           <li>
             <a class="menu-option" href="obiettivi.html" aria-current="page">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Un bersaglio rappresenta gli obiettivi. -->
+                <!-- Un bersaglio: gli obiettivi. -->
                 <circle cx="12" cy="12" r="9"></circle>
                 <circle cx="12" cy="12" r="5"></circle>
                 <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"></circle>
@@ -135,7 +109,7 @@
           <li>
             <button class="menu-option" type="button">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Tre barre di altezza diversa rappresentano le statistiche. -->
+                <!-- Tre barre di altezza diversa: le statistiche. -->
                 <path d="M3 3v18h18M7 17v-5M12 17V8M17 17V5"></path>
               </svg>
               <span>Statistica</span>
@@ -144,7 +118,7 @@
           <li>
             <button class="menu-option" type="button">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Un ingranaggio con otto denti rappresenta le impostazioni. -->
+                <!-- Un ingranaggio con otto denti: le impostazioni. -->
                 <path d="M19.2 10.27L21.91 10.67V13.33L19.2 13.73A7.4 7.4 0 0 1 18.31 15.87L19.95 18.07L18.07 19.95L15.87 18.31A7.4 7.4 0 0 1 13.73 19.2L13.33 21.91H10.67L10.27 19.2A7.4 7.4 0 0 1 8.13 18.31L5.93 19.95L4.05 18.07L5.69 15.87A7.4 7.4 0 0 1 4.8 13.73L2.09 13.33V10.67L4.8 10.27A7.4 7.4 0 0 1 5.69 8.13L4.05 5.93L5.93 4.05L8.13 5.69A7.4 7.4 0 0 1 10.27 4.8L10.67 2.09H13.33L13.73 4.8A7.4 7.4 0 0 1 15.87 5.69L18.07 4.05L19.95 5.93L18.31 8.13A7.4 7.4 0 0 1 19.2 10.27Z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
               </svg>
@@ -155,11 +129,11 @@
       </nav>
     </header>
 
-    <!--
-      Questo svg non si vede: contiene solo un symbol, un disegno con un id.
-      Ogni <use href="#flame-icon"> lo richiama, così la fiammina è scritta una volta sola
-      anche se compare molte volte nella pagina.
-    -->
+    <!-- =================================================================
+         SEZIONE ICONE
+         Il disegno della fiammina, scritto una volta sola: ogni
+         <use href="#flame-icon"> nella pagina lo richiama.
+         ================================================================= -->
     <svg hidden>
       <symbol id="flame-icon" viewBox="0 0 24 24">
         <path d="M12 2.5c.6 3.2 2.6 4.9 4.2 6.9 1.4 1.7 2.3 3.5 2.3 5.6a6.5 6.5 0 0 1-13 0c0-2.4 1.2-4.4 2.9-5.9.1 1.5.8 2.7 2 3.2-.6-3.4.3-6.8 1.6-9.8Z"></path>
@@ -167,21 +141,37 @@
     </svg>
 
     <!--
-      Questa pagina carica js/obiettivi.js e js/menu.js. Riutilizza le classi di layout,
-      modulo e pulsanti della pagina Progetti, così le due pagine restano coerenti.
+      La pagina riutilizza le classi di layout, modulo e pulsanti della pagina Progetti
+      (projects-main, project-form, project-action...), così le due pagine restano coerenti.
     -->
     <main class="projects-main">
       <section class="projects-section" aria-labelledby="goals-heading">
+        <!-- ===============================================================
+             SEZIONE TITOLO E PULSANTE CREA
+             Il titolo della pagina, il pulsante che apre il modulo vuoto
+             e l'avviso che compare quando non c'è ancora nessun progetto.
+             =============================================================== -->
         <div class="projects-heading-row">
           <h2 id="goals-heading">Obiettivi</h2>
           <button id="new-goal-button" class="project-action project-action-primary" type="button">Crea obiettivo</button>
         </div>
 
-        <!-- Ogni obiettivo appartiene a un progetto: senza progetti, questo avviso porta a crearne uno. -->
+        <!--
+          Ogni obiettivo appartiene a un progetto: senza progetti, JavaScript nasconde
+          Crea obiettivo e mostra questo avviso, che porta a crearne uno.
+        -->
         <p id="goals-no-projects" class="projects-empty" hidden>
           Per creare un obiettivo serve almeno un progetto. <a href="progetti.html">Vai ai progetti</a>
         </p>
 
+        <!-- ===============================================================
+             SEZIONE MODULO DELL'OBIETTIVO
+             Nome, progetto, data e tempo previsto. Lo stesso modulo serve per
+             creare e per modificare un obiettivo: JavaScript cambia il titolo,
+             il testo del pulsante e mostra Elimina solo durante una modifica.
+             hidden lo nasconde finché non si preme Crea obiettivo o una matita.
+             JavaScript: sezione MODULO di js/obiettivi.js.
+             =============================================================== -->
         <form id="goal-form" class="project-form" hidden aria-labelledby="goal-form-title">
           <h3 id="goal-form-title" class="project-form-title">Nuovo obiettivo</h3>
 
@@ -193,10 +183,9 @@
             <div class="goal-field">
               <label for="goal-project">Progetto</label>
               <!--
-                select è un menu a tendina: JavaScript crea un option per ogni progetto.
-                Le voci di un select possono contenere solo testo: la cartella colorata
-                è un svg a parte, sovrapposto a sinistra del campo, che JavaScript colora
-                con il colore del progetto scelto.
+                JavaScript crea un option per ogni progetto. Le voci di un select possono
+                contenere solo testo: la cartella colorata è un svg a parte, sovrapposto
+                a sinistra del campo, che JavaScript colora con il colore del progetto scelto.
               -->
               <div class="goal-project-picker">
                 <svg id="goal-project-icon" class="goal-project-picker-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -207,20 +196,20 @@
             </div>
             <div class="goal-field">
               <label for="goal-date">Data prevista</label>
-              <!--
-                type="date" mostra il calendario del browser; il valore ha la forma 2026-10-12.
-                required la rende obbligatoria: senza data il browser non invia il modulo
-                e mostra un avviso sul campo, come per il nome.
-              -->
+              <!-- La data è obbligatoria (required); il valore ha la forma 2026-10-12. -->
               <input id="goal-date" name="data" type="date" required>
             </div>
           </div>
 
-          <!--
-            Le fiammine sono radio con lo stesso name: se ne sceglie una sola, ma il CSS
-            accende anche tutte quelle prima. Ogni fiammina vale 25 minuti.
-            Dopo le prime otto, la nona fiammina con il + apre una finestrella per sceglierne di più.
-          -->
+          <!-- =============================================================
+               SEZIONE SCELTA DELLE FIAMMINE
+               Il tempo previsto: per ora ogni fiammina vale 25 minuti.
+               Le fiammine sono radio con lo stesso name: se ne sceglie una sola,
+               ma il CSS accende anche tutte quelle prima. Dopo le prime otto,
+               la nona fiammina con il + apre una finestrella per sceglierne di più.
+               JavaScript: sezioni SCELTA DELLE FIAMMINE e FINESTRELLA DELLE
+               FIAMMINE di js/obiettivi.js.
+               ============================================================= -->
           <fieldset class="flame-picker">
             <legend>Tempo previsto</legend>
             <div class="flame-options">
@@ -259,7 +248,7 @@
               <!--
                 La nona fiammina è un radio come le altre, ma il suo value cambia: è il numero
                 scelto nella finestrella, da 9 in su. Cliccandola si apre la finestrella accanto.
-                aria-controls indica ai lettori di schermo quale elemento comanda.
+                JavaScript aggiorna l'aria-label con il numero scelto e il badge con "+4", "+5"...
               -->
               <label class="flame-option flame-more">
                 <input id="goal-flames-more" type="radio" name="fiammine" value="9" aria-label="Più di 8 fiammine" aria-controls="goal-flames-panel">
@@ -269,7 +258,6 @@
               <!--
                 La finestrella: − e + cambiano il numero di fiammine, che si può anche scrivere
                 direttamente nel campo al centro, accanto alla sua icona.
-                role="group" e aria-label danno un nome al gruppo di controlli.
               -->
               <div id="goal-flames-panel" class="flame-panel" role="group" aria-label="Numero di fiammine" hidden>
                 <button id="goal-flames-less" class="flame-step" type="button" aria-label="Una fiammina in meno" disabled>−</button>
@@ -277,8 +265,8 @@
                   <!--
                     Un campo di testo, non type="number": così il browser non blocca mai l'invio
                     del modulo per un valore "non valido", e i controlli li fa JavaScript.
-                    inputmode="numeric" mostra la tastiera dei numeri sui telefoni;
                     value="9" è il valore a cui lo riporta reset().
+                    JavaScript completa l'aria-label con il massimo: "da 9 a 38".
                   -->
                   <input id="goal-flames-number" class="flame-count-input" type="text" inputmode="numeric" maxlength="2" value="9" autocomplete="off" aria-label="Numero di fiammine">
                   <svg id="goal-flames-panel-icon" class="flame-count-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
@@ -286,12 +274,12 @@
                 <button id="goal-flames-plus" class="flame-step" type="button" aria-label="Una fiammina in più">+</button>
               </div>
             </div>
-            <!-- output mostra un risultato calcolato; JavaScript lo aggiorna a ogni scelta. -->
+            <!-- Il testo "3 fiammine · 1 h 15 min": JavaScript lo aggiorna a ogni scelta. -->
             <output id="goal-flames-output" class="flame-output">1 fiammina · 25 min</output>
           </fieldset>
 
+          <!-- I pulsanti del modulo. L'id di Salva serve a JavaScript per cambiarne il testo in "Salva modifiche". -->
           <div class="project-form-actions">
-            <!-- L'id serve a JavaScript per cambiare il testo in "Salva modifiche" durante una modifica. -->
             <button id="save-goal-button" class="project-action project-action-primary" type="submit">Salva obiettivo</button>
             <button id="cancel-goal-button" class="project-action" type="button">Annulla</button>
             <!--
@@ -308,19 +296,28 @@
           </div>
         </form>
 
+        <!-- ===============================================================
+             SEZIONE ELENCO DEGLI OBIETTIVI
+             Il messaggio per la lista vuota, la lista e il modello di una voce.
+             JavaScript: sezioni ELENCO e STATI DEGLI OBIETTIVI di js/obiettivi.js.
+             =============================================================== -->
+        <!-- JavaScript nasconde questo messaggio quando c'è almeno un obiettivo. -->
         <p id="goals-empty" class="projects-empty">Non hai ancora creato obiettivi.</p>
+        <!-- La lista parte vuota: JavaScript crea una voce per ciascun obiettivo. -->
         <ul id="goal-list" class="goal-list" aria-label="Obiettivi creati"></ul>
 
         <!--
-          Modello di un obiettivo. data-stato, scritto da JavaScript sul li, decide l'aspetto:
-          non-completato, in-corso o completato. Lo stato si vede dai pulsanti e dal bordo,
-          senza un'etichetta scritta: a sinistra il cerchio per completare, a destra il play.
+          Il modello di una voce, che JavaScript copia per ogni obiettivo.
+          data-stato, scritto da JavaScript sul li, decide l'aspetto: non-completato, in-corso
+          o completato. Lo stato si vede dai pulsanti, dal bordo e dalle fiammine, senza
+          un'etichetta scritta: a sinistra il cerchio per completare, a destra matita e play.
         -->
         <template id="goal-item-template">
           <li class="goal">
             <!--
-              aria-pressed dice se il pulsante è attivo: true quando l'obiettivo è completato.
-              È il primo elemento del li, quindi sta all'estrema sinistra, prima del nome.
+              Il cerchio per completare. È il primo elemento del li, quindi sta all'estrema sinistra.
+              aria-pressed è true quando l'obiettivo è completato.
+              JavaScript lo disattiva (disabled) finché sull'obiettivo non c'è tempo lavorato.
             -->
             <button class="project-item-action goal-complete" type="button" aria-pressed="false" title="Segna come completato">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -357,7 +354,6 @@
                     <!-- Un calendario: il riquadro, la riga dei giorni e i due anelli in alto. -->
                     <path d="M4 6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6ZM4 10h16M8 3v4M16 3v4"></path>
                   </svg>
-                  <!-- time indica una data leggibile anche dalle macchine, tramite datetime. -->
                   <time class="goal-date-text"></time>
                 </span>
                 <span class="goal-project">
@@ -390,7 +386,11 @@
           </li>
         </template>
 
-        <!-- role=status annuncia l'esito senza interrompere la lettura. -->
+        <!-- ===============================================================
+             SEZIONE MESSAGGI
+             L'esito delle azioni, per esempio "Obiettivo creato: Ripasso.",
+             annunciato anche dai lettori di schermo grazie a role="status".
+             =============================================================== -->
         <p id="goals-message" class="projects-message" role="status"></p>
       </section>
     </main>

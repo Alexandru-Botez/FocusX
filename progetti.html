@@ -1,66 +1,49 @@
 <!DOCTYPE html>
 <!--
-  DOCTYPE indica che il documento usa HTML moderno (HTML5).
-  Questi blocchi sono commenti: servono a chi legge il codice e non appaiono nella pagina.
-  I tag delimitano gli elementi; gli attributi ne specificano le caratteristiche.
-  L'indentazione mostra quali elementi sono contenuti dentro altri elementi.
+  =====================================================================
+  PROGETTI.HTML: la pagina Progetti, per creare, modificare ed eliminare i progetti.
+  Stile: css/styles.css. Comportamento: js/menu.js e js/progetti.js.
+
+  Sezioni, nell'ordine:
+    - HEAD: informazioni sulla pagina e file collegati
+    - INTESTAZIONE E MENU, uguale in tutte le pagine
+    - TITOLO E PULSANTE CREA
+    - MODULO DEL PROGETTO, con i colori
+    - ELENCO DEI PROGETTI
+    - MESSAGGI
+  =====================================================================
 -->
-
-<!-- html contiene l'intero documento; lang="it" indica la lingua a browser e lettori di schermo. -->
 <html lang="it">
-  <!-- head contiene le informazioni sulla pagina e i collegamenti alle sue risorse. -->
+  <!-- =================================================================
+       SEZIONE HEAD
+       Informazioni sulla pagina e file collegati.
+       Il parametro ?v nei percorsi cambia a ogni modifica di un file,
+       così il browser non usa una vecchia copia salvata.
+       ================================================================= -->
   <head>
-    <!-- UTF-8 permette di interpretare correttamente lettere accentate e altri caratteri. -->
     <meta charset="UTF-8">
-
-    <!--
-      Il viewport è l'area in cui il browser mostra la pagina.
-      width=device-width usa la larghezza del dispositivo in pixel CSS.
-      initial-scale=1.0 imposta lo zoom iniziale al 100%, utile soprattutto sui telefoni.
-    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- theme-color colora di nero la barra del browser su mobile, in continuità con la pagina. -->
     <meta name="theme-color" content="#000000">
-
-    <!-- title è il nome mostrato nella scheda del browser e nei segnalibri. -->
     <title>Progetti</title>
-
-    <!-- rel="icon" sceglie l'icona della scheda del browser: riutilizziamo il nostro logo SVG. -->
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-
-    <!--
-      link collega una risorsa esterna al documento.
-      rel="stylesheet" specifica che si tratta di un foglio di stile CSS.
-      href è il percorso del file, relativo alla cartella di questo documento.
-    -->
     <link rel="stylesheet" href="css/styles.css?v=struttura-1">
-
-    <!--
-      script collega il file JavaScript indicato da src.
-      defer permette di scaricarlo mentre il browser legge l'HTML e di eseguirlo
-      dopo che il documento è stato analizzato, quando i suoi elementi sono disponibili.
-      Il parametro ?v aggiorna l'URL per evitare una vecchia copia del file in cache.
-      js/progetti.js gestisce la creazione e il salvataggio locale dei progetti.
-      js/menu.js gestisce il menu anche nelle altre pagine del sito.
-    -->
     <script src="js/menu.js?v=struttura-1" defer></script>
     <script src="js/progetti.js?v=struttura-1" defer></script>
   </head>
 
-  <!-- body contiene gli elementi che formano il contenuto visibile della pagina. -->
   <body>
-    <!-- header è l'intestazione della pagina: raggruppa pulsante Menu, logo e nome dell'app. -->
+    <!-- =================================================================
+         SEZIONE INTESTAZIONE E MENU
+         Pulsante del menu, logo, nome dell'app e pannello del menu.
+         È uguale in tutte e tre le pagine: cambia solo la voce con
+         aria-current="page", quella della pagina aperta.
+         Se la modifichi, aggiorna tutti e tre i file HTML.
+         JavaScript: js/menu.js.
+         ================================================================= -->
     <header>
-      <!--
-        Questo button integra l'icona SVG fornita e funziona anche con Invio e Spazio.
-        aria-label dà un nome all'icona; aria-expanded indica se il menu è aperto.
-        aria-controls contiene l'id del pannello controllato da questo pulsante.
-      -->
+      <!-- Quando il menu si apre, l'icona a tre linee si trasforma in una X dentro un cerchio. -->
       <button id="menu-button" type="button" aria-label="Menu" aria-expanded="false" aria-controls="sidebar-menu" title="Menu">
-        <!-- viewBox conserva le coordinate originali; il CSS ridimensiona e anima il disegno. -->
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
-          <!-- currentColor riprende il bianco del pulsante; round arrotonda le estremità. -->
           <g fill="none" stroke="currentColor" stroke-width="6.5" stroke-linecap="round">
             <!-- L'ordine dei sei path è importante: il CSS li seleziona con nth-child. -->
             <path d="M72 82.286h28.75"></path>
@@ -74,39 +57,28 @@
       </button>
 
       <!--
-        img mostra il logo vettoriale: SVG può essere ingrandito senza perdere nitidezza.
-        class="brand-logo" collega questo elemento al selettore .brand-logo nel CSS.
-        src indica il file; ?v=fiamma-concentrata-2 è una versione che possiamo cambiare
-        quando aggiorniamo il logo, per far richiedere al browser un nuovo URL.
-        alt="" indica un'immagine decorativa: il nome dell'app è già presente nel titolo.
-        width e height riservano uno spazio di 44 × 44 pixel anche prima del caricamento.
-
-        Il link intorno al logo porta a Home con un clic, come il nome FocusX.
-        Per la tastiera e i lettori di schermo basta il link del nome: tabindex="-1" toglie
-        questo link dal percorso del Tab e aria-hidden="true" lo nasconde ai lettori di schermo,
-        così lo stesso link non viene annunciato due volte.
+        Il logo è un link a Home, come il nome FocusX accanto. Per la tastiera e i lettori
+        di schermo basta il link del nome: tabindex="-1" e aria-hidden="true" evitano
+        che lo stesso link venga raggiunto e annunciato due volte.
       -->
       <a class="brand-logo-link" href="index.html" tabindex="-1" aria-hidden="true">
         <img class="brand-logo" src="assets/focusx-mark.svg?v=fiamma-concentrata-2" alt="" width="44" height="44">
       </a>
 
-      <!-- h1 è il titolo principale del documento; il CSS ne sceglie font e dimensione. -->
       <h1><a class="brand-link" href="index.html">FocusX</a></h1>
+
       <!--
-        nav identifica il pannello destinato alla navigazione.
-        È dentro l'header: il CSS lo sovrappone a logo e titolo, lasciando il pulsante sopra.
-        inert rende il menu chiuso non interattivo e lo esclude dai lettori di schermo.
-        JavaScript rimuove questo stato quando apre il pannello.
-        ul è una lista; Home, Progetti e Obiettivi sono link a una pagina, le altre voci sono pulsanti.
-        Questi pulsanti mostrano solo un effetto alla pressione, senza destinazione.
+        Il pannello del menu. Il CSS lo sovrappone a logo e titolo, lasciando sopra il pulsante.
+        inert lo rende non interattivo finché è chiuso: js/menu.js lo toglie quando si apre.
+        Statistica e Impostazioni per ora sono pulsanti senza destinazione:
+        le loro pagine non esistono ancora.
       -->
       <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
         <ul>
-          <!-- Le icone sono decorative: aria-hidden evita di ripetere il nome della voce. -->
           <li>
             <a class="menu-option" href="index.html">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Una casa rappresenta la pagina iniziale, quella del timer. -->
+                <!-- Una casa: la pagina iniziale, quella del timer. -->
                 <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H4a1 1 0 0 1-1-1v-9.5Z"></path>
               </svg>
               <span>Home</span>
@@ -115,7 +87,7 @@
           <li>
             <a class="menu-option" href="progetti.html" aria-current="page">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Una cartella rappresenta i progetti. -->
+                <!-- Una cartella: i progetti. -->
                 <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
               </svg>
               <span>Progetti</span>
@@ -124,7 +96,7 @@
           <li>
             <a class="menu-option" href="obiettivi.html">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Un bersaglio rappresenta gli obiettivi. -->
+                <!-- Un bersaglio: gli obiettivi. -->
                 <circle cx="12" cy="12" r="9"></circle>
                 <circle cx="12" cy="12" r="5"></circle>
                 <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"></circle>
@@ -135,7 +107,7 @@
           <li>
             <button class="menu-option" type="button">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Tre barre di altezza diversa rappresentano le statistiche. -->
+                <!-- Tre barre di altezza diversa: le statistiche. -->
                 <path d="M3 3v18h18M7 17v-5M12 17V8M17 17V5"></path>
               </svg>
               <span>Statistica</span>
@@ -144,7 +116,7 @@
           <li>
             <button class="menu-option" type="button">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Un ingranaggio con otto denti rappresenta le impostazioni. -->
+                <!-- Un ingranaggio con otto denti: le impostazioni. -->
                 <path d="M19.2 10.27L21.91 10.67V13.33L19.2 13.73A7.4 7.4 0 0 1 18.31 15.87L19.95 18.07L18.07 19.95L15.87 18.31A7.4 7.4 0 0 1 13.73 19.2L13.33 21.91H10.67L10.27 19.2A7.4 7.4 0 0 1 8.13 18.31L5.93 19.95L4.05 18.07L5.69 15.87A7.4 7.4 0 0 1 4.8 13.73L2.09 13.33V10.67L4.8 10.27A7.4 7.4 0 0 1 5.69 8.13L4.05 5.93L5.93 4.05L8.13 5.69A7.4 7.4 0 0 1 10.27 4.8L10.67 2.09H13.33L13.73 4.8A7.4 7.4 0 0 1 15.87 5.69L18.07 4.05L19.95 5.93L18.31 8.13A7.4 7.4 0 0 1 19.2 10.27Z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
               </svg>
@@ -155,31 +127,35 @@
       </nav>
     </header>
 
-    <!-- Questa pagina carica js/progetti.js e js/menu.js; il timer vive nella pagina index.html. -->
+    <!-- projects-main dispone il contenuto dall'alto, invece che al centro come nel timer. -->
     <main class="projects-main">
       <section class="projects-section" aria-labelledby="projects-heading">
+        <!-- ===============================================================
+             SEZIONE TITOLO E PULSANTE CREA
+             Il titolo della pagina e il pulsante che apre il modulo vuoto.
+             =============================================================== -->
         <div class="projects-heading-row">
           <h2 id="projects-heading">Progetti</h2>
           <button id="new-project-button" class="project-action project-action-primary" type="button">Crea progetto</button>
         </div>
 
-        <!-- hidden nasconde il modulo finché l'utente non preme Crea progetto. -->
-        <!--
-          Lo stesso modulo serve per creare e per modificare un progetto:
-          JavaScript cambia il titolo e il testo del pulsante di salvataggio.
-        -->
+        <!-- ===============================================================
+             SEZIONE MODULO DEL PROGETTO
+             Nome e colore. Lo stesso modulo serve per creare e per modificare
+             un progetto: JavaScript cambia il titolo e il testo del pulsante.
+             hidden lo nasconde finché non si preme Crea progetto o una matita.
+             JavaScript: sezioni MODULO e COLORI di js/progetti.js.
+             =============================================================== -->
         <form id="project-form" class="project-form" hidden aria-labelledby="project-form-title">
           <h3 id="project-form-title" class="project-form-title">Nuovo progetto</h3>
-          <!-- for collega l'etichetta all'input; required e maxlength validano il campo. -->
           <label for="project-name">Nome del progetto</label>
           <input id="project-name" name="nome" type="text" required maxlength="80" autocomplete="off">
 
           <!--
-            fieldset raggruppa i controlli collegati; legend è il nome del gruppo.
-            I radio con lo stesso name formano una scelta unica: se ne seleziona uno solo.
-            value è il colore salvato; --swatch, una variabile CSS, colora il cerchio.
-            aria-label e title danno un nome al colore, perché il cerchio non contiene testo.
-            checked sceglie il colore predefinito, che Annulla e reset() ripristinano.
+            I colori: 12 cerchi, più il + che apre altri 12 colori in una finestrella.
+            value è il colore salvato; la variabile CSS --swatch colora il cerchio.
+            checked è il colore predefinito, che Annulla e reset() ripristinano.
+            JavaScript segna con un puntino i colori già usati da altri progetti.
           -->
           <fieldset class="project-colors">
             <legend>Colore</legend>
@@ -196,11 +172,7 @@
             <input type="radio" name="colore" value="#b197fc" style="--swatch: #b197fc" aria-label="Viola" title="Viola">
             <input type="radio" name="colore" value="#f783ac" style="--swatch: #f783ac" aria-label="Rosa" title="Rosa">
 
-            <!--
-              popovertarget collega il pulsante + alla finestrella con id="more-colors":
-              il browser la apre e la chiude al clic, senza JavaScript.
-              type="button" evita che il pulsante invii il modulo.
-            -->
+            <!-- Il + apre e chiude la finestrella da solo, grazie a popovertarget: senza JavaScript. -->
             <button id="more-colors-button" class="more-colors-button" type="button" popovertarget="more-colors" aria-label="Altri colori" title="Altri colori">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path d="M12 5v14M5 12h14"></path>
@@ -208,9 +180,8 @@
             </button>
 
             <!--
-              popover rende il div una finestrella sopra la pagina, nascosta finché non viene aperta.
-              Si chiude con Esc o con un clic fuori. I radio dentro hanno lo stesso name="colore":
-              fanno parte della stessa scelta dei dodici colori principali.
+              La finestrella con gli altri 12 colori; si chiude anche con Esc o con un clic fuori.
+              I suoi radio hanno lo stesso name="colore": sono la stessa scelta dei 12 principali.
             -->
             <div id="more-colors" class="more-colors" popover>
               <p class="more-colors-title">Altri colori</p>
@@ -231,17 +202,24 @@
             </div>
           </fieldset>
 
+          <!-- L'id del pulsante Salva serve a JavaScript per cambiarne il testo in "Salva modifiche". -->
           <div class="project-form-actions">
             <button id="save-project-button" class="project-action project-action-primary" type="submit">Salva progetto</button>
             <button id="cancel-project-button" class="project-action" type="button">Annulla</button>
           </div>
         </form>
 
+        <!-- ===============================================================
+             SEZIONE ELENCO DEI PROGETTI
+             Il messaggio per la lista vuota, la lista e il modello di una voce.
+             JavaScript: sezione ELENCO DEI PROGETTI di js/progetti.js.
+             =============================================================== -->
+        <!-- JavaScript nasconde questo messaggio quando c'è almeno un progetto. -->
         <p id="projects-empty" class="projects-empty">Non hai ancora creato progetti.</p>
-        <!-- JavaScript crea una voce per ciascun progetto, usando textContent per il nome. -->
+        <!-- La lista parte vuota: JavaScript crea una voce per ciascun progetto. -->
         <ul id="project-list" class="project-list" aria-label="Progetti creati"></ul>
         <!--
-          template non viene mostrato: è un modello che JavaScript copia per ogni progetto.
+          Il modello di una voce, che JavaScript copia per ogni progetto.
           La cartella prende il colore del progetto e lo span riceve il nome.
           A destra, la matita apre il modulo per modificarlo e il cestino lo elimina.
         -->
@@ -268,7 +246,11 @@
             </div>
           </li>
         </template>
-        <!-- role=status annuncia l'esito senza interrompere la lettura. -->
+        <!-- ===============================================================
+             SEZIONE MESSAGGI
+             L'esito delle azioni, per esempio "Progetto creato: Studio.",
+             annunciato anche dai lettori di schermo grazie a role="status".
+             =============================================================== -->
         <p id="projects-message" class="projects-message" role="status"></p>
       </section>
     </main>
