@@ -1504,9 +1504,23 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+  Le fiammine dell'elenco sono il tempo previsto, non ancora lavorato: si vedono vuote,
+  con il solo contorno arancione. fill: transparent lascia vuoto l'interno e stroke
+  disegna il bordo; il path del symbol non ha colori propri, quindi li eredita da qui.
+*/
 .goal-flame-icons svg {
   width: 15px;
   height: 15px;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  transition: fill 400ms var(--ease-out);
+}
+
+/* Quando l'obiettivo è completato, il tempo è tutto fatto: le fiammine si riempiono. */
+.goal[data-stato="completato"] .goal-flame-icons svg {
   fill: currentColor;
 }
 
@@ -1689,6 +1703,7 @@ button:disabled {
   .project-colors input,
   .flame-picker .flame-option,
   .flame-count-icon,
+  .goal-flame-icons svg,
   .goal,
   .goal-name,
   .goal-state {
