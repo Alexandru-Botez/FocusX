@@ -320,6 +320,14 @@ Ogni `li` ha un attributo `data-id`, scritto con `voce.dataset.id`;
 La chiamano `apriModificaProgetto`, `chiudiModuloProgetto` e `mostraProgetti`,
 così la voce resta nascosta anche quando l'elenco viene ricostruito.
 
+Due progetti non possono avere lo stesso nome e lo stesso colore. `esisteDoppione(nome, colore)`
+usa `some` sugli altri progetti (quello in modifica è escluso) e confronta i nomi con
+`trim().toLowerCase()`, così «Studio» e « studio» contano come uguali. `controllaDoppione()`
+disattiva `#save-project-button` e mostra `#project-duplicate-warning`; la chiamano l'evento
+`input` del modulo, che risale dal nome e da tutti i radio dei colori, e le funzioni che aprono
+e chiudono il modulo, perché scrivere `value` da JavaScript non genera eventi.
+`inviaModuloProgetto` ripete il controllo prima di salvare.
+
 `caricaProgetti()` e `salvaProgetti(elenco)` concentrano l'accesso a
 [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
 con chiave `focusx.progetti.v1`. `JSON.parse` legge l'array salvato e `JSON.stringify`
@@ -530,6 +538,9 @@ Per i progetti controlla che:
   Salva modifiche aggiorni solo quel progetto, nella stessa posizione, anche dopo una ricarica.
 - Annulla durante una modifica non cambi nulla e Crea progetto riapra un modulo vuoto.
 - Durante una modifica il progetto sparisca dall'elenco e ricompaia dopo Annulla o il salvataggio.
+- Con lo stesso nome (anche con maiuscole diverse) e lo stesso colore di un altro progetto,
+  Salva sia disattivato e compaia l'avviso; cambiando nome o colore torni attivo.
+  Modificando un progetto senza cambiarlo, Salva resti attivo.
 - I colori degli altri progetti abbiano il puntino, anche nella finestrella; in modifica
   il colore del progetto stesso non lo abbia.
 - Il colore scelto nel modulo compaia nella cartella a sinistra del nome, anche dopo una ricarica.

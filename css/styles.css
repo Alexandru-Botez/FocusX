@@ -1140,6 +1140,14 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
+/* L'avviso del doppione, sopra Salva: rosso come gli errori, piccolo come gli altri messaggi. */
+.project-form-warning {
+  margin: 0 0 12px;
+  color: var(--reset-hover);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 /* ---------- Pagina Obiettivi ---------- */
 
 /* Il link dell'avviso "Vai ai progetti" resta bianco e sottolineato, leggibile sul grigio. */

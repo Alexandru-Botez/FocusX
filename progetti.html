@@ -26,9 +26,9 @@
     <meta name="theme-color" content="#000000">
     <title>Progetti</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=struttura-1">
+    <link rel="stylesheet" href="css/styles.css?v=progetti-doppioni-1">
     <script src="js/menu.js?v=struttura-1" defer></script>
-    <script src="js/progetti.js?v=struttura-1" defer></script>
+    <script src="js/progetti.js?v=progetti-doppioni-1" defer></script>
   </head>
 
   <body>
@@ -201,6 +201,14 @@
               </div>
             </div>
           </fieldset>
+
+          <!--
+            Compare quando nome e colore sono uguali a quelli di un altro progetto:
+            intanto JavaScript disattiva Salva. role="status" lo fa annunciare ai lettori di schermo.
+          -->
+          <p id="project-duplicate-warning" class="project-form-warning" role="status" hidden>
+            Esiste già un progetto con questo nome e questo colore.
+          </p>
 
           <!-- L'id del pulsante Salva serve a JavaScript per cambiarne il testo in "Salva modifiche". -->
           <div class="project-form-actions">
