@@ -29,10 +29,10 @@
     <meta name="theme-color" content="#000000">
     <title>Home</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=home-obiettivo-1">
+    <link rel="stylesheet" href="css/styles.css?v=pillola-2">
     <script type="module" src="js/menu.js?v=moduli-1"></script>
     <script type="module" src="js/timer.js?v=moduli-1"></script>
-    <script type="module" src="js/home-obiettivo.js?v=moduli-1"></script>
+    <script type="module" src="js/home-obiettivo.js?v=pillola-2"></script>
   </head>
 
   <body>
@@ -153,8 +153,8 @@
       <section aria-label="Timer Pomodoro">
         <!-- ===============================================================
              SEZIONE OBIETTIVO SCELTO
-             L'obiettivo su cui si lavora: cerchio per completarlo, nome e
-             fiammine. Un clic sul blocco apre sotto una finestrella con gli
+             L'obiettivo su cui si lavora, in una pillola: cerchio per
+             completarlo, nome e fiammine. Un clic sul blocco apre sotto una finestrella con gli
              obiettivi da fare; premendo Avvia, quello scelto va in corso.
              Usa le stesse classi della lista obiettivi (goal-name,
              goal-flame-icons...), così fiammine e stati hanno lo stesso aspetto.
@@ -174,7 +174,6 @@
             aria-expanded dice se è aperta; JavaScript scrive l'aria-label con il nome scelto.
           -->
           <button id="home-goal-picker" class="home-goal-picker" type="button" aria-expanded="false" aria-controls="home-goal-panel">
-            <span class="home-goal-label">Obiettivo</span>
             <span class="home-goal-title"><span id="home-goal-name" class="goal-name">Scegli un obiettivo</span></span>
             <span id="home-goal-details" class="goal-details home-goal-details" hidden>
               <!-- Otto fiammine: JavaScript nasconde quelle in più e dà a ognuna il suo aspetto. -->

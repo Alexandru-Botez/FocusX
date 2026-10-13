@@ -466,8 +466,12 @@ Sopra il timer, `#home-goal` mostra l'obiettivo su cui si lavora. Lo gestisce
 `js/home-obiettivo.js`, caricato dopo `js/timer.js`. Essendo moduli, i due file possono
 chiamare entrambi `pulsanteAvvia` lo stesso pulsante: i nomi di un modulo sono privati.
 
-Il blocco ha il cerchio `.goal-complete`, a sinistra, e un unico pulsante `#home-goal-picker`
-con etichetta, nome e fiammine. Usa le stesse classi della lista (`goal-name`, `goal-flame-icons`,
+Il blocco è una pillola snella (`border-radius: 999px`, larga al massimo 340px) con il cerchio
+`.goal-complete` a sinistra e un unico pulsante `#home-goal-picker` con nome e fiammine.
+Passando il mouse sul nome diventa grigia tutta la pillola, con
+`.home-goal:has(.home-goal-picker:hover)`; il cerchio resta nero, con il suo hover separato.
+Aprendo la finestrella con il mouse il focus non si sposta (`evento.detail > 0`); da tastiera
+va sull'obiettivo già scelto o sul primo, come per la finestrella delle fiammine. Usa le stesse classi della lista (`goal-name`, `goal-flame-icons`,
 `goal-complete`) e lo stesso `<symbol id="flame-icon">`: nel CSS gli stati condivisi sono scritti
 con `:is(.goal, .home-goal)`, così fiammine, nome barrato e cerchio hanno lo stesso aspetto.
 `data-stato="nessuno"` dà al blocco vuoto un bordo tratteggiato.

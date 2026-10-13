@@ -239,7 +239,7 @@ function riempiFinestrellaObiettivi() {
 }
 
 // Apre la finestrella, o la chiude se è già aperta.
-function alternaFinestrellaObiettivi() {
+function alternaFinestrellaObiettivi(evento) {
   if (!finestrellaObiettivi.hidden) {
     chiudiFinestrellaObiettivi();
     return;
@@ -247,7 +247,12 @@ function alternaFinestrellaObiettivi() {
   riempiFinestrellaObiettivi();
   finestrellaObiettivi.hidden = false;
   pulsanteScelta.setAttribute("aria-expanded", "true");
-  // Il focus va sull'obiettivo già scelto, oppure sul primo: si sceglie anche da tastiera.
+  // Con il mouse o il dito (detail > 0) si sceglie direttamente con un clic: il focus resta
+  // dov'è e non compare il contorno bianco. Da tastiera (Invio o Spazio, detail vale 0)
+  // il focus va sull'obiettivo già scelto, oppure sul primo, così si sceglie con le frecce e Tab.
+  if (evento.detail > 0) {
+    return;
+  }
   const daSelezionare = elencoSceltaObiettivi.querySelector('[aria-pressed="true"]')
     || elencoSceltaObiettivi.querySelector(".home-goal-option");
   if (daSelezionare !== null) {

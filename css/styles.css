@@ -1683,7 +1683,8 @@ button:disabled {
 /* ---------- Home: obiettivo scelto sopra il timer ---------- */
 
 /*
-  Il blocco è una scheda come quelle della lista obiettivi, centrata sopra il timer.
+  Il blocco è una pillola snella, centrata sopra il timer:
+  border-radius: 999px arrotonda del tutto i lati corti, qualunque sia l'altezza.
   position: relative fa da riferimento alla finestrella, che si apre appena sotto.
   text-align: left annulla il testo centrato della sezione del timer.
 */
@@ -1691,20 +1692,30 @@ button:disabled {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
-  max-width: 420px;
-  margin: 0 auto 40px;
-  padding: 8px 8px 8px 12px;
+  gap: 6px;
+  max-width: 340px;
+  margin: 0 auto 36px;
+  padding: 5px;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 999px;
   background-color: var(--surface);
   text-align: left;
-  transition: border-color 300ms ease;
+  transition: border-color 300ms ease, background-color var(--transition-fast) ease;
+}
+
+/*
+  Passando il mouse sul nome diventa grigia tutta la pillola, non solo il pulsante:
+  :has() colora il blocco quando contiene il pulsante della scelta sotto il mouse.
+  Il cerchio resta nero, fuori dal grigio: è un'azione diversa, con il suo hover.
+*/
+@media (hover: hover) {
+  .home-goal:has(.home-goal-picker:hover:not(:disabled)) {
+    background-color: var(--hover);
+  }
 }
 
 /* Senza obiettivo il bordo è tratteggiato, come un posto ancora da riempire. */
 .home-goal[data-stato="nessuno"] {
-  padding-left: 8px;
   border-style: dashed;
   border-color: var(--border-strong);
 }
@@ -1714,17 +1725,23 @@ button:disabled {
   border-color: var(--goal-progress);
 }
 
-/* Il cerchio per completare, uguale a quello della lista. */
+/*
+  Il cerchio per completare, più piccolo che nella lista. Resta nero anche quando
+  la pillola diventa grigia, così si distingue dal resto; al passaggio del mouse
+  sul cerchio vale l'hover di tutti i pulsanti (bordo chiaro e sfondo grigio).
+  Da completato si riempie di verde con la regola comune della lista.
+*/
 .home-goal .goal-complete {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   flex-shrink: 0;
+  background-color: var(--background);
 }
 
 .home-goal .goal-complete svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.75;
@@ -1733,8 +1750,9 @@ button:disabled {
 }
 
 /*
-  Il resto del blocco è un pulsante: largo quanto lo spazio libero, senza bordo,
-  con il testo a sinistra e la freccia a destra. Due colonne: testi e freccia.
+  Il resto della pillola è un pulsante: largo quanto lo spazio libero, senza bordo
+  né sfondo proprio, con il testo a sinistra e la freccia a destra.
+  Due colonne (testi e freccia) e due righe (nome e fiammine).
 */
 .home-goal-picker {
   flex: 1;
@@ -1745,37 +1763,41 @@ button:disabled {
   grid-template-columns: 1fr auto;
   align-items: center;
   justify-items: start;
-  gap: 4px 12px;
-  padding: 8px 10px;
+  gap: 2px 10px;
+  padding: 3px 12px 3px 8px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 999px;
   background-color: transparent;
   text-align: left;
 }
 
-/* Un pulsante grande si riduce meno dei cerchi del timer quando lo premi. */
+/* Lo sfondo grigio lo dà già la pillola: il pulsante resta trasparente anche sotto il mouse. */
+@media (hover: hover) {
+  .home-goal-picker:hover:not(:disabled) {
+    background-color: transparent;
+  }
+}
+
+/* Un pulsante largo si riduce meno dei cerchi del timer quando lo premi. */
 .home-goal-picker:active:not(:disabled) {
   transform: scale(0.98);
 }
 
-/* Le tre righe di testo stanno nella prima colonna, una sotto l'altra. */
-.home-goal-label,
+/* Nome e fiammine stanno nella prima colonna, uno sotto l'altro. */
 .home-goal-title,
 .home-goal-details {
   grid-column: 1;
 }
 
-.home-goal-label {
-  color: var(--muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.home-goal-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
-.home-goal-title {
-  font-size: 1.0625rem;
-  font-weight: 600;
-  overflow-wrap: anywhere;
+.home-goal-details {
+  font-size: 0.8125rem;
 }
 
 /* Senza obiettivo il nome è un invito, in grigio. */
@@ -1784,12 +1806,17 @@ button:disabled {
   font-weight: 400;
 }
 
-/* La freccia occupa la seconda colonna, centrata in altezza su tutte e tre le righe. */
+/* Senza cerchio, il testo dell'invito non deve toccare il bordo sinistro della pillola. */
+.home-goal[data-stato="nessuno"] .home-goal-picker {
+  padding: 8px 12px 8px 14px;
+}
+
+/* La freccia occupa la seconda colonna, centrata in altezza su nome e fiammine. */
 .home-goal-picker .home-goal-chevron {
   grid-column: 2;
-  grid-row: 1 / span 3;
-  width: 18px;
-  height: 18px;
+  grid-row: 1 / span 2;
+  width: 16px;
+  height: 16px;
   fill: none;
   stroke: var(--muted);
   stroke-width: 2;
@@ -1817,7 +1844,7 @@ button:disabled {
   overflow-y: auto;
   padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 20px;
   background-color: var(--background);
   box-shadow: 0 10px 30px rgb(0 0 0 / 0.7);
   transform-origin: top center;
