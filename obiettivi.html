@@ -21,6 +21,10 @@
        Informazioni sulla pagina e file collegati.
        Il parametro ?v nei percorsi cambia a ogni modifica di un file,
        così il browser non usa una vecchia copia salvata.
+       type="module": ogni file JavaScript è un modulo, con i suoi nomi
+       privati, che parte dopo che il browser ha letto tutto l'HTML.
+       I moduli funzionano solo aprendo la pagina da un server
+       (python -m http.server), non con un doppio clic sul file.
        ================================================================= -->
   <head>
     <meta charset="UTF-8">
@@ -28,9 +32,9 @@
     <meta name="theme-color" content="#000000">
     <title>Obiettivi</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=progetti-doppioni-1">
-    <script src="js/menu.js?v=struttura-1" defer></script>
-    <script src="js/obiettivi.js?v=obiettivi-doppioni-1" defer></script>
+    <link rel="stylesheet" href="css/styles.css?v=home-obiettivo-1">
+    <script type="module" src="js/menu.js?v=moduli-1"></script>
+    <script type="module" src="js/obiettivi.js?v=moduli-1"></script>
   </head>
 
   <body>

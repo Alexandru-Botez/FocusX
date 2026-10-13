@@ -2,8 +2,10 @@
 // PROGETTI.JS: la pagina Progetti (progetti.html)
 // Crea, mostra, modifica ed elimina i progetti, con il loro colore,
 // e li salva nel browser.
+// È un modulo: i suoi nomi sono privati e il codice comune lo importa.
 //
 // Sezioni, nell'ordine:
+//   - IMPORTAZIONI
 //   - ELEMENTI DELLA PAGINA
 //   - SALVATAGGIO NEL BROWSER
 //   - DATI IN MEMORIA
@@ -13,6 +15,14 @@
 //   - MODULO: CREARE E MODIFICARE
 //   - AVVIO DELLA PAGINA
 // =====================================================================
+
+
+// =====================================================================
+// SEZIONE IMPORTAZIONI
+// Il codice comune ad altre pagine, scritto una volta sola nei moduli.
+// =====================================================================
+
+import { chiaveProgetti, leggiElenco } from "./archivio.js?v=moduli-1";
 
 
 // =====================================================================
@@ -43,25 +53,17 @@ const modelloVoceProgetto = document.getElementById("project-item-template");
 
 // =====================================================================
 // SEZIONE SALVATAGGIO NEL BROWSER
-// Leggono e scrivono i progetti in localStorage,
-// controllando che i dati salvati siano validi.
+// Leggono e scrivono i progetti in localStorage, controllando che i dati
+// salvati siano validi. La chiave e la lettura vera e propria (leggiElenco)
+// arrivano da js/archivio.js.
 // =====================================================================
-
-// Questa chiave distingue i dati di FocusX da eventuali altri dati dello stesso sito.
-const chiaveProgetti = "focusx.progetti.v1";
 
 // Restituisce i progetti salvati, solo se ognuno ha id e nome.
 function caricaProgetti() {
   try {
     // localStorage conserva testo nel browser anche dopo una ricarica della pagina.
-    const testoSalvato = localStorage.getItem(chiaveProgetti);
-    if (testoSalvato === null) {
-      return [];
-    }
-
-    // JSON.parse trasforma il testo JSON in un array di oggetti JavaScript.
-    const archivio = JSON.parse(testoSalvato);
-    if (!Array.isArray(archivio) || !archivio.every(progetto =>
+    const archivio = leggiElenco(chiaveProgetti);
+    if (!archivio.every(progetto =>
       progetto && typeof progetto.id === "string" && typeof progetto.nome === "string")) {
       throw new Error("Archivio progetti non valido");
     }

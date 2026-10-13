@@ -2,13 +2,15 @@
 // OBIETTIVI.JS: la pagina Obiettivi (obiettivi.html)
 // Crea, mostra, modifica ed elimina gli obiettivi, ne cambia lo stato
 // e li salva nel browser. I progetti vengono soltanto letti.
+// È un modulo: i suoi nomi sono privati e il codice comune lo importa.
 //
 // Sezioni, nell'ordine:
+//   - IMPORTAZIONI
 //   - ELEMENTI DELLA PAGINA
 //   - IMPOSTAZIONI
 //   - SALVATAGGIO NEL BROWSER
 //   - DATI IN MEMORIA
-//   - FORMATTAZIONE DI TEMPO E DATE
+//   - FORMATTAZIONE DELLE DATE
 //   - ELENCO DEGLI OBIETTIVI
 //   - STATI DEGLI OBIETTIVI
 //   - SCELTA DELLE FIAMMINE
@@ -17,6 +19,21 @@
 //   - MODULO: CREARE, MODIFICARE, ELIMINARE
 //   - AVVIO DELLA PAGINA
 // =====================================================================
+
+
+// =====================================================================
+// SEZIONE IMPORTAZIONI
+// Il codice comune ad altre pagine, scritto una volta sola nei moduli.
+// =====================================================================
+
+import { chiaveProgetti, chiaveObiettivi, leggiElenco } from "./archivio.js?v=moduli-1";
+import {
+  fiammineVisibili,
+  oreMassime,
+  fiammineMassime,
+  formattaTempo,
+  disegnaFiammine
+} from "./fiammine.js?v=moduli-1";
 
 
 // =====================================================================
@@ -60,23 +77,10 @@ const modelloVoceObiettivo = document.getElementById("goal-item-template");
 
 // =====================================================================
 // SEZIONE IMPOSTAZIONI
-// Valori fissi che decidono il comportamento della pagina:
-// cambiandoli qui, cambiano ovunque.
+// Valori fissi che decidono il comportamento della pagina.
+// Le chiavi dei dati arrivano da js/archivio.js; il valore di una fiammina
+// e i limiti (fiammineVisibili, oreMassime, fiammineMassime) da js/fiammine.js.
 // =====================================================================
-
-// Gli obiettivi hanno una chiave propria; i progetti vengono soltanto letti.
-const chiaveObiettivi = "focusx.obiettivi.v1";
-const chiaveProgetti = "focusx.progetti.v1";
-
-// Per ora ogni fiammina vale 25 minuti: cambiando questo numero cambia tutto il calcolo.
-const minutiPerFiammina = 25;
-// Le prime otto fiammine si cliccano direttamente; dalla nona si sceglie nella finestrella.
-const fiammineVisibili = 8;
-// Il limite è di tempo, non di fiammine: al massimo 16 ore, per la previsione
-// e in futuro anche per il tempo trascorso. Math.floor tiene solo le fiammine intere
-// che ci stanno: con 25 minuti sono 38 (15 h 50 min), perché 39 supererebbero le 16 ore.
-const oreMassime = 16;
-const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
 
 // Gli unici stati che un obiettivo può avere: servono a controllare l'archivio salvato.
 const statiValidi = ["non-completato", "in-corso", "completato"];
@@ -85,23 +89,9 @@ const statiValidi = ["non-completato", "in-corso", "completato"];
 // =====================================================================
 // SEZIONE SALVATAGGIO NEL BROWSER
 // Leggono e scrivono progetti e obiettivi in localStorage,
-// controllando che i dati salvati siano validi.
+// controllando che i dati salvati siano validi. La lettura vera e propria
+// è leggiElenco, importata da js/archivio.js.
 // =====================================================================
-
-// Legge un elenco salvato in localStorage; se il testo non è un array, lancia un errore.
-function leggiElenco(chiave) {
-  // Restituisce l'array salvato con quella chiave, oppure un array vuoto se non c'è ancora.
-  const testoSalvato = localStorage.getItem(chiave);
-  if (testoSalvato === null) {
-    return [];
-  }
-  const elenco = JSON.parse(testoSalvato);
-  if (!Array.isArray(elenco)) {
-    // throw interrompe la funzione con un errore, che il catch di chi la chiama riceve.
-    throw new Error("Archivio non valido");
-  }
-  return elenco;
-}
 
 // Restituisce i progetti salvati, che servono per il menu e per nome e colore delle voci.
 function caricaProgetti() {
@@ -175,29 +165,10 @@ let idInModifica = null;
 
 
 // =====================================================================
-// SEZIONE FORMATTAZIONE DI TEMPO E DATE
-// Trasformano numeri e date nel testo che si legge nella pagina.
+// SEZIONE FORMATTAZIONE DELLE DATE
+// Trasformano le date nel testo che si legge nella pagina.
+// Il testo del tempo delle fiammine, formattaTempo, arriva da js/fiammine.js.
 // =====================================================================
-
-// Scrive il tempo di un certo numero di fiammine in ore e minuti.
-function formattaTempo(fiammine) {
-  // 2 fiammine → "50 min"; 3 fiammine → "1 h 15 min"; 8 fiammine → "3 h 20 min".
-  const minuti = fiammine * minutiPerFiammina;
-  // Math.floor arrotonda per difetto; % è il resto della divisione.
-  const ore = Math.floor(minuti / 60);
-  const resto = minuti % 60;
-  if (ore === 0) {
-    return minuti + " min";
-  }
-  return resto === 0 ? ore + " h" : ore + " h " + resto + " min";
-}
-
-// Scrive il numero di fiammine all'italiana, con al massimo un decimale.
-function formattaNumeroFiammine(fiammine) {
-  // Il numero con al massimo un decimale e la virgola italiana: 12 → "12", 12.4 → "12,4".
-  // Oggi le fiammine sono intere; il decimale servirà per il tempo trascorso "in corso".
-  return fiammine.toLocaleString("it-IT", { maximumFractionDigits: 1 });
-}
 
 // Trasforma "2026-10-12" in una data leggibile, come "12 ott 2026".
 function formattaData(testo) {
@@ -251,18 +222,7 @@ function mostraObiettivi(idNuovo) {
     testoData.dateTime = obiettivo.data;
     testoData.textContent = formattaData(obiettivo.data);
 
-    // Fino a otto fiammine si vedono tutte; oltre, una sola fiammina seguita dal numero: 🔥12.
-    const tante = obiettivo.fiammine > fiammineVisibili;
-    const fiammineDaMostrare = tante ? 1 : obiettivo.fiammine;
-    const fiammine = voce.querySelectorAll(".goal-flame-icons svg");
-    fiammine.forEach((fiammina, posizione) => {
-      // Gli svg non hanno la proprietà hidden degli elementi HTML: toggleAttribute
-      // aggiunge l'attributo hidden quando la condizione è vera e lo toglie quando è falsa.
-      fiammina.toggleAttribute("hidden", posizione >= fiammineDaMostrare);
-    });
-    const numeroFiammine = voce.querySelector(".goal-flames-count");
-    numeroFiammine.hidden = !tante;
-    numeroFiammine.textContent = formattaNumeroFiammine(obiettivo.fiammine);
+    // Le fiammine le disegna applicaStato, che le aggiorna anche a ogni cambio di stato.
     voce.querySelector(".goal-minutes").textContent = formattaTempo(obiettivo.fiammine);
 
     applicaStato(voce, obiettivo);
@@ -318,21 +278,13 @@ function applicaStato(voce, obiettivo) {
   const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
   voce.querySelector(".goal-date").classList.toggle("is-late", inRitardo);
 
-  // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
-  // azzurra e tremolante) o is-done (fatta, piena e accesa). Il tempo lavorato non lo misuriamo
-  // ancora: un obiettivo completato ha tutte le fiammine fatte, gli altri nessuna.
-  const fiammineFatte = obiettivo.stato === "completato" ? obiettivo.fiammine : 0;
-  // Oltre otto si vede una sola fiammina, che le rappresenta tutte: è fatta solo quando
-  // lo sono tutte, e altrimenti è lei quella da completare.
-  const tante = obiettivo.fiammine > fiammineVisibili;
-  const posizioneDaCompletare = tante ? 0 : fiammineFatte;
-  voce.querySelectorAll(".goal-flame-icons svg").forEach((fiammina, posizione) => {
-    const fatta = tante ? fiammineFatte === obiettivo.fiammine : posizione < fiammineFatte;
-    // Come hidden, anche classList funziona sugli svg.
-    fiammina.classList.toggle("is-done", fatta);
-    fiammina.classList.toggle("is-current",
-      obiettivo.stato === "in-corso" && !fatta && posizione === posizioneDaCompletare);
-  });
+  // Quante fiammine si vedono e l'aspetto di ognuna (vuota, da completare o fatta):
+  // lo decide la funzione comune di js/fiammine.js, usata anche dalla Home.
+  disegnaFiammine(
+    voce.querySelectorAll(".goal-flame-icons svg"),
+    voce.querySelector(".goal-flames-count"),
+    obiettivo
+  );
 }
 
 // Cambia lo stato di un obiettivo dopo un clic sul cerchio o sul play, e lo salva.
@@ -776,7 +728,7 @@ moduloObiettivo.addEventListener("change", gestisciSceltaFiammine);
 radioPiuFiammine.addEventListener("click", alternaFinestrellaFiammine);
 pulsanteMenoFiammine.addEventListener("click", () => cambiaPiuFiammine(-1));
 pulsantePiuFiammine.addEventListener("click", () => cambiaPiuFiammine(1));
-// Il massimo dipende da minutiPerFiammina: lo scriviamo qui invece che nell'HTML.
+// Il massimo dipende da minutiPerFiammina (in js/fiammine.js): lo scriviamo qui invece che nell'HTML.
 campoNumeroFiammine.setAttribute("aria-label", "Numero di fiammine, da " + (fiammineVisibili + 1) + " a " + fiammineMassime);
 // input scatta a ogni cifra scritta; change quando si esce dal campo dopo averlo cambiato.
 campoNumeroFiammine.addEventListener("input", scriviNumeroFiammine);

@@ -1580,7 +1580,7 @@ button:disabled {
   si distinguono da quella da completare, azzurra ma quasi vuota e tremolante.
   Da completato tornano arancioni.
 */
-.goal[data-stato="in-corso"] .goal-flame-icons svg.is-done {
+:is(.goal, .home-goal)[data-stato="in-corso"] .goal-flame-icons svg.is-done {
   color: var(--goal-progress);
 }
 
@@ -1589,7 +1589,7 @@ button:disabled {
   border-color: var(--goal-progress);
 }
 
-.goal[data-stato="completato"] .goal-name {
+:is(.goal, .home-goal)[data-stato="completato"] .goal-name {
   background-size: 100% 1.5px;
   color: var(--muted);
 }
@@ -1669,15 +1669,228 @@ button:disabled {
   color: var(--background);
 }
 
-.goal-list .goal-complete[aria-pressed="true"] {
+:is(.goal-list, .home-goal) .goal-complete[aria-pressed="true"] {
   background-color: var(--goal-done);
   border-color: var(--goal-done);
   color: var(--background);
 }
 
 /* Dopo un clic, l'icona del pulsante appena attivato fa un piccolo salto. */
-.goal.is-updated [aria-pressed="true"] svg {
+:is(.goal, .home-goal).is-updated [aria-pressed="true"] svg {
   animation: guizzo 300ms var(--ease-out);
+}
+
+/* ---------- Home: obiettivo scelto sopra il timer ---------- */
+
+/*
+  Il blocco è una scheda come quelle della lista obiettivi, centrata sopra il timer.
+  position: relative fa da riferimento alla finestrella, che si apre appena sotto.
+  text-align: left annulla il testo centrato della sezione del timer.
+*/
+.home-goal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 420px;
+  margin: 0 auto 40px;
+  padding: 8px 8px 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background-color: var(--surface);
+  text-align: left;
+  transition: border-color 300ms ease;
+}
+
+/* Senza obiettivo il bordo è tratteggiato, come un posto ancora da riempire. */
+.home-goal[data-stato="nessuno"] {
+  padding-left: 8px;
+  border-style: dashed;
+  border-color: var(--border-strong);
+}
+
+/* In corso il bordo diventa azzurro, come la scheda nella lista. */
+.home-goal[data-stato="in-corso"] {
+  border-color: var(--goal-progress);
+}
+
+/* Il cerchio per completare, uguale a quello della lista. */
+.home-goal .goal-complete {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.home-goal .goal-complete svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+  Il resto del blocco è un pulsante: largo quanto lo spazio libero, senza bordo,
+  con il testo a sinistra e la freccia a destra. Due colonne: testi e freccia.
+*/
+.home-goal-picker {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  justify-items: start;
+  gap: 4px 12px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background-color: transparent;
+  text-align: left;
+}
+
+/* Un pulsante grande si riduce meno dei cerchi del timer quando lo premi. */
+.home-goal-picker:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Le tre righe di testo stanno nella prima colonna, una sotto l'altra. */
+.home-goal-label,
+.home-goal-title,
+.home-goal-details {
+  grid-column: 1;
+}
+
+.home-goal-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-goal-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Senza obiettivo il nome è un invito, in grigio. */
+.home-goal[data-stato="nessuno"] .goal-name {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* La freccia occupa la seconda colonna, centrata in altezza su tutte e tre le righe. */
+.home-goal-picker .home-goal-chevron {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate var(--transition-fast) ease;
+}
+
+/* A finestrella aperta la freccia si gira verso l'alto. */
+.home-goal-picker[aria-expanded="true"] .home-goal-chevron {
+  rotate: 180deg;
+}
+
+/*
+  La finestrella si apre appena sotto il blocco, larga quanto lui, sopra il timer.
+  Se gli obiettivi sono tanti, scorre al suo interno invece di allungarsi.
+*/
+.home-goal-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background-color: var(--background);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.7);
+  transform-origin: top center;
+  animation: apri-finestrella 160ms var(--ease-out);
+}
+
+.home-goal-panel-title {
+  margin: 6px 10px 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-goal-options {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Ogni voce è una riga larga: cartella, nome e tempo previsto. */
+.home-goal-option {
+  width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+  background-color: transparent;
+  text-align: left;
+}
+
+.home-goal-option:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* L'obiettivo già scelto ha lo sfondo acceso. */
+.home-goal-option[aria-pressed="true"] {
+  background-color: var(--hover);
+}
+
+.home-goal-option .home-goal-option-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.home-goal-option-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.home-goal-option-time {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.home-goal-panel-empty {
+  margin: 4px 10px 8px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Il link "Crea un obiettivo" resta bianco e sottolineato, leggibile sul grigio. */
+.home-goal-panel-empty a {
+  color: var(--text);
 }
 
 /*
@@ -1793,7 +2006,9 @@ button:disabled {
   .flame-count-icon,
   .goal-flame-icons svg,
   .goal,
-  .goal-name {
+  .goal-name,
+  .home-goal,
+  .home-goal-chevron {
     transition: none;
   }
 
@@ -1804,7 +2019,8 @@ button:disabled {
   .flame-option svg,
   .flame-panel,
   .goal-flame-icons svg.is-current,
-  .goal.is-updated [aria-pressed="true"] svg {
+  .home-goal-panel,
+  :is(.goal, .home-goal).is-updated [aria-pressed="true"] svg {
     animation: none !important;
   }
 

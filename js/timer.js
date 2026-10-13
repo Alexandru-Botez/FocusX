@@ -2,6 +2,8 @@
 // TIMER.JS: il timer della pagina Home (index.html)
 // Conta 25 minuti alla rovescia, con i pulsanti Avvia, Pausa e Reset,
 // e riparte da capo quando arriva a zero.
+// È un modulo: i suoi nomi sono privati, non si scontrano con quelli
+// degli altri file della pagina.
 //
 // Sezioni, nell'ordine:
 //   - ELEMENTI DELLA PAGINA

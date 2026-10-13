@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <!--
   =====================================================================
-  INDEX.HTML: la pagina Home, con il timer Pomodoro da 25 minuti.
-  Stile: css/styles.css. Comportamento: js/menu.js e js/timer.js.
+  INDEX.HTML: la pagina Home, con l'obiettivo scelto e il timer Pomodoro da 25 minuti.
+  Stile: css/styles.css. Comportamento: js/menu.js, js/timer.js e js/home-obiettivo.js.
 
   Sezioni, nell'ordine:
     - HEAD: informazioni sulla pagina e file collegati
     - INTESTAZIONE E MENU, uguale in tutte le pagine
+    - ICONE: il disegno della fiammina, scritto una volta sola
+    - OBIETTIVO SCELTO, sopra il timer
     - TIMER
   =====================================================================
 -->
@@ -16,6 +18,10 @@
        Informazioni sulla pagina e file collegati.
        Il parametro ?v nei percorsi cambia a ogni modifica di un file,
        così il browser non usa una vecchia copia salvata.
+       type="module": ogni file JavaScript è un modulo, con i suoi nomi
+       privati, che parte dopo che il browser ha letto tutto l'HTML.
+       I moduli funzionano solo aprendo la pagina da un server
+       (python -m http.server), non con un doppio clic sul file.
        ================================================================= -->
   <head>
     <meta charset="UTF-8">
@@ -23,9 +29,10 @@
     <meta name="theme-color" content="#000000">
     <title>Home</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=progetti-doppioni-1">
-    <script src="js/menu.js?v=struttura-1" defer></script>
-    <script src="js/timer.js?v=struttura-1" defer></script>
+    <link rel="stylesheet" href="css/styles.css?v=home-obiettivo-1">
+    <script type="module" src="js/menu.js?v=moduli-1"></script>
+    <script type="module" src="js/timer.js?v=moduli-1"></script>
+    <script type="module" src="js/home-obiettivo.js?v=moduli-1"></script>
   </head>
 
   <body>
@@ -125,13 +132,95 @@
     </header>
 
     <!-- =================================================================
+         SEZIONE ICONE
+         Il disegno della fiammina, scritto una volta sola: ogni
+         <use href="#flame-icon"> nella pagina lo richiama.
+         È lo stesso della pagina Obiettivi.
+         ================================================================= -->
+    <svg hidden>
+      <symbol id="flame-icon" viewBox="0 0 24 24">
+        <path d="M12 2.5c.6 3.2 2.6 4.9 4.2 6.9 1.4 1.7 2.3 3.5 2.3 5.6a6.5 6.5 0 0 1-13 0c0-2.4 1.2-4.4 2.9-5.9.1 1.5.8 2.7 2 3.2-.6-3.4.3-6.8 1.6-9.8Z"></path>
+      </symbol>
+    </svg>
+
+    <!-- =================================================================
          SEZIONE TIMER
          Il tempo che scorre, i pulsanti Avvia, Pausa e Reset
-         e il messaggio sullo stato del timer.
+         e il messaggio sullo stato del timer. Sopra, l'obiettivo scelto.
          JavaScript: js/timer.js.
          ================================================================= -->
     <main>
       <section aria-label="Timer Pomodoro">
+        <!-- ===============================================================
+             SEZIONE OBIETTIVO SCELTO
+             L'obiettivo su cui si lavora: cerchio per completarlo, nome e
+             fiammine. Un clic sul blocco apre sotto una finestrella con gli
+             obiettivi da fare; premendo Avvia, quello scelto va in corso.
+             Usa le stesse classi della lista obiettivi (goal-name,
+             goal-flame-icons...), così fiammine e stati hanno lo stesso aspetto.
+             JavaScript: js/home-obiettivo.js.
+             =============================================================== -->
+        <div id="home-goal" class="home-goal" data-stato="nessuno">
+          <!-- Il cerchio compare solo quando un obiettivo è scelto. -->
+          <button id="home-goal-complete" class="goal-complete" type="button" aria-pressed="false" title="Segna come completato" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!-- Il segno di spunta: obiettivo raggiunto. -->
+              <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+            </svg>
+          </button>
+
+          <!--
+            Tutto il resto del blocco è un unico pulsante che apre la finestrella.
+            aria-expanded dice se è aperta; JavaScript scrive l'aria-label con il nome scelto.
+          -->
+          <button id="home-goal-picker" class="home-goal-picker" type="button" aria-expanded="false" aria-controls="home-goal-panel">
+            <span class="home-goal-label">Obiettivo</span>
+            <span class="home-goal-title"><span id="home-goal-name" class="goal-name">Scegli un obiettivo</span></span>
+            <span id="home-goal-details" class="goal-details home-goal-details" hidden>
+              <!-- Otto fiammine: JavaScript nasconde quelle in più e dà a ognuna il suo aspetto. -->
+              <span id="home-goal-flames" class="goal-flame-icons" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+              </span>
+              <span id="home-goal-flames-count" class="goal-flames-count" hidden></span>
+              <span id="home-goal-minutes" class="goal-minutes"></span>
+            </span>
+            <svg class="home-goal-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <!-- Una freccia verso il basso: il blocco si apre. -->
+              <path d="M6 9l6 6 6-6"></path>
+            </svg>
+          </button>
+
+          <!-- La finestrella sotto il blocco, con gli obiettivi non ancora completati. -->
+          <div id="home-goal-panel" class="home-goal-panel" hidden>
+            <p class="home-goal-panel-title">Scegli un obiettivo</p>
+            <ul id="home-goal-options" class="home-goal-options" aria-label="Obiettivi da fare"></ul>
+            <p id="home-goal-empty" class="home-goal-panel-empty" hidden>
+              Non ci sono obiettivi da fare. <a href="obiettivi.html">Crea un obiettivo</a>
+            </p>
+          </div>
+
+          <!-- Il modello di una voce della finestrella, che JavaScript copia per ogni obiettivo. -->
+          <template id="home-goal-option-template">
+            <li>
+              <button class="home-goal-option" type="button" aria-pressed="false">
+                <svg class="home-goal-option-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- La cartella del progetto, con il suo colore. -->
+                  <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+                </svg>
+                <span class="home-goal-option-name"></span>
+                <span class="home-goal-option-time"></span>
+              </button>
+            </li>
+          </template>
+        </div>
+
         <!-- aria-live="off" evita che i lettori di schermo annuncino ogni secondo del conto alla rovescia. -->
         <p id="timer" role="timer" aria-live="off">25:00</p>
 

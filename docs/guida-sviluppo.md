@@ -18,7 +18,10 @@ Non c'è ancora una suite di test automatici nel repository.
 | --- | --- |
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
 | [css/styles.css](../css/styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
+| [js/archivio.js](../js/archivio.js) | Modulo comune: chiavi di `localStorage` e `leggiElenco`. |
+| [js/fiammine.js](../js/fiammine.js) | Modulo comune: valore e limiti delle fiammine, `formattaTempo`, `disegnaFiammine`. |
 | [js/timer.js](../js/timer.js) | Comportamento del timer nella pagina principale. |
+| [js/home-obiettivo.js](../js/home-obiettivo.js) | Blocco dell'obiettivo scelto sopra il timer, nella pagina principale. |
 | [js/menu.js](../js/menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
 | [progetti.html](../progetti.html) | Pagina Progetti, modulo, lista e modello di una voce. |
 | [js/progetti.js](../js/progetti.js) | Creazione, modifica, eliminazione, visualizzazione e salvataggio locale dei progetti. |
@@ -29,7 +32,15 @@ Non c'è ancora una suite di test automatici nel repository.
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
 
 Il browser legge `index.html`, carica il foglio CSS e il file JavaScript collegati
-e mostra la pagina. L'attributo `defer` fa eseguire lo script dopo l'analisi dell'HTML.
+e mostra la pagina. Tutti i file JavaScript sono caricati come moduli, con
+`<script type="module">`: ogni modulo ha i suoi nomi privati, quindi due file della stessa
+pagina possono usare lo stesso nome senza scontrarsi, e parte dopo che l'HTML è stato letto,
+come con `defer`. Il codice usato da più pagine sta in moduli comuni, `js/archivio.js`
+e `js/fiammine.js`: lo esportano con `export` e le pagine lo prendono con `import`.
+Anche negli `import` il percorso ha `?v=`, uguale in tutti i file che importano lo stesso
+modulo: con due versioni diverse il browser lo caricherebbe due volte.
+I moduli funzionano solo da un server, come `python -m http.server`, non aprendo il file
+con un doppio clic.
 
 Le pagine HTML restano nella cartella principale, così i loro indirizzi non cambiano;
 il CSS sta in `css/`, il JavaScript in `js/`, logo e font in `assets/`.
@@ -356,7 +367,7 @@ Il modulo contiene il nome, un `select` con un `option` per progetto (creato da
 e otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
 `<use href="#flame-icon">`, che richiama un unico `symbol` definito all'inizio del `body`.
 Il radio è invisibile ma resta usabile con Tab e frecce; il CSS spegne le fiammine dopo quella
-scelta con `.flame-option:has(input:checked) ~ .flame-option`. `minutiPerFiammina` vale 25:
+scelta con `.flame-option:has(input:checked) ~ .flame-option`. `minutiPerFiammina`, in `js/fiammine.js`, vale 25:
 `formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` del modulo
 e nelle voci.
 
@@ -379,7 +390,7 @@ precedente. Invio nel campo non invia il modulo: `preventDefault()` lo ferma.
 `cambiaPiuFiammine(differenza)` aggiorna il valore con `impostaPiuFiammine`, che disabilita
 `−` a 9 e `+` al massimo, fa crescere l'icona con `--crescita` e le dà un guizzo con `animate()`,
 saltato se `matchMedia` trova `prefers-reduced-motion`. Il segno sulla nona diventa «+4» per 12.
-Il limite è di tempo: `oreMassime` vale 16 e `fiammineMassime` si calcola con
+Il limite è di tempo: `oreMassime`, in `js/fiammine.js`, vale 16 e `fiammineMassime` si calcola con
 `Math.floor(oreMassime * 60 / minutiPerFiammina)`, cioè 38 fiammine con 25 minuti (15 h 50 min).
 Le 16 ore varranno anche per il tempo trascorso, quando ci sarà lo stato «in corso».
 La finestrella si chiude con Esc, con un clic fuori o scegliendo una delle prime otto,
@@ -449,6 +460,30 @@ e chiudono il modulo; `inviaModuloObiettivo` ripete il controllo prima di salvar
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
 La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
 
+## Obiettivo scelto nella Home
+
+Sopra il timer, `#home-goal` mostra l'obiettivo su cui si lavora. Lo gestisce
+`js/home-obiettivo.js`, caricato dopo `js/timer.js`. Essendo moduli, i due file possono
+chiamare entrambi `pulsanteAvvia` lo stesso pulsante: i nomi di un modulo sono privati.
+
+Il blocco ha il cerchio `.goal-complete`, a sinistra, e un unico pulsante `#home-goal-picker`
+con etichetta, nome e fiammine. Usa le stesse classi della lista (`goal-name`, `goal-flame-icons`,
+`goal-complete`) e lo stesso `<symbol id="flame-icon">`: nel CSS gli stati condivisi sono scritti
+con `:is(.goal, .home-goal)`, così fiammine, nome barrato e cerchio hanno lo stesso aspetto.
+`data-stato="nessuno"` dà al blocco vuoto un bordo tratteggiato.
+
+Un clic sul pulsante apre `#home-goal-panel` appena sotto il blocco (`position: absolute`),
+riempito da `riempiFinestrellaObiettivi()` con gli obiettivi non completati, copiando
+`template#home-goal-option-template`. La finestrella si chiude scegliendo un obiettivo,
+con un clic fuori o con Esc. L'id scelto è salvato con la chiave `focusx.home.obiettivo.v1`;
+aprendo la Home si mostra quello, oppure l'obiettivo in corso.
+
+Avvia mette in corso l'obiettivo scelto: `js/home-obiettivo.js` aggiunge un proprio listener
+al pulsante, senza modificare `js/timer.js`. Se il timer sta già contando, anche scegliere
+un altro obiettivo lo mette in corso. Valgono le regole della pagina Obiettivi: un solo
+obiettivo in corso e cerchio disattivato senza tempo lavorato. Le fiammine si disegnano
+con `disegnaFiammine`, la stessa funzione della lista, importata da `js/fiammine.js`.
+
 ## Accessibilità
 
 Le scelte presenti nel codice sono:
@@ -482,8 +517,8 @@ l'elemento con `statoTimer.classList.remove("is-hidden")`. Evita annunci continu
   le sue sezioni. Ogni sezione si apre con un titolo, per esempio
   `SEZIONE SCELTA DELLE FIAMMINE`, e due righe su cosa contiene; ogni funzione ha sopra
   una riga che dice cosa fa. Una funzione nuova va nella sezione del suo argomento.
-- Nei file JavaScript l'ordine delle sezioni è sempre: elementi della pagina, impostazioni,
-  salvataggio, dati in memoria, funzioni per argomento, avvio della pagina. Il codice che parte
+- Nei file JavaScript l'ordine delle sezioni è sempre: importazioni, elementi della pagina,
+  impostazioni, salvataggio, dati in memoria, funzioni per argomento, avvio della pagina. Il codice che parte
   subito (dati in memoria e avvio) deve stare dopo le costanti che usa.
 - Anche i file HTML iniziano con un'intestazione (pagina, file collegati, elenco delle sezioni)
   e hanno un commento `SEZIONE ...` prima di ogni parte: head, intestazione e menu, poi le parti
@@ -587,6 +622,15 @@ Per gli obiettivi controlla che:
   Modificando un obiettivo senza cambiarlo, Salva resti attivo.
 - Elimina si veda solo in modifica e cancelli l'obiettivo, anche dopo una ricarica; eliminando l'ultimo
   ricompaia «Non hai ancora creato obiettivi».
+
+Per l'obiettivo nella Home controlla che:
+
+- Senza obiettivo scelto il blocco sia tratteggiato e dica «Scegli un obiettivo».
+- Il clic apra la finestrella sotto il blocco, sopra il timer, con i soli obiettivi da fare
+  e la cartella del colore del progetto; Esc, un clic fuori o una scelta la chiudano.
+- Avvia metta in corso l'obiettivo scelto (bordo azzurro, fiammina tremolante) e fermi l'altro;
+  a timer avviato, scegliere un altro obiettivo lo metta in corso.
+- Dopo una ricarica resti scelto lo stesso obiettivo; su un telefono il blocco non esca dallo schermo.
 
 Per il timer attuale controlla anche che:
 

@@ -2,6 +2,8 @@
 // MENU.JS: il menu laterale, condiviso da tutte le pagine
 // Apre e chiude il pannello con il pulsante nell'header,
 // con un clic fuori dal pannello o con il tasto Esc.
+// È un modulo: i suoi nomi sono privati, non si scontrano con quelli
+// degli altri file della pagina.
 //
 // Sezioni, nell'ordine:
 //   - ELEMENTI DELLA PAGINA
