@@ -8,7 +8,7 @@
     - HEAD: informazioni sulla pagina e file collegati
     - INTESTAZIONE E MENU, uguale in tutte le pagine
     - TITOLO E PULSANTE CREA
-    - MODULO DEL PROGETTO, con i colori
+    - MODULO DEL PROGETTO, con i colori e l'avviso dei doppioni
     - ELENCO DEI PROGETTI
     - MESSAGGI
   =====================================================================
@@ -143,8 +143,11 @@
              SEZIONE MODULO DEL PROGETTO
              Nome e colore. Lo stesso modulo serve per creare e per modificare
              un progetto: JavaScript cambia il titolo e il testo del pulsante.
+             Se nome e colore sono uguali a quelli di un altro progetto,
+             Salva si disattiva e compare l'avviso sopra i pulsanti.
              hidden lo nasconde finché non si preme Crea progetto o una matita.
-             JavaScript: sezioni MODULO e COLORI di js/progetti.js.
+             JavaScript: sezioni MODULO, COLORI e CONTROLLO DEI DOPPIONI
+             di js/progetti.js.
              =============================================================== -->
         <form id="project-form" class="project-form" hidden aria-labelledby="project-form-title">
           <h3 id="project-form-title" class="project-form-title">Nuovo progetto</h3>
@@ -205,6 +208,7 @@
           <!--
             Compare quando nome e colore sono uguali a quelli di un altro progetto:
             intanto JavaScript disattiva Salva. role="status" lo fa annunciare ai lettori di schermo.
+            JavaScript: sezione CONTROLLO DEI DOPPIONI di js/progetti.js.
           -->
           <p id="project-duplicate-warning" class="project-form-warning" role="status" hidden>
             Esiste già un progetto con questo nome e questo colore.

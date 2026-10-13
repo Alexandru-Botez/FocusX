@@ -9,6 +9,7 @@
 //   - DATI IN MEMORIA
 //   - ELENCO DEI PROGETTI
 //   - COLORI
+//   - CONTROLLO DEI DOPPIONI
 //   - MODULO: CREARE E MODIFICARE
 //   - AVVIO DELLA PAGINA
 // =====================================================================
@@ -25,6 +26,7 @@ const moduloProgetto = document.getElementById("project-form");
 const titoloModuloProgetto = document.getElementById("project-form-title");
 const campoNomeProgetto = document.getElementById("project-name");
 const pulsanteSalvaProgetto = document.getElementById("save-project-button");
+// L'avviso che compare sopra Salva quando il progetto sarebbe un doppione.
 const avvisoDoppione = document.getElementById("project-duplicate-warning");
 const pulsanteAnnullaProgetto = document.getElementById("cancel-project-button");
 
@@ -209,9 +211,37 @@ function scegliAltroColore(evento) {
 
 
 // =====================================================================
+// SEZIONE CONTROLLO DEI DOPPIONI
+// Due progetti non possono avere lo stesso nome e lo stesso colore:
+// finché il modulo descrive un doppione, Salva è disattivato
+// e un avviso spiega perché. Maiuscole e spazi ai lati non contano.
+// =====================================================================
+
+// Dice se un altro progetto ha già questo nome e questo colore.
+function esisteDoppione(nome, colore) {
+  // trim e toLowerCase: "Studio", "studio" e " Studio " contano come lo stesso nome.
+  const nomeNormale = nome.trim().toLowerCase();
+  // some restituisce true appena trova un elemento che rispetta la condizione.
+  // Il progetto in modifica è escluso: confrontarlo con sé stesso darebbe sempre un doppione.
+  return progetti.some(progetto =>
+    progetto.id !== idInModifica
+    && progetto.nome.trim().toLowerCase() === nomeNormale
+    && progetto.colore === colore);
+}
+
+// A ogni cambio di nome o colore disattiva Salva e mostra l'avviso se il progetto è un doppione.
+function controllaDoppione() {
+  const doppione = esisteDoppione(campoNomeProgetto.value, moduloProgetto.elements.colore.value);
+  pulsanteSalvaProgetto.disabled = doppione;
+  avvisoDoppione.hidden = !doppione;
+}
+
+
+// =====================================================================
 // SEZIONE MODULO: CREARE E MODIFICARE
 // Lo stesso modulo serve per un progetto nuovo e per modificarne uno:
-// idInModifica dice quale dei due lavori sta facendo.
+// idInModifica dice quale dei due lavori sta facendo. Aprendo, chiudendo
+// e salvando, il modulo richiama il controllo dei doppioni.
 // =====================================================================
 
 // Mostra il modulo vuoto per creare un progetto.
@@ -340,25 +370,6 @@ function modificaProgetto(id, nome, colore) {
   elencoProgetti.querySelectorAll(".project-edit")[posizione].focus();
 }
 
-// Dice se un altro progetto ha già questo nome e questo colore.
-function esisteDoppione(nome, colore) {
-  // trim e toLowerCase: "Studio", "studio" e " Studio " contano come lo stesso nome.
-  const nomeNormale = nome.trim().toLowerCase();
-  // some restituisce true appena trova un elemento che rispetta la condizione.
-  // Il progetto in modifica è escluso: confrontarlo con sé stesso darebbe sempre un doppione.
-  return progetti.some(progetto =>
-    progetto.id !== idInModifica
-    && progetto.nome.trim().toLowerCase() === nomeNormale
-    && progetto.colore === colore);
-}
-
-// A ogni cambio di nome o colore disattiva Salva e mostra l'avviso se il progetto è un doppione.
-function controllaDoppione() {
-  const doppione = esisteDoppione(campoNomeProgetto.value, moduloProgetto.elements.colore.value);
-  pulsanteSalvaProgetto.disabled = doppione;
-  avvisoDoppione.hidden = !doppione;
-}
-
 // Toglie l'avviso "Inserisci un nome" appena si scrive nel campo.
 function cancellaErroreNome() {
   // Un errore personalizzato va azzerato quando l'utente corregge il campo.
@@ -372,14 +383,19 @@ function cancellaErroreNome() {
 // e i campi alle funzioni e mostra la lista.
 // =====================================================================
 
+// Modulo.
 pulsanteNuovoProgetto.addEventListener("click", apriModuloProgetto);
 pulsanteAnnullaProgetto.addEventListener("click", chiudiModuloProgetto);
 moduloProgetto.addEventListener("submit", inviaModuloProgetto);
 campoNomeProgetto.addEventListener("input", cancellaErroreNome);
-// input risale dal campo del nome e da tutti i radio dei colori, anche quelli della finestrella.
-moduloProgetto.addEventListener("input", controllaDoppione);
+
+// Colori.
 // change scatta quando un radio della finestrella viene selezionato e risale fino al div.
 finestraAltriColori.addEventListener("change", scegliAltroColore);
+
+// Controllo dei doppioni.
+// input risale dal campo del nome e da tutti i radio dei colori, anche quelli della finestrella.
+moduloProgetto.addEventListener("input", controllaDoppione);
 
 // La lista compare subito, con i progetti salvati.
 mostraProgetti();

@@ -1140,7 +1140,10 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
-/* L'avviso del doppione, sopra Salva: rosso come gli errori, piccolo come gli altri messaggi. */
+/*
+  L'avviso del doppione nel modulo dei progetti, sopra Salva:
+  rosso come gli errori, piccolo come gli altri messaggi.
+*/
 .project-form-warning {
   margin: 0 0 12px;
   color: var(--reset-hover);
