@@ -1141,7 +1141,7 @@ button:disabled {
 }
 
 /*
-  L'avviso del doppione nel modulo dei progetti, sopra Salva:
+  L'avviso del doppione nei moduli di progetti e obiettivi, sopra Salva:
   rosso come gli errori, piccolo come gli altri messaggi.
 */
 .project-form-warning {

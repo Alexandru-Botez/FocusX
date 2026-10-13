@@ -439,6 +439,13 @@ cancella niente e la scheda resta con due soli pulsanti. `eliminaObiettivo()` to
 in `idInModifica` con `filter`, salva, chiude il modulo, ridisegna la lista e sposta il focus su
 Crea obiettivo.
 
+Come per i progetti, due obiettivi dello stesso progetto non possono avere lo stesso nome.
+`esisteDoppione(nome, progettoId)` usa `some` sugli altri obiettivi (quello in modifica è escluso)
+e confronta i nomi con `trim().toLowerCase()`. `controllaDoppione()` disattiva `#save-goal-button`
+e mostra `#goal-duplicate-warning`, che usa la stessa classe `.project-form-warning` dei progetti.
+La chiamano l'evento `input` del modulo (nome e menu dei progetti) e le funzioni che aprono
+e chiudono il modulo; `inviaModuloObiettivo` ripete il controllo prima di salvare.
+
 Invio e Spazio attivano il pulsante tramite il suo comportamento HTML nativo.
 La preferenza `prefers-reduced-motion` disattiva le transizioni mantenendo il cambio di stato.
 
@@ -575,6 +582,9 @@ Per gli obiettivi controlla che:
 - Mettendo in corso un obiettivo, quello che era in corso torni non completato.
 - Con 0 minuti lavorati il cerchio sia disattivato; un obiettivo già completato si possa riaprire,
   e poi il cerchio si disattivi.
+- Con lo stesso nome (anche con maiuscole diverse) e lo stesso progetto di un altro obiettivo,
+  Salva sia disattivato e compaia l'avviso; cambiando nome o progetto torni attivo.
+  Modificando un obiettivo senza cambiarlo, Salva resti attivo.
 - Elimina si veda solo in modifica e cancelli l'obiettivo, anche dopo una ricarica; eliminando l'ultimo
   ricompaia «Non hai ancora creato obiettivi».
 

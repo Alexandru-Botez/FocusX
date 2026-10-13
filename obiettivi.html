@@ -9,7 +9,7 @@
     - INTESTAZIONE E MENU, uguale in tutte le pagine
     - ICONE: il disegno della fiammina, scritto una volta sola
     - TITOLO E PULSANTE CREA
-    - MODULO DELL'OBIETTIVO: nome, progetto e data
+    - MODULO DELL'OBIETTIVO: nome, progetto, data e l'avviso dei doppioni
     - SCELTA DELLE FIAMMINE, dentro il modulo
     - ELENCO DEGLI OBIETTIVI
     - MESSAGGI
@@ -30,7 +30,7 @@
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
     <link rel="stylesheet" href="css/styles.css?v=progetti-doppioni-1">
     <script src="js/menu.js?v=struttura-1" defer></script>
-    <script src="js/obiettivi.js?v=struttura-1" defer></script>
+    <script src="js/obiettivi.js?v=obiettivi-doppioni-1" defer></script>
   </head>
 
   <body>
@@ -169,8 +169,10 @@
              Nome, progetto, data e tempo previsto. Lo stesso modulo serve per
              creare e per modificare un obiettivo: JavaScript cambia il titolo,
              il testo del pulsante e mostra Elimina solo durante una modifica.
+             Se nome e progetto sono uguali a quelli di un altro obiettivo,
+             Salva si disattiva e compare l'avviso sopra i pulsanti.
              hidden lo nasconde finché non si preme Crea obiettivo o una matita.
-             JavaScript: sezione MODULO di js/obiettivi.js.
+             JavaScript: sezioni MODULO e CONTROLLO DEI DOPPIONI di js/obiettivi.js.
              =============================================================== -->
         <form id="goal-form" class="project-form" hidden aria-labelledby="goal-form-title">
           <h3 id="goal-form-title" class="project-form-title">Nuovo obiettivo</h3>
@@ -277,6 +279,16 @@
             <!-- Il testo "3 fiammine · 1 h 15 min": JavaScript lo aggiorna a ogni scelta. -->
             <output id="goal-flames-output" class="flame-output">1 fiammina · 25 min</output>
           </fieldset>
+
+          <!--
+            Compare quando nome e progetto sono uguali a quelli di un altro obiettivo:
+            intanto JavaScript disattiva Salva. role="status" lo fa annunciare ai lettori di schermo.
+            Usa lo stesso stile dell'avviso nella pagina Progetti.
+            JavaScript: sezione CONTROLLO DEI DOPPIONI di js/obiettivi.js.
+          -->
+          <p id="goal-duplicate-warning" class="project-form-warning" role="status" hidden>
+            Esiste già un obiettivo con questo nome in questo progetto.
+          </p>
 
           <!-- I pulsanti del modulo. L'id di Salva serve a JavaScript per cambiarne il testo in "Salva modifiche". -->
           <div class="project-form-actions">

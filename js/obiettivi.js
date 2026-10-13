@@ -13,6 +13,7 @@
 //   - STATI DEGLI OBIETTIVI
 //   - SCELTA DELLE FIAMMINE
 //   - FINESTRELLA DELLE FIAMMINE
+//   - CONTROLLO DEI DOPPIONI
 //   - MODULO: CREARE, MODIFICARE, ELIMINARE
 //   - AVVIO DELLA PAGINA
 // =====================================================================
@@ -30,6 +31,8 @@ const moduloObiettivo = document.getElementById("goal-form");
 const titoloModuloObiettivo = document.getElementById("goal-form-title");
 const pulsanteSalvaObiettivo = document.getElementById("save-goal-button");
 const pulsanteEliminaObiettivo = document.getElementById("delete-goal-button");
+// L'avviso che compare sopra Salva quando l'obiettivo sarebbe un doppione.
+const avvisoDoppione = document.getElementById("goal-duplicate-warning");
 const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
 
 // Campi del modulo.
@@ -520,9 +523,37 @@ function chiudiFinestrellaConEsc(evento) {
 
 
 // =====================================================================
+// SEZIONE CONTROLLO DEI DOPPIONI
+// Due obiettivi dello stesso progetto non possono avere lo stesso nome:
+// finché il modulo descrive un doppione, Salva è disattivato
+// e un avviso spiega perché. Maiuscole e spazi ai lati non contano.
+// =====================================================================
+
+// Dice se un altro obiettivo dello stesso progetto ha già questo nome.
+function esisteDoppione(nome, progettoId) {
+  // trim e toLowerCase: "Ripasso", "ripasso" e " Ripasso " contano come lo stesso nome.
+  const nomeNormale = nome.trim().toLowerCase();
+  // some restituisce true appena trova un elemento che rispetta la condizione.
+  // L'obiettivo in modifica è escluso: confrontarlo con sé stesso darebbe sempre un doppione.
+  return obiettivi.some(obiettivo =>
+    obiettivo.id !== idInModifica
+    && obiettivo.nome.trim().toLowerCase() === nomeNormale
+    && obiettivo.progettoId === progettoId);
+}
+
+// A ogni cambio di nome o progetto disattiva Salva e mostra l'avviso se l'obiettivo è un doppione.
+function controllaDoppione() {
+  const doppione = esisteDoppione(campoNomeObiettivo.value, sceltaProgetto.value);
+  pulsanteSalvaObiettivo.disabled = doppione;
+  avvisoDoppione.hidden = !doppione;
+}
+
+
+// =====================================================================
 // SEZIONE MODULO: CREARE, MODIFICARE, ELIMINARE
 // Lo stesso modulo serve per un obiettivo nuovo e per modificarne uno:
-// idInModifica dice quale dei due lavori sta facendo.
+// idInModifica dice quale dei due lavori sta facendo. Aprendo, chiudendo
+// e salvando, il modulo richiama il controllo dei doppioni.
 // =====================================================================
 
 // Colora la cartella accanto al menu con il colore del progetto scelto.
@@ -548,6 +579,7 @@ function apriModuloObiettivo() {
   moduloObiettivo.hidden = false;
   pulsanteNuovoObiettivo.hidden = true;
   messaggioObiettivi.textContent = "";
+  controllaDoppione();
   campoNomeObiettivo.focus();
 }
 
@@ -589,6 +621,8 @@ function apriModificaObiettivo(id) {
   pulsanteEliminaObiettivo.hidden = false;
   // L'obiettivo compare già nel modulo: nell'elenco sarebbe un doppione.
   nascondiVoceInModifica();
+  // Scrivere value da JavaScript non genera eventi: il controllo lo chiamiamo noi.
+  controllaDoppione();
   campoNomeObiettivo.focus();
 }
 
@@ -609,6 +643,7 @@ function chiudiModuloObiettivo() {
   titoloModuloObiettivo.textContent = "Nuovo obiettivo";
   pulsanteSalvaObiettivo.textContent = "Salva obiettivo";
   pulsanteEliminaObiettivo.hidden = true;
+  controllaDoppione();
 }
 
 // Al salvataggio: controlla il nome, raccoglie i dati e sceglie fra creare e modificare.
@@ -631,6 +666,10 @@ function inviaModuloObiettivo(evento) {
     data: campoData.value,
     fiammine: Number(moduloObiettivo.elements.fiammine.value)
   };
+  // Salva è già disattivato per un doppione; il controllo resta anche qui, per sicurezza.
+  if (esisteDoppione(dati.nome, dati.progettoId)) {
+    return;
+  }
 
   if (idInModifica === null) {
     creaObiettivo(dati);
@@ -726,6 +765,10 @@ moduloObiettivo.addEventListener("submit", inviaModuloObiettivo);
 campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
 // change scatta quando l'utente sceglie un altro progetto nel menu a tendina.
 sceltaProgetto.addEventListener("change", aggiornaIconaProgetto);
+
+// Controllo dei doppioni.
+// input risale dal campo del nome e dal menu dei progetti fino al form.
+moduloObiettivo.addEventListener("input", controllaDoppione);
 
 // Fiammine.
 // change risale dai radio delle fiammine fino al form.
