@@ -6,7 +6,7 @@ Per scaricarlo e avviarlo, parti dal [README](../README.md).
 ## Stato attuale
 
 FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa lo ferma
-e Reset lo ferma riportando il tempo a 25 minuti.
+e Stop lo ferma riportando il tempo a 25 minuti.
 Il timer ricomincia automaticamente da 25 minuti quando i secondi rimanenti arrivano a zero.
 La pagina Progetti consente di creare ed eliminare progetti con nome e colore, salvati nel browser.
 La pagina Obiettivi consente di creare obiettivi legati a un progetto e di cambiarne lo stato.
@@ -73,8 +73,8 @@ Gli identificatori da conoscere sono:
 | `.timer-controls` | Contenitore dei pulsanti | Disposizione dei controlli con Flexbox. |
 | `#start-button` | Pulsante Avvia | Collegato ad avviaTimer; disponibile quando il timer è fermo. |
 | `#pause-button` | Pulsante Pausa | Collegato a pausaTimer; disponibile durante il conteggio. |
-| `#reset-button` | Pulsante Reset | Collegato a resetTimer; disponibile dopo l'avvio, anche in pausa. |
-| `#timer-status` | Messaggio di stato | Visibile prima dell'avvio e dopo Reset; nascosto al clic su Avvia. |
+| `#stop-button` | Pulsante Stop | Collegato a fermaSessione; disponibile dopo l'avvio, anche in pausa. |
+| `#timer-status` | Messaggio di stato | Visibile prima dell'avvio e dopo Stop; nascosto al clic su Avvia. |
 
 Una `class` può essere condivisa da più elementi. Un `id` deve identificare un solo elemento
 nel documento. Se cambi un nome, aggiorna anche i selettori CSS, gli eventuali riferimenti
@@ -105,7 +105,7 @@ Per cambiare la palette, parti dalle variabili in `:root`:
 | `--muted` | Testo secondario. |
 | `--border` | Bordi dei pulsanti. |
 | `--hover` | Sfondo comune al passaggio del mouse. |
-| `--reset-hover` | Sfondo rosso chiaro al passaggio del mouse su Reset, con la stessa opacità dello sfondo comune. |
+| `--danger` | Sfondo rosso chiaro al passaggio del mouse su Stop, con la stessa opacità dello sfondo comune. |
 | `--border-strong` | Bordo dei campi di testo al passaggio del mouse. |
 | `--transition-fast` | Durata comune (180 millisecondi) dei cambi di colore, bordo, opacità e pressione. |
 | `--ease-out` | Curva di accelerazione degli elementi che entrano: veloce all'inizio, lenta alla fine. |
@@ -130,7 +130,7 @@ con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 | Transizioni dei pulsanti | `button` anima colore, bordo, opacità e `transform` in `--transition-fast`. |
 | Pressione | `button:active` riduce il pulsante al 94% (97% per i pulsanti dei progetti); il Menu è escluso. |
 | Hover solo con puntatore | Gli hover sono dentro `@media (hover: hover)`: su touch l'evidenziazione non resta dopo il tocco. |
-| Cifre grigie in pausa | `section:has(#start-button:enabled):has(#reset-button:enabled) #timer` usa `--muted`. |
+| Cifre grigie in pausa | `section:has(#start-button:enabled):has(#stop-button:enabled) #timer` usa `--muted`. |
 | Dissolvenza dello status | `#timer-status` anima `opacity`; `visibility` cambia alla fine, conservando lo spazio. |
 | Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
 | Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 240 millisecondi. |
@@ -143,7 +143,7 @@ Il velo ha `pointer-events: none`: un clic fuori dal menu raggiunge l'elemento s
 come prima. `@view-transition` e `:has()` sono miglioramenti progressivi: un browser che non
 li supporta mostra la pagina senza queste rifiniture. Se aggiungi una voce al menu,
 aggiungi anche il suo `transition-delay`. Lo stato «in pausa» dipende dagli attributi
-`disabled` di Avvia e Reset: se cambi la tabella degli stati, aggiorna anche quel selettore.
+`disabled` di Avvia e Stop: se cambi la tabella degli stati, aggiorna anche quel selettore.
 Il `meta` `theme-color` nei due file HTML colora di nero la barra del browser su mobile.
 
 ## Primo passo JavaScript
@@ -156,9 +156,9 @@ Le cinque funzioni hanno responsabilità distinte:
 
 | Funzione | Responsabilità |
 | --- | --- |
-| `avviaTimer()` | Disabilita Avvia, abilita Pausa e Reset, nasconde lo stato e avvia o riprende il conteggio. |
+| `avviaTimer()` | Disabilita Avvia, abilita Pausa e Stop, nasconde lo stato e avvia o riprende il conteggio. |
 | `pausaTimer()` | Ferma l'intervallo, abilita Avvia e disabilita Pausa, conservando i secondi rimasti. |
-| `resetTimer()` | Ferma il timer, ripristina 1500 secondi, disabilita Reset e mostra il messaggio iniziale. |
+| `fermaSessione()` | Ferma il timer, ripristina 1500 secondi, disabilita Stop e mostra il messaggio iniziale. |
 | `passaUnSecondo()` | Sottrae un secondo, ripristina 1500 quando arriva a zero e aggiorna il testo. |
 | `aggiornaTimer()` | Converte i secondi rimanenti nel formato minuti:secondi. |
 
@@ -177,22 +177,22 @@ Il valore `secondiRimanenti` resta intatto e `intervalloTimer` torna a `null`,
 che nel progetto indica l'assenza di un intervallo attivo.
 Premendo Avvia viene creato un nuovo intervallo a partire dal tempo conservato.
 
-`resetTimer()` richiama `pausaTimer()` per fermare il conteggio senza duplicare quelle istruzioni.
+`fermaSessione()` richiama `pausaTimer()` per fermare il conteggio senza duplicare quelle istruzioni.
 Poi assegna `durataSessione` a `secondiRimanenti` e richiama `aggiornaTimer()`:
 il testo torna subito a `25:00`, senza attendere un altro secondo.
-Reset viene disabilitato e il messaggio iniziale torna visibile rimuovendo la classe
+Stop viene disabilitato e il messaggio iniziale torna visibile rimuovendo la classe
 con `statoTimer.classList.remove("is-hidden")`.
 Il conteggio riparte solo quando premi nuovamente Avvia.
 
-| Stato | Avvia | Pausa | Reset |
+| Stato | Avvia | Pausa | Stop |
 | --- | --- | --- | --- |
 | Prima del primo avvio | Disponibile | Disabilitato | Disabilitato |
 | Conteggio in corso | Disabilitato | Disponibile | Disponibile |
 | Timer in pausa dopo l'avvio | Disponibile | Disabilitato | Disponibile |
-| Dopo Reset | Disponibile | Disabilitato | Disabilitato |
+| Dopo Stop | Disponibile | Disabilitato | Disabilitato |
 
-Reset si abilita al clic su Avvia, anche prima del primo aggiornamento del tempo.
-La ripartenza automatica a `25:00` mantiene il conteggio attivo e Reset disponibile.
+Stop si abilita al clic su Avvia, anche prima del primo aggiornamento del tempo.
+La ripartenza automatica a `25:00` mantiene il conteggio attivo e Stop disponibile.
 
 Per visualizzare il tempo, `Math.floor()` ricava i minuti interi e `%` ricava i secondi restanti.
 `String()` converte i numeri in testo e `padStart(2, "0")` mantiene due cifre.
@@ -312,7 +312,7 @@ Ogni voce ha a destra un pulsante `.project-delete` con l'icona del cestino:
 il suo `aria-label` contiene il nome del progetto. Il clic chiama `eliminaProgetto(id)`,
 che salva l'elenco senza quel progetto e lo ricostruisce. Il focus passa al cestino
 della voce successiva, o a Crea progetto quando l'elenco è vuoto. Al passaggio del mouse
-il pulsante usa lo stesso rosso di Reset, `--reset-hover`. Non c'è richiesta di conferma.
+il pulsante usa lo stesso rosso di Stop, `--danger`. Non c'è richiesta di conferma.
 
 Prima del cestino, il pulsante `.project-edit` con la matita chiama `apriModificaProgetto(id)`.
 Lo stesso `#project-form` serve per creare e per modificare: la variabile `idInModifica`
@@ -484,11 +484,17 @@ aprendo la Home si mostra quello, oppure l'obiettivo in corso.
 
 In corso vuol dire che il timer sta contando su quell'obiettivo. Avvia mette in corso
 l'obiettivo scelto: `js/home-obiettivo.js` aggiunge un proprio listener al pulsante, senza
-modificare `js/timer.js`. Pausa e Reset chiamano `fermaObiettivoInCorso()`, che riporta
+modificare `js/timer.js`. Pausa e Stop chiamano `fermaObiettivoInCorso()`, che riporta
 l'obiettivo in corso a non completato; la stessa funzione parte all'apertura della pagina,
-perché il timer parte fermo e un «in corso» salvato da prima (una ricarica, o il play della
-pagina Obiettivi) sarebbe falso. L'obiettivo resta comunque scelto, perché `idScelto` viene
-calcolato prima. Se il timer sta già contando, anche scegliere
+perché il timer parte fermo e un «in corso» salvato da prima sarebbe falso, e all'evento
+`pagehide`, quando si lascia la pagina e il timer si ferma con lei. L'obiettivo resta comunque
+scelto, perché `idScelto` viene calcolato prima.
+
+Il play della pagina Obiettivi chiama `avviaNellaHome(id)`: riapre l'obiettivo se era completato,
+salva il suo id con `chiaveObiettivoScelto` (esportata da `js/archivio.js`) e apre
+`index.html?avvia`. All'apertura la Home legge il parametro con `URLSearchParams`, lo toglie
+dall'indirizzo con `history.replaceState`, così una ricarica non fa ripartire il timer, e preme
+Avvia con `pulsanteAvvia.click()`: partono il timer e `avviaConObiettivo`. Se il timer sta già contando, anche scegliere
 un altro obiettivo lo mette in corso. Valgono le regole della pagina Obiettivi: un solo
 obiettivo in corso e cerchio disattivato senza tempo lavorato. Le fiammine si disegnano
 con `disegnaFiammine`, la stessa funzione della lista, importata da `js/fiammine.js`.
@@ -507,7 +513,7 @@ Le scelte presenti nel codice sono:
 - I controlli sono elementi `button`, utilizzabili anche con la tastiera.
 - `:focus-visible` rende visibile il pulsante selezionato da tastiera.
 - Il timer usa `role="timer"` e `aria-live="off"` per evitare annunci continui.
-- Il messaggio informativo usa `role="status"`, è nascosto dopo l'avvio e torna visibile dopo Reset.
+- Il messaggio informativo usa `role="status"`, è nascosto dopo l'avvio e torna visibile dopo Stop.
 
 Se nelle prossime funzioni servirà mostrare un nuovo messaggio, rendi prima visibile
 l'elemento con `statoTimer.classList.remove("is-hidden")`. Evita annunci continui a ogni secondo.
@@ -619,7 +625,10 @@ Per gli obiettivi controlla che:
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
 - Senza data il modulo non venga inviato e il browser segnali il campo; una data passata sia rossa
   finché l'obiettivo non è completato.
-- Play e spunta cambino lo stato, anche dopo una ricarica; premuti di nuovo, tornino a non completato.
+- La spunta cambi lo stato, anche dopo una ricarica; premuta di nuovo, torni a non completato.
+- Il play apra la Home con quell'obiettivo scelto e il timer già partito, e l'indirizzo torni
+  `index.html` senza `?avvia`; su un obiettivo completato lo riapra.
+- Uscendo dalla Home con il timer avviato, l'obiettivo non resti in corso nella pagina Obiettivi.
 - Rinominando o ricolorando un progetto, i suoi obiettivi si aggiornino.
 - La matita apra il modulo compilato, anche con più di 8 fiammine, e nasconda la voce; Annulla la
   faccia ricomparire. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
@@ -650,14 +659,14 @@ Per il timer attuale controlla anche che:
 - Dopo un clic su Pausa, il tempo resti fermo e Avvia torni disponibile.
 - Premendo Avvia dopo una pausa, il timer continui dal valore rimasto.
 - Più cicli di pausa e ripresa non accelerino il conteggio.
-- Reset sia disabilitato all'apertura e abilitato dopo Avvia, anche in pausa.
-- Premendo Reset durante il conteggio o in pausa, il tempo torni a `25:00` e resti fermo.
-- Dopo Reset, Avvia sia disponibile e Pausa e Reset siano disabilitati.
-- Avvia dopo Reset riparta da `25:00` con un solo intervallo.
-- Passando il mouse su Reset abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
+- Stop sia disabilitato all'apertura e abilitato dopo Avvia, anche in pausa.
+- Premendo Stop durante il conteggio o in pausa, il tempo torni a `25:00` e resti fermo.
+- Dopo Stop, Avvia sia disponibile e Pausa e Stop siano disabilitati.
+- Avvia dopo Stop riparta da `25:00` con un solo intervallo.
+- Passando il mouse su Stop abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - Il messaggio di stato sia visibile prima dell'avvio e nascosto dopo il clic.
-- Il messaggio di stato torni visibile dopo Reset.
-- In pausa le cifre diventino grigie e tornino bianche con Avvia o Reset.
+- Il messaggio di stato torni visibile dopo Stop.
+- In pausa le cifre diventino grigie e tornino bianche con Avvia o Stop.
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.
 - La posizione del timer e dei pulsanti resti invariata quando lo status scompare o riappare.
 - Il formato mantenga due cifre per minuti e secondi.

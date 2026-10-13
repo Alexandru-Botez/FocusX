@@ -26,7 +26,12 @@
 // Il codice comune ad altre pagine, scritto una volta sola nei moduli.
 // =====================================================================
 
-import { chiaveProgetti, chiaveObiettivi, leggiElenco } from "./archivio.js?v=moduli-1";
+import {
+  chiaveProgetti,
+  chiaveObiettivi,
+  chiaveObiettivoScelto,
+  leggiElenco
+} from "./archivio.js?v=avvia-1";
 import {
   fiammineVisibili,
   oreMassime,
@@ -231,9 +236,9 @@ function mostraObiettivi(idNuovo) {
     pulsanteModifica.setAttribute("aria-label", "Modifica " + obiettivo.nome);
     pulsanteModifica.addEventListener("click", () => apriModificaObiettivo(obiettivo.id));
 
-    const pulsanteInCorso = voce.querySelector(".goal-start");
-    pulsanteInCorso.setAttribute("aria-label", "Metti in corso " + obiettivo.nome);
-    pulsanteInCorso.addEventListener("click", () => cambiaStato(obiettivo.id, "in-corso"));
+    const pulsanteAvvia = voce.querySelector(".goal-start");
+    pulsanteAvvia.setAttribute("aria-label", "Avvia nella Home " + obiettivo.nome);
+    pulsanteAvvia.addEventListener("click", () => avviaNellaHome(obiettivo.id));
 
     const pulsanteCompleta = voce.querySelector(".goal-complete");
     pulsanteCompleta.setAttribute("aria-label", "Segna come completato " + obiettivo.nome);
@@ -258,7 +263,8 @@ function nascondiVoceInModifica() {
 // =====================================================================
 // SEZIONE STATI DEGLI OBIETTIVI
 // Non completato, in corso e completato: come si vedono nella voce
-// e cosa succede premendo il cerchio o il play.
+// e cosa succede premendo il cerchio o il play. In corso vuol dire che il timer
+// della Home sta contando: il play porta lì e fa partire il timer.
 // =====================================================================
 
 // Mostra lo stato di un obiettivo nella sua voce: pulsanti, data in ritardo e fiammine.
@@ -287,7 +293,33 @@ function applicaStato(voce, obiettivo) {
   );
 }
 
-// Cambia lo stato di un obiettivo dopo un clic sul cerchio o sul play, e lo salva.
+// Il play porta alla Home: lì questo obiettivo è scelto e il timer parte da solo.
+function avviaNellaHome(id) {
+  const obiettivo = obiettivi.find(obiettivo => obiettivo.id === id);
+  if (obiettivo === undefined) {
+    return;
+  }
+  // Un obiettivo completato si riapre: se lo avvii, ci torni a lavorare.
+  if (obiettivo.stato === "completato") {
+    const elencoAggiornato = obiettivi.map(elemento =>
+      elemento.id === id ? { ...elemento, stato: "non-completato" } : elemento);
+    if (!salvaObiettivi(elencoAggiornato)) {
+      return;
+    }
+    obiettivi = elencoAggiornato;
+  }
+  // La Home legge l'obiettivo scelto da questa chiave, come se l'avessi scelto lì.
+  try {
+    localStorage.setItem(chiaveObiettivoScelto, id);
+  } catch {
+    messaggioObiettivi.textContent = "Non riesco a salvare l'obiettivo scelto. Controlla le impostazioni del browser.";
+    return;
+  }
+  // ?avvia dice alla Home di premere Avvia appena aperta.
+  location.href = "index.html?avvia";
+}
+
+// Cambia lo stato di un obiettivo dopo un clic sul cerchio, e lo salva.
 function cambiaStato(id, statoScelto) {
   const obiettivo = obiettivi.find(obiettivo => obiettivo.id === id);
   if (obiettivo === undefined) {

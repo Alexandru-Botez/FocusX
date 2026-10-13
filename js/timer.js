@@ -1,6 +1,6 @@
 // =====================================================================
 // TIMER.JS: il timer della pagina Home (index.html)
-// Conta 25 minuti alla rovescia, con i pulsanti Avvia, Pausa e Reset,
+// Conta 25 minuti alla rovescia, con i pulsanti Avvia, Pausa e Stop,
 // e riparte da capo quando arriva a zero.
 // È un modulo: i suoi nomi sono privati, non si scontrano con quelli
 // degli altri file della pagina.
@@ -9,7 +9,7 @@
 //   - ELEMENTI DELLA PAGINA
 //   - IMPOSTAZIONI E DATI DEL TIMER
 //   - CONTEGGIO
-//   - PULSANTI AVVIA, PAUSA E RESET
+//   - PULSANTI AVVIA, PAUSA E STOP
 //   - AVVIO DELLA PAGINA
 // =====================================================================
 
@@ -24,7 +24,7 @@
 const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
-const pulsanteReset = document.getElementById("reset-button");
+const pulsanteStop = document.getElementById("stop-button");
 const statoTimer = document.getElementById("timer-status");
 
 
@@ -84,7 +84,7 @@ function passaUnSecondo() {
 
 
 // =====================================================================
-// SEZIONE PULSANTI AVVIA, PAUSA E RESET
+// SEZIONE PULSANTI AVVIA, PAUSA E STOP
 // Cosa succede premendo ciascun pulsante, e quali pulsanti
 // restano attivi in ogni momento.
 // =====================================================================
@@ -102,8 +102,8 @@ function avviaTimer() {
   // false riabilita Pausa: adesso c'è un conteggio che possiamo fermare.
   pulsantePausa.disabled = false;
 
-  // Dopo l'avvio possiamo riportare il timer al suo valore iniziale con Reset.
-  pulsanteReset.disabled = false;
+  // Dopo l'avvio possiamo riportare il timer al suo valore iniziale con Stop.
+  pulsanteStop.disabled = false;
 
   // classList.add aggiunge una classe CSS all'elemento del messaggio.
   // La classe usa visibility: hidden: lo status scompare ma conserva il suo spazio.
@@ -128,8 +128,8 @@ function pausaTimer() {
   pulsantePausa.disabled = true;
 }
 
-// Ferma il conteggio e riporta il timer a 25:00.
-function resetTimer() {
+// Stop: finisce la sessione, ferma il conteggio e riporta il timer a 25:00.
+function fermaSessione() {
   // Riutilizziamo Pausa per fermare l'intervallo e rendere di nuovo disponibile Avvia.
   pausaTimer();
 
@@ -137,8 +137,8 @@ function resetTimer() {
   secondiRimanenti = durataSessione;
   aggiornaTimer();
 
-  // Non serve un altro Reset finché non premiamo nuovamente Avvia.
-  pulsanteReset.disabled = true;
+  // Non serve un altro Stop finché non premiamo nuovamente Avvia.
+  pulsanteStop.disabled = true;
 
   // classList.remove toglie la classe: il messaggio torna visibile senza spostare il timer.
   statoTimer.classList.remove("is-hidden");
@@ -157,5 +157,5 @@ pulsanteAvvia.addEventListener("click", avviaTimer);
 // Il clic su Pausa esegue la funzione che ferma il conteggio.
 pulsantePausa.addEventListener("click", pausaTimer);
 
-// Il clic su Reset ferma il conteggio e ripristina lo stato iniziale.
-pulsanteReset.addEventListener("click", resetTimer);
+// Il clic su Stop finisce la sessione: ferma il conteggio e ripristina lo stato iniziale.
+pulsanteStop.addEventListener("click", fermaSessione);

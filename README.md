@@ -14,17 +14,17 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 - Sopra il timer, un blocco mostra l'obiettivo su cui lavori: nome, cerchio per completarlo
   e fiammine. Un clic sul blocco apre una finestrella con gli obiettivi da fare;
-  premendo Avvia, l'obiettivo scelto va in corso; Pausa e Reset lo fermano.
+  premendo Avvia, l'obiettivo scelto va in corso; Pausa e Stop lo fermano.
   Un obiettivo è in corso solo mentre il timer conta. La scelta resta dopo una ricarica.
-- Conto alla rovescia di 25 minuti con i pulsanti Avvia, Pausa e Reset.
+- Conto alla rovescia di 25 minuti con i pulsanti Avvia, Pausa e Stop.
 - Pausa conserva il tempo rimasto e Avvia riprende da lì; in pausa le cifre diventano grigie.
-- Reset ferma il timer e lo riporta a `25:00`.
+- Stop finisce la sessione: ferma il timer e lo riporta a `25:00`.
 - Arrivato a zero, il timer riparte da `25:00` e continua da solo.
 - Ogni pulsante è disponibile solo quando ha senso usarlo:
 
-| Stato | Avvia | Pausa | Reset |
+| Stato | Avvia | Pausa | Stop |
 | --- | --- | --- | --- |
-| All'apertura e dopo Reset | Disponibile | Disabilitato | Disabilitato |
+| All'apertura e dopo Stop | Disponibile | Disabilitato | Disabilitato |
 | Conteggio in corso | Disabilitato | Disponibile | Disponibile |
 | In pausa | Disponibile | Disabilitato | Disponibile |
 
@@ -59,8 +59,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   azzurra mentre l'obiettivo è in corso, arancione quando è completato.
   Per ora sono fatte tutte quando l'obiettivo è completato.
 - Tre stati: non completato, in corso e completato. Il cerchio a sinistra del nome
-  completa l'obiettivo e il "play" a destra lo mette in corso; premuti di nuovo,
-  lo riportano a non completato. Lo stato si riconosce dai pulsanti, dal bordo e dalle fiammine.
+  completa l'obiettivo; premuto di nuovo, lo riporta a non completato. Il "play" a destra
+  porta alla Home, sceglie lì l'obiettivo e fa partire il timer: è in corso finché il timer conta. Lo stato si riconosce dai pulsanti, dal bordo e dalle fiammine.
 - Un solo obiettivo alla volta è in corso: mettendone in corso un altro, il precedente si ferma
   e torna non completato.
 - Ogni obiettivo ricorda i minuti lavorati. Senza tempo lavorato il cerchio è disattivato:
@@ -128,7 +128,7 @@ FocusX/
 ├── js/                    Moduli JavaScript (type="module")
 │   ├── archivio.js         Comune: chiavi e lettura dei dati salvati
 │   ├── fiammine.js         Comune: valore, testi e disegno delle fiammine
-│   ├── timer.js            Timer: avvio, pausa, reset e ripartenza
+│   ├── timer.js            Timer: avvio, pausa, stop e ripartenza
 │   ├── home-obiettivo.js   Home: obiettivo scelto sopra il timer
 │   ├── menu.js             Menu laterale, condiviso da tutte le pagine
 │   ├── progetti.js         Creazione, modifica, eliminazione e salvataggio dei progetti

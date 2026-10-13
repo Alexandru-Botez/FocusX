@@ -55,8 +55,8 @@
   /* Sfondo usato al passaggio del mouse sui pulsanti. */
   --hover: #1a1a1a;
 
-  /* Rosso chiaro per Reset e per il cestino dei progetti: sfondo pieno, senza trasparenza. */
-  --reset-hover: #ff6b6b;
+  /* Rosso chiaro per le azioni che chiudono o cancellano: Stop, cestino ed Elimina. */
+  --danger: #ff6b6b;
 
   /* Colori degli obiettivi: fiammine arancioni, "in corso" azzurro, "completato" verde. */
   --flame: #ffa94d;
@@ -458,15 +458,15 @@ section {
 }
 
 /*
-  In pausa Avvia e Reset sono entrambi disponibili: solo in quello stato le cifre diventano grigie.
-  Prima dell'avvio Reset è disabilitato; durante il conteggio lo è Avvia.
+  In pausa Avvia e Stop sono entrambi disponibili: solo in quello stato le cifre diventano grigie.
+  Prima dell'avvio Stop è disabilitato; durante il conteggio lo è Avvia.
   Leggiamo lo stato dai pulsanti con :has e :enabled, senza modificare JavaScript.
 */
-section:has(#start-button:enabled):has(#reset-button:enabled) #timer {
+section:has(#start-button:enabled):has(#stop-button:enabled) #timer {
   color: var(--muted);
 }
 
-/* Contenitore comune dei pulsanti Avvia, Pausa e Reset. */
+/* Contenitore comune dei pulsanti Avvia, Pausa e Stop. */
 .timer-controls {
   /* Dispone i pulsanti in una riga con Flexbox. */
   display: flex;
@@ -484,7 +484,7 @@ section:has(#start-button:enabled):has(#reset-button:enabled) #timer {
   gap: 12px;
 }
 
-/* Regola comune a tutti i pulsanti; più avanti personalizziamo Menu, Avvia e Reset con i loro id. */
+/* Regola comune a tutti i pulsanti; più avanti personalizziamo Menu, Avvia e Stop con i loro id. */
 button {
   /* Il pulsante si comporta come un elemento inline e organizza i suoi contenuti con Flexbox. */
   display: inline-flex;
@@ -682,30 +682,16 @@ button svg {
   }
 }
 
-/* Reset contiene una parola: lo adattiamo al testo invece di mantenere il cerchio. */
-#reset-button {
-  /* La larghezza viene calcolata dal contenuto e dal padding, invece di restare a 56px. */
-  width: auto;
-
-  /* Nessuno spazio interno sopra o sotto; 18px a sinistra e a destra del testo. */
-  padding: 0 18px;
-
-  /* Rende invisibile il bordo mantenendone lo spessore e lo spazio occupato. */
-  border-color: transparent;
-
-  /* Gli angoli arrotondati danno al pulsante largo una forma simile a una pillola. */
-  border-radius: 28px;
-
-  /* Testo più piccolo: 0.875rem equivale a 14px se il font della radice è 16px. */
-  font-size: 0.875rem;
-}
-
-/* La regola con id personalizza lo sfondo hover del solo pulsante Reset. */
+/*
+  Stop è un cerchio come Pausa, con un quadrato al centro.
+  Finisce la sessione, quindi al passaggio del mouse diventa rosso come il cestino.
+*/
 @media (hover: hover) {
-  #reset-button:hover:not(:disabled) {
-    /* Cambia il colore dello sfondo senza modificare l'opacità del pulsante o del testo. */
-    background-color: var(--reset-hover);
-    /* Il testo nero mantiene un buon contrasto con lo sfondo rosso chiaro. */
+  #stop-button:hover:not(:disabled) {
+    /* Cambia il colore dello sfondo senza modificare l'opacità del pulsante. */
+    background-color: var(--danger);
+    border-color: var(--danger);
+    /* L'icona nera mantiene un buon contrasto con lo sfondo rosso chiaro. */
     color: var(--background);
   }
 }
@@ -744,7 +730,7 @@ button:disabled {
   /* Il grigio lo distingue dal tempo, che è l'informazione principale. */
   color: var(--muted);
 
-  /* Usa la stessa dimensione del testo del pulsante Reset. */
+  /* Testo piccolo: 0.875rem equivale a 14px se il font della radice è 16px. */
   font-size: 0.875rem;
 
   /* Una riga alta 1.5 volte il font resta leggibile anche se il messaggio va a capo. */
@@ -1111,11 +1097,11 @@ button:disabled {
   stroke-linejoin: round;
 }
 
-/* Come Reset, al passaggio del mouse il pulsante diventa rosso: l'azione elimina un dato. */
+/* Come Stop, al passaggio del mouse il pulsante diventa rosso: l'azione elimina un dato. */
 @media (hover: hover) {
   .project-list .project-delete:hover {
-    background-color: var(--reset-hover);
-    border-color: var(--reset-hover);
+    background-color: var(--danger);
+    border-color: var(--danger);
     color: var(--background);
   }
 }
@@ -1146,7 +1132,7 @@ button:disabled {
 */
 .project-form-warning {
   margin: 0 0 12px;
-  color: var(--reset-hover);
+  color: var(--danger);
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -1496,7 +1482,7 @@ button:disabled {
 
 /* Una data passata, per un obiettivo non ancora completato, diventa rossa. */
 .goal-date.is-late {
-  color: var(--reset-hover);
+  color: var(--danger);
 }
 
 .goal-flame-icons {
@@ -1619,7 +1605,7 @@ button:disabled {
 .projects-section .goal-delete-action {
   gap: 8px;
   margin-left: auto;
-  color: var(--reset-hover);
+  color: var(--danger);
 }
 
 .projects-section .goal-delete-action svg {
@@ -1634,8 +1620,8 @@ button:disabled {
 
 @media (hover: hover) {
   .projects-section .goal-delete-action:hover:not(:disabled) {
-    background-color: var(--reset-hover);
-    border-color: var(--reset-hover);
+    background-color: var(--danger);
+    border-color: var(--danger);
     color: var(--background);
   }
 }
@@ -1796,7 +1782,12 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
+/*
+  Fiammine e minuti sono figli diretti di .goal-details, che separa le sue parti di 16px:
+  qui stanno vicini, a 6px, come dentro .goal-flames nella lista.
+*/
 .home-goal-details {
+  gap: 6px;
   font-size: 0.8125rem;
 }
 
@@ -2004,11 +1995,9 @@ button:disabled {
   }
 
   button {
-    /* Avvia e Pausa diventano cerchi da 52px, occupando meno spazio sui telefoni. */
+    /* Avvia, Pausa e Stop diventano cerchi da 52px, occupando meno spazio sui telefoni. */
     width: 52px;
     height: 52px;
-
-    /* Reset mantiene width: auto perché il suo selettore #reset-button è più specifico. */
   }
 }
 

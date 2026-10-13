@@ -32,9 +32,9 @@
     <meta name="theme-color" content="#000000">
     <title>Obiettivi</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=pillola-2">
-    <script type="module" src="js/menu.js?v=moduli-1"></script>
-    <script type="module" src="js/obiettivi.js?v=moduli-1"></script>
+    <link rel="stylesheet" href="css/styles.css?v=stop-2">
+    <script type="module" src="js/menu.js?v=avvia-1"></script>
+    <script type="module" src="js/obiettivi.js?v=avvia-1"></script>
   </head>
 
   <body>
@@ -327,6 +327,7 @@
           data-stato, scritto da JavaScript sul li, decide l'aspetto: non-completato, in-corso
           o completato. Lo stato si vede dai pulsanti, dal bordo e dalle fiammine, senza
           un'etichetta scritta: a sinistra il cerchio per completare, a destra matita e play.
+          Il play porta alla Home, sceglie lì l'obiettivo e fa partire il timer.
         -->
         <template id="goal-item-template">
           <li class="goal">
@@ -391,8 +392,11 @@
                   <path d="M4 20h4L19 9a2.83 2.83 0 0 0-4-4L4 16v4ZM13.5 6.5l4 4"></path>
                 </svg>
               </button>
-              <!-- aria-pressed è true quando l'obiettivo è in corso. -->
-              <button class="project-item-action goal-start" type="button" aria-pressed="false" title="Metti in corso">
+              <!--
+                Il play porta alla Home e fa partire il timer su questo obiettivo.
+                aria-pressed è true quando l'obiettivo è in corso.
+              -->
+              <button class="project-item-action goal-start" type="button" aria-pressed="false" title="Avvia nella Home">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <!-- Il triangolo di "play": iniziare a lavorare sull'obiettivo. -->
                   <path d="M8 5.5v13l10-6.5-10-6.5Z"></path>

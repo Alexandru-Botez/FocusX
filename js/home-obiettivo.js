@@ -3,7 +3,7 @@
 // Sopra il timer mostra l'obiettivo scelto: nome, cerchio per completarlo
 // e fiammine. Un clic sul blocco apre una finestrella con gli obiettivi
 // da fare. L'obiettivo è in corso solo mentre il timer conta: Avvia lo mette
-// in corso, Pausa e Reset lo fermano.
+// in corso, Pausa e Stop lo fermano.
 //
 // È un modulo, come gli altri file JavaScript: i suoi nomi sono privati,
 // quindi può chiamare pulsanteAvvia anche se js/timer.js usa lo stesso nome.
@@ -11,7 +11,6 @@
 // Sezioni, nell'ordine:
 //   - IMPORTAZIONI
 //   - ELEMENTI DELLA PAGINA
-//   - IMPOSTAZIONI
 //   - SALVATAGGIO NEL BROWSER
 //   - DATI IN MEMORIA
 //   - BLOCCO DELL'OBIETTIVO
@@ -26,7 +25,12 @@
 // Il codice comune ad altre pagine, scritto una volta sola nei moduli.
 // =====================================================================
 
-import { chiaveProgetti, chiaveObiettivi, leggiElenco } from "./archivio.js?v=moduli-1";
+import {
+  chiaveProgetti,
+  chiaveObiettivi,
+  chiaveObiettivoScelto,
+  leggiElenco
+} from "./archivio.js?v=avvia-1";
 import { formattaTempo, disegnaFiammine } from "./fiammine.js?v=moduli-1";
 
 
@@ -56,22 +60,14 @@ const modelloSceltaObiettivo = document.getElementById("home-goal-option-templat
 // I pulsanti del timer, gli stessi che usa js/timer.js.
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
-const pulsanteReset = document.getElementById("reset-button");
-
-
-// =====================================================================
-// SEZIONE IMPOSTAZIONI
-// La chiave con cui la Home ricorda l'obiettivo scelto.
-// Le chiavi di progetti e obiettivi arrivano da js/archivio.js.
-// =====================================================================
-
-const chiaveObiettivoScelto = "focusx.home.obiettivo.v1";
+const pulsanteStop = document.getElementById("stop-button");
 
 
 // =====================================================================
 // SEZIONE SALVATAGGIO NEL BROWSER
 // Leggono progetti e obiettivi, scrivono gli obiettivi
 // e ricordano quale obiettivo è scelto in Home.
+// Le chiavi dei dati arrivano da js/archivio.js.
 // =====================================================================
 
 // Restituisce i progetti salvati, che servono per il colore delle cartelle nella finestrella.
@@ -300,7 +296,7 @@ function scegliObiettivo(id) {
 // =====================================================================
 // SEZIONE STATI DELL'OBIETTIVO
 // In corso vuol dire "ci sto lavorando adesso": vale solo mentre il timer conta.
-// Avvia mette in corso l'obiettivo scelto; Pausa, Reset e l'apertura della
+// Avvia mette in corso l'obiettivo scelto; Pausa, Stop e l'apertura della
 // pagina, quando il timer è fermo, lo fermano. Il cerchio lo completa.
 // Valgono le regole della pagina Obiettivi: un solo obiettivo in corso
 // e niente completato senza tempo lavorato.
@@ -337,7 +333,7 @@ function avviaConObiettivo() {
 }
 
 // Il timer si è fermato: l'obiettivo in corso torna non completato.
-// Serve per Pausa e Reset, e all'apertura della pagina, quando il timer parte fermo:
+// Serve per Pausa e Stop, e all'apertura della pagina, quando il timer parte fermo:
 // un "in corso" rimasto salvato da prima (una ricarica, o il play della pagina Obiettivi)
 // non deve far sembrare che si stia lavorando.
 function fermaObiettivoInCorso() {
@@ -392,10 +388,26 @@ document.addEventListener("keydown", chiudiFinestrellaConEsc);
 pulsanteCompleta.addEventListener("click", alternaCompletato);
 pulsanteAvvia.addEventListener("click", avviaConObiettivo);
 pulsantePausa.addEventListener("click", fermaObiettivoInCorso);
-pulsanteReset.addEventListener("click", fermaObiettivoInCorso);
+pulsanteStop.addEventListener("click", fermaObiettivoInCorso);
+
+// Uscendo dalla Home (un link del menu, un'altra pagina, la scheda chiusa) il timer
+// si ferma con la pagina: pagehide scatta proprio in quel momento e ferma l'obiettivo.
+window.addEventListener("pagehide", fermaObiettivoInCorso);
 
 // All'apertura il timer è fermo: nessun obiettivo può essere in corso.
 // idScelto è già stato calcolato, quindi l'obiettivo che era in corso resta scelto.
 fermaObiettivoInCorso();
 // Il blocco compare subito, con l'obiettivo scelto l'ultima volta.
 mostraBloccoObiettivo();
+
+// Arrivando dal play della pagina Obiettivi l'indirizzo è index.html?avvia:
+// URLSearchParams legge la parte dopo il ?, e has dice se c'è "avvia".
+const parametri = new URLSearchParams(location.search);
+if (parametri.has("avvia") && idScelto !== null) {
+  // replaceState toglie ?avvia dall'indirizzo, senza ricaricare: così una ricarica
+  // della pagina non fa ripartire il timer da solo.
+  history.replaceState(null, "", location.pathname);
+  // click() preme Avvia come farebbe l'utente: partono sia il timer di js/timer.js
+  // sia avviaConObiettivo, che mette in corso l'obiettivo scelto.
+  pulsanteAvvia.click();
+}

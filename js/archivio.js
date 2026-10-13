@@ -18,6 +18,8 @@
 
 export const chiaveProgetti = "focusx.progetti.v1";
 export const chiaveObiettivi = "focusx.obiettivi.v1";
+// L'obiettivo scelto nella Home: lo scrive anche il play della pagina Obiettivi.
+export const chiaveObiettivoScelto = "focusx.home.obiettivo.v1";
 
 
 // =====================================================================

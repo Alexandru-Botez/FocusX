@@ -29,10 +29,10 @@
     <meta name="theme-color" content="#000000">
     <title>Home</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=pillola-2">
-    <script type="module" src="js/menu.js?v=moduli-1"></script>
-    <script type="module" src="js/timer.js?v=moduli-1"></script>
-    <script type="module" src="js/home-obiettivo.js?v=pausa-1"></script>
+    <link rel="stylesheet" href="css/styles.css?v=stop-2">
+    <script type="module" src="js/menu.js?v=avvia-1"></script>
+    <script type="module" src="js/timer.js?v=avvia-1"></script>
+    <script type="module" src="js/home-obiettivo.js?v=avvia-1"></script>
   </head>
 
   <body>
@@ -145,7 +145,7 @@
 
     <!-- =================================================================
          SEZIONE TIMER
-         Il tempo che scorre, i pulsanti Avvia, Pausa e Reset
+         Il tempo che scorre, i pulsanti Avvia, Pausa e Stop
          e il messaggio sullo stato del timer. Sopra, l'obiettivo scelto.
          JavaScript: js/timer.js.
          ================================================================= -->
@@ -156,7 +156,7 @@
              L'obiettivo su cui si lavora, in una pillola: cerchio per
              completarlo, nome e fiammine. Un clic sul blocco apre sotto una
              finestrella con gli obiettivi da fare. Avvia mette in corso
-             quello scelto, Pausa e Reset lo fermano.
+             quello scelto, Pausa e Stop lo fermano.
              Usa le stesse classi della lista obiettivi (goal-name,
              goal-flame-icons...), così fiammine e stati hanno lo stesso aspetto.
              JavaScript: js/home-obiettivo.js.
@@ -231,7 +231,7 @@
             </svg>
           </button>
 
-          <!-- Pausa e Reset partono disattivati: js/timer.js li attiva all'avvio. -->
+          <!-- Pausa e Stop partono disattivati: js/timer.js li attiva all'avvio. -->
           <button id="pause-button" type="button" aria-label="Pausa" title="Pausa" disabled>
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"></rect>
@@ -239,7 +239,12 @@
             </svg>
           </button>
 
-          <button id="reset-button" type="button" disabled>Reset</button>
+          <!-- Stop finisce la sessione: ferma il timer e lo riporta a 25:00. -->
+          <button id="stop-button" type="button" aria-label="Stop" title="Stop" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"></rect>
+            </svg>
+          </button>
         </div>
 
         <!--
