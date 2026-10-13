@@ -25,7 +25,6 @@ const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
 const pulsanteStop = document.getElementById("stop-button");
-const statoTimer = document.getElementById("timer-status");
 
 
 // =====================================================================
@@ -105,10 +104,6 @@ function avviaTimer() {
   // Dopo l'avvio possiamo riportare il timer al suo valore iniziale con Stop.
   pulsanteStop.disabled = false;
 
-  // classList.add aggiunge una classe CSS all'elemento del messaggio.
-  // La classe usa visibility: hidden: lo status scompare ma conserva il suo spazio.
-  statoTimer.classList.add("is-hidden");
-
   // setInterval richiede di eseguire la funzione ogni 1000 millisecondi, cioè un secondo.
   // Passiamo passaUnSecondo senza (): dovrà essere eseguita dall'intervallo, non adesso.
   // Salviamo il suo identificatore; i secondi rimasti non vengono azzerati alla ripresa.
@@ -139,9 +134,6 @@ function fermaSessione() {
 
   // Non serve un altro Stop finché non premiamo nuovamente Avvia.
   pulsanteStop.disabled = true;
-
-  // classList.remove toglie la classe: il messaggio torna visibile senza spostare il timer.
-  statoTimer.classList.remove("is-hidden");
 }
 
 

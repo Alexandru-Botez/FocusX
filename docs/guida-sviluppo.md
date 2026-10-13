@@ -58,7 +58,7 @@ Le voci Home, Progetti e Obiettivi usano invece un `a.menu-option` con `href="in
 `aria-hidden="true"`, così tastiera e lettori di schermo trovano un solo link, quello del nome.
 Nel `head`, un `link` con `rel="icon"` riutilizza il logo SVG come favicon della scheda.
 Il contenuto `main` contiene una `section` chiamata «Timer Pomodoro» tramite `aria-label`.
-All'interno della sezione si trovano il tempo, il gruppo dei pulsanti e il messaggio di stato.
+All'interno della sezione si trovano il tempo e il gruppo dei pulsanti.
 
 Gli identificatori da conoscere sono:
 
@@ -74,7 +74,6 @@ Gli identificatori da conoscere sono:
 | `#start-button` | Pulsante Avvia | Collegato ad avviaTimer; disponibile quando il timer è fermo. |
 | `#pause-button` | Pulsante Pausa | Collegato a pausaTimer; disponibile durante il conteggio. |
 | `#stop-button` | Pulsante Stop | Collegato a fermaSessione; disponibile dopo l'avvio, anche in pausa. |
-| `#timer-status` | Messaggio di stato | Visibile prima dell'avvio e dopo Stop; nascosto al clic su Avvia. |
 
 Una `class` può essere condivisa da più elementi. Un `id` deve identificare un solo elemento
 nel documento. Se cambi un nome, aggiorna anche i selettori CSS, gli eventuali riferimenti
@@ -131,7 +130,6 @@ con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 | Pressione | `button:active` riduce il pulsante al 94% (97% per i pulsanti dei progetti); il Menu è escluso. |
 | Hover solo con puntatore | Gli hover sono dentro `@media (hover: hover)`: su touch l'evidenziazione non resta dopo il tocco. |
 | Cifre grigie in pausa | `section:has(#start-button:enabled):has(#stop-button:enabled) #timer` usa `--muted`. |
-| Dissolvenza dello status | `#timer-status` anima `opacity`; `visibility` cambia alla fine, conservando lo spazio. |
 | Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
 | Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 240 millisecondi. |
 | Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`; 8px separano le voci. |
@@ -156,9 +154,9 @@ Le cinque funzioni hanno responsabilità distinte:
 
 | Funzione | Responsabilità |
 | --- | --- |
-| `avviaTimer()` | Disabilita Avvia, abilita Pausa e Stop, nasconde lo stato e avvia o riprende il conteggio. |
+| `avviaTimer()` | Disabilita Avvia, abilita Pausa e Stop e avvia o riprende il conteggio. |
 | `pausaTimer()` | Ferma l'intervallo, abilita Avvia e disabilita Pausa, conservando i secondi rimasti. |
-| `fermaSessione()` | Ferma il timer, ripristina 1500 secondi, disabilita Stop e mostra il messaggio iniziale. |
+| `fermaSessione()` | Ferma il timer, ripristina 1500 secondi e disabilita Stop. |
 | `passaUnSecondo()` | Sottrae un secondo, ripristina 1500 quando arriva a zero e aggiorna il testo. |
 | `aggiornaTimer()` | Converte i secondi rimanenti nel formato minuti:secondi. |
 
@@ -167,10 +165,6 @@ Le cinque funzioni hanno responsabilità distinte:
 un identificatore, che viene conservato in `intervalloTimer`.
 Avvia viene disabilitato durante il conteggio; una condizione impedisce anche di creare
 un secondo intervallo se la funzione viene richiamata mentre uno è già attivo.
-Il messaggio «Pronto per iniziare.» scompare quando JavaScript aggiunge la classe `is-hidden`
-con `statoTimer.classList.add("is-hidden")`.
-Il CSS applica `visibility: hidden`: lo status conserva spazio e margini nel layout,
-quindi il timer e i pulsanti non cambiano posizione quando il testo viene nascosto.
 
 `clearInterval(intervalloTimer)` interrompe le chiamate periodiche quando premi Pausa.
 Il valore `secondiRimanenti` resta intatto e `intervalloTimer` torna a `null`,
@@ -180,8 +174,7 @@ Premendo Avvia viene creato un nuovo intervallo a partire dal tempo conservato.
 `fermaSessione()` richiama `pausaTimer()` per fermare il conteggio senza duplicare quelle istruzioni.
 Poi assegna `durataSessione` a `secondiRimanenti` e richiama `aggiornaTimer()`:
 il testo torna subito a `25:00`, senza attendere un altro secondo.
-Stop viene disabilitato e il messaggio iniziale torna visibile rimuovendo la classe
-con `statoTimer.classList.remove("is-hidden")`.
+Stop viene disabilitato.
 Il conteggio riparte solo quando premi nuovamente Avvia.
 
 | Stato | Avvia | Pausa | Stop |
@@ -345,6 +338,9 @@ con chiave `focusx.progetti.v1`. `JSON.parse` legge l'array salvato e `JSON.stri
 lo converte in testo. Il nuovo progetto compare solo dopo un salvataggio riuscito.
 Se l'archivio non è leggibile, la creazione viene disabilitata per non sovrascriverlo;
 se il salvataggio fallisce, il modulo mantiene il nome e mostra un messaggio.
+Creare, modificare o eliminare un progetto o un obiettivo non mostra conferme: il risultato
+si vede già nella lista. Il paragrafo `#projects-message` (e `#goals-message` nella pagina
+Obiettivi) resta vuoto e si riempie solo con gli errori di lettura o salvataggio.
 Queste funzioni potranno essere adattate alle richieste verso un futuro backend.
 
 Il cambio di pagina interrompe il timer: tornando a `index.html`, il tempo riparte dallo stato iniziale.
@@ -513,16 +509,15 @@ Le scelte presenti nel codice sono:
 - I controlli sono elementi `button`, utilizzabili anche con la tastiera.
 - `:focus-visible` rende visibile il pulsante selezionato da tastiera.
 - Il timer usa `role="timer"` e `aria-live="off"` per evitare annunci continui.
-- Il messaggio informativo usa `role="status"`, è nascosto dopo l'avvio e torna visibile dopo Stop.
+- I messaggi d'errore di Progetti e Obiettivi usano `role="status"`, così vengono annunciati.
 
-Se nelle prossime funzioni servirà mostrare un nuovo messaggio, rendi prima visibile
-l'elemento con `statoTimer.classList.remove("is-hidden")`. Evita annunci continui a ogni secondo.
+Se nelle prossime funzioni servirà mostrare un nuovo messaggio, evita annunci continui a ogni secondo.
 
 ## Convenzioni del codice
 
 - Usa due spazi per l'indentazione, come nei file esistenti.
 - Scrivi i tag HTML in minuscolo.
-- Usa nomi descrittivi in kebab-case per classi e identificatori, per esempio `timer-status`.
+- Usa nomi descrittivi in kebab-case per classi e identificatori, per esempio `stop-button`.
 - Nel CSS scrivi una dichiarazione per riga e riutilizza le variabili dei colori.
 - Mantieni HTML per la struttura, CSS per lo stile e JavaScript per il comportamento.
 - In JavaScript usa nomi descrittivi in camelCase, `const` per i nomi non riassegnati
@@ -588,7 +583,8 @@ Per i progetti controlla che:
 - Un nome vuoto o composto solo da spazi non venga accettato.
 - Un nome valido venga aggiunto una sola volta e rimanga dopo una ricarica.
 - Si possano aggiungere più progetti, compresi nomi con accenti o caratteri come `<` e `>`.
-- Su mobile il modulo, i nomi lunghi e il messaggio di conferma non allarghino la pagina.
+- Su mobile il modulo e i nomi lunghi non allarghino la pagina.
+- Creando, modificando o eliminando un progetto non compaia nessun messaggio sotto la lista.
 - Il modulo e il progetto appena creato compaiano salendo di pochi pixel.
 - Matita e cestino restino all'estremità destra di ogni voce, anche con nomi lunghi e su mobile.
 - La matita apra il modulo con titolo «Modifica progetto», nome e colore del progetto;
@@ -664,11 +660,8 @@ Per il timer attuale controlla anche che:
 - Dopo Stop, Avvia sia disponibile e Pausa e Stop siano disabilitati.
 - Avvia dopo Stop riparta da `25:00` con un solo intervallo.
 - Passando il mouse su Stop abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
-- Il messaggio di stato sia visibile prima dell'avvio e nascosto dopo il clic.
-- Il messaggio di stato torni visibile dopo Stop.
 - In pausa le cifre diventino grigie e tornino bianche con Avvia o Stop.
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.
-- La posizione del timer e dei pulsanti resti invariata quando lo status scompare o riappare.
 - Il formato mantenga due cifre per minuti e secondi.
 - Dopo 25 minuti il timer torni a `25:00` e continui.
 

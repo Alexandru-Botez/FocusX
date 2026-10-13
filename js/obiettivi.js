@@ -73,7 +73,7 @@ const iconaFinestrella = document.getElementById("goal-flames-panel-icon");
 const pulsanteMenoFiammine = document.getElementById("goal-flames-less");
 const pulsantePiuFiammine = document.getElementById("goal-flames-plus");
 
-// Elenco e messaggi.
+// Elenco e messaggio d'errore.
 const elencoObiettivi = document.getElementById("goal-list");
 const statoVuotoObiettivi = document.getElementById("goals-empty");
 const messaggioObiettivi = document.getElementById("goals-message");
@@ -677,7 +677,6 @@ function creaObiettivo(dati) {
   obiettivi = elencoAggiornato;
   mostraObiettivi(nuovoObiettivo.id);
   chiudiModuloObiettivo();
-  messaggioObiettivi.textContent = "Obiettivo creato: " + dati.nome + ".";
 }
 
 // Sostituisce i dati di un obiettivo esistente, tenendo id, stato e minuti lavorati.
@@ -693,7 +692,6 @@ function modificaObiettivo(id, dati) {
   obiettivi = elencoAggiornato;
   mostraObiettivi();
   chiudiModuloObiettivo();
-  messaggioObiettivi.textContent = "Obiettivo modificato: " + dati.nome + ".";
 
   // Il focus torna alla matita dello stesso obiettivo, nella sua posizione nell'elenco.
   const posizione = obiettivi.findIndex(obiettivo => obiettivo.id === id);
@@ -718,7 +716,6 @@ function eliminaObiettivo() {
   // Prima chiudiamo il modulo, che riporta idInModifica a null; poi ridisegniamo la lista.
   chiudiModuloObiettivo();
   mostraObiettivi();
-  messaggioObiettivi.textContent = "Obiettivo eliminato: " + obiettivo.nome + ".";
   // Il pulsante premuto è sparito insieme al modulo: il focus va su Crea obiettivo.
   pulsanteNuovoObiettivo.focus();
 }

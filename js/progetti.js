@@ -44,7 +44,7 @@ const pulsanteAnnullaProgetto = document.getElementById("cancel-project-button")
 const pulsanteAltriColori = document.getElementById("more-colors-button");
 const finestraAltriColori = document.getElementById("more-colors");
 
-// Elenco e messaggi.
+// Elenco e messaggio d'errore.
 const elencoProgetti = document.getElementById("project-list");
 const statoVuotoProgetti = document.getElementById("projects-empty");
 const messaggioProgetti = document.getElementById("projects-message");
@@ -157,7 +157,6 @@ function eliminaProgetto(id) {
     return;
   }
 
-  const nome = progetti[posizione].nome;
   // filter crea un nuovo array con tutti i progetti tranne quello da eliminare.
   const elencoAggiornato = progetti.filter(progetto => progetto.id !== id);
   if (!salvaProgetti(elencoAggiornato)) {
@@ -171,7 +170,6 @@ function eliminaProgetto(id) {
 
   progetti = elencoAggiornato;
   mostraProgetti();
-  messaggioProgetti.textContent = "Progetto eliminato: " + nome + ".";
 
   // Il pulsante premuto non esiste più: il focus passa al cestino vicino o a Crea progetto.
   const pulsantiElimina = elencoProgetti.querySelectorAll(".project-delete");
@@ -344,7 +342,6 @@ function creaProgetto(nome, colore) {
   progetti = elencoAggiornato;
   mostraProgetti(nuovoProgetto.id);
   chiudiModuloProgetto();
-  messaggioProgetti.textContent = "Progetto creato: " + nome + ".";
 }
 
 // Cambia nome e colore di un progetto esistente e lo salva.
@@ -365,7 +362,6 @@ function modificaProgetto(id, nome, colore) {
   progetti = elencoAggiornato;
   mostraProgetti();
   chiudiModuloProgetto();
-  messaggioProgetti.textContent = "Progetto modificato: " + nome + ".";
 
   // Il focus torna alla matita dello stesso progetto, nella sua posizione nell'elenco.
   const posizione = progetti.findIndex(progetto => progetto.id === id);
