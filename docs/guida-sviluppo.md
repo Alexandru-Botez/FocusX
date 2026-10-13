@@ -482,8 +482,13 @@ riempito da `riempiFinestrellaObiettivi()` con gli obiettivi non completati, cop
 con un clic fuori o con Esc. L'id scelto è salvato con la chiave `focusx.home.obiettivo.v1`;
 aprendo la Home si mostra quello, oppure l'obiettivo in corso.
 
-Avvia mette in corso l'obiettivo scelto: `js/home-obiettivo.js` aggiunge un proprio listener
-al pulsante, senza modificare `js/timer.js`. Se il timer sta già contando, anche scegliere
+In corso vuol dire che il timer sta contando su quell'obiettivo. Avvia mette in corso
+l'obiettivo scelto: `js/home-obiettivo.js` aggiunge un proprio listener al pulsante, senza
+modificare `js/timer.js`. Pausa e Reset chiamano `fermaObiettivoInCorso()`, che riporta
+l'obiettivo in corso a non completato; la stessa funzione parte all'apertura della pagina,
+perché il timer parte fermo e un «in corso» salvato da prima (una ricarica, o il play della
+pagina Obiettivi) sarebbe falso. L'obiettivo resta comunque scelto, perché `idScelto` viene
+calcolato prima. Se il timer sta già contando, anche scegliere
 un altro obiettivo lo mette in corso. Valgono le regole della pagina Obiettivi: un solo
 obiettivo in corso e cerchio disattivato senza tempo lavorato. Le fiammine si disegnano
 con `disegnaFiammine`, la stessa funzione della lista, importata da `js/fiammine.js`.

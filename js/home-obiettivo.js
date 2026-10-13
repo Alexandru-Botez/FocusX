@@ -2,7 +2,8 @@
 // HOME-OBIETTIVO.JS: il blocco dell'obiettivo nella pagina Home (index.html)
 // Sopra il timer mostra l'obiettivo scelto: nome, cerchio per completarlo
 // e fiammine. Un clic sul blocco apre una finestrella con gli obiettivi
-// da fare; premendo Avvia sul timer, l'obiettivo scelto va in corso.
+// da fare. L'obiettivo è in corso solo mentre il timer conta: Avvia lo mette
+// in corso, Pausa e Reset lo fermano.
 //
 // È un modulo, come gli altri file JavaScript: i suoi nomi sono privati,
 // quindi può chiamare pulsanteAvvia anche se js/timer.js usa lo stesso nome.
@@ -55,6 +56,7 @@ const modelloSceltaObiettivo = document.getElementById("home-goal-option-templat
 // I pulsanti del timer, gli stessi che usa js/timer.js.
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
+const pulsanteReset = document.getElementById("reset-button");
 
 
 // =====================================================================
@@ -297,7 +299,9 @@ function scegliObiettivo(id) {
 
 // =====================================================================
 // SEZIONE STATI DELL'OBIETTIVO
-// Avvia mette in corso l'obiettivo scelto; il cerchio lo completa.
+// In corso vuol dire "ci sto lavorando adesso": vale solo mentre il timer conta.
+// Avvia mette in corso l'obiettivo scelto; Pausa, Reset e l'apertura della
+// pagina, quando il timer è fermo, lo fermano. Il cerchio lo completa.
 // Valgono le regole della pagina Obiettivi: un solo obiettivo in corso
 // e niente completato senza tempo lavorato.
 // =====================================================================
@@ -330,6 +334,23 @@ function avviaConObiettivo() {
   if (idScelto !== null) {
     mettiInCorso(idScelto);
   }
+}
+
+// Il timer si è fermato: l'obiettivo in corso torna non completato.
+// Serve per Pausa e Reset, e all'apertura della pagina, quando il timer parte fermo:
+// un "in corso" rimasto salvato da prima (una ricarica, o il play della pagina Obiettivi)
+// non deve far sembrare che si stia lavorando.
+function fermaObiettivoInCorso() {
+  if (obiettivi === null || !obiettivi.some(obiettivo => obiettivo.stato === "in-corso")) {
+    return;
+  }
+  const elencoAggiornato = obiettivi.map(elemento =>
+    elemento.stato === "in-corso" ? { ...elemento, stato: "non-completato" } : elemento);
+  if (!salvaObiettivi(elencoAggiornato)) {
+    return;
+  }
+  obiettivi = elencoAggiornato;
+  mostraBloccoObiettivo();
 }
 
 // Il cerchio completa l'obiettivo scelto; premuto di nuovo lo riporta a non completato.
@@ -366,9 +387,15 @@ pulsanteScelta.addEventListener("click", alternaFinestrellaObiettivi);
 document.addEventListener("click", chiudiFinestrellaFuori);
 document.addEventListener("keydown", chiudiFinestrellaConEsc);
 
-// Stati: il cerchio e il pulsante Avvia del timer.
+// Stati: il cerchio e i pulsanti del timer. Questi listener si aggiungono a quelli
+// di js/timer.js: prima il timer parte o si ferma, poi cambia lo stato dell'obiettivo.
 pulsanteCompleta.addEventListener("click", alternaCompletato);
 pulsanteAvvia.addEventListener("click", avviaConObiettivo);
+pulsantePausa.addEventListener("click", fermaObiettivoInCorso);
+pulsanteReset.addEventListener("click", fermaObiettivoInCorso);
 
+// All'apertura il timer è fermo: nessun obiettivo può essere in corso.
+// idScelto è già stato calcolato, quindi l'obiettivo che era in corso resta scelto.
+fermaObiettivoInCorso();
 // Il blocco compare subito, con l'obiettivo scelto l'ultima volta.
 mostraBloccoObiettivo();

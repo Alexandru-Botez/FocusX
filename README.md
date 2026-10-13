@@ -14,7 +14,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 - Sopra il timer, un blocco mostra l'obiettivo su cui lavori: nome, cerchio per completarlo
   e fiammine. Un clic sul blocco apre una finestrella con gli obiettivi da fare;
-  premendo Avvia, l'obiettivo scelto va in corso. La scelta resta dopo una ricarica.
+  premendo Avvia, l'obiettivo scelto va in corso; Pausa e Reset lo fermano.
+  Un obiettivo è in corso solo mentre il timer conta. La scelta resta dopo una ricarica.
 - Conto alla rovescia di 25 minuti con i pulsanti Avvia, Pausa e Reset.
 - Pausa conserva il tempo rimasto e Avvia riprende da lì; in pausa le cifre diventano grigie.
 - Reset ferma il timer e lo riporta a `25:00`.
