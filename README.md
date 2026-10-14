@@ -54,18 +54,19 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   si può anche scrivere direttamente. Nell'elenco, oltre le otto,
   la voce mostra una sola fiammina seguita dal numero, per esempio 🔥12;
   in corso anche il numero diventa azzurro, come la fiammina.
-- Ogni obiettivo mostra, sotto il nome, le fiammine con il tempo totale, la data e il suo progetto con il colore.
+- Ogni obiettivo mostra, sotto il nome, le fiammine con il tempo che manca, la data e il suo progetto con il colore.
   Ogni fiammina ha tre aspetti: vuota (solo contorno) se è da fare, azzurra e tremolante
   se è quella da completare mentre l'obiettivo è in corso, piena e accesa quando è fatta:
   azzurra mentre l'obiettivo è in corso, arancione quando è completato.
-  Per ora sono fatte tutte quando l'obiettivo è completato.
+  Una fiammina diventa fatta ogni 25 minuti lavorati; da completato sono fatte tutte.
 - Tre stati: non completato, in corso e completato. Il cerchio a sinistra del nome
   completa l'obiettivo; premuto di nuovo, lo riporta a non completato. Il "play" a destra
   porta alla Home, sceglie lì l'obiettivo e fa partire il timer: è in corso finché il timer conta. Lo stato si riconosce dai pulsanti, dal bordo e dalle fiammine.
 - Un solo obiettivo alla volta è in corso: mettendone in corso un altro, il precedente si ferma
   e torna non completato.
-- Ogni obiettivo ricorda i minuti lavorati. Senza tempo lavorato il cerchio è disattivato:
-  per ora il tempo non viene ancora misurato, quindi vale 0 per tutti.
+- Ogni obiettivo ricorda il tempo lavorato: ogni secondo del timer della Home si aggiunge
+  all'obiettivo in corso, fino a 16 ore. Il tempo mostrato scende, fino a 0 da completato.
+  Senza tempo lavorato il cerchio è disattivato.
 - La matita accanto al play apre lo stesso modulo con i dati dell'obiettivo, per modificare
   nome, progetto, data e fiammine; lo stato non cambia. Durante la modifica la voce è nascosta.
 - Nel modulo di modifica, il pulsante rosso Elimina cancella l'obiettivo.
@@ -88,8 +89,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Nel menu Statistica e Impostazioni non hanno ancora una destinazione.
 - Cambiare pagina interrompe il timer: tornando si riparte da `25:00`.
 - I progetti hanno solo nome e colore, e l'eliminazione non chiede conferma.
-- Gli obiettivi non si possono ancora modificare né eliminare. Eliminando un progetto,
-  i suoi obiettivi restano e mostrano «Progetto eliminato».
+- Eliminando un progetto, i suoi obiettivi restano e mostrano «Progetto eliminato».
+- Il tempo lavorato si conta solo con la Home aperta, a ogni secondo del timer.
 
 ## Avvio locale
 

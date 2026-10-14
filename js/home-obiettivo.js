@@ -3,7 +3,8 @@
 // Sopra il timer mostra l'obiettivo scelto: nome, cerchio per completarlo
 // e fiammine. Un clic sul blocco apre una finestrella con gli obiettivi
 // da fare. L'obiettivo è in corso solo mentre il timer conta: Avvia lo mette
-// in corso, Pausa e Stop lo fermano.
+// in corso, Pausa e Stop lo fermano. Ogni secondo del timer si aggiunge
+// al tempo lavorato dell'obiettivo in corso.
 //
 // È un modulo, come gli altri file JavaScript: i suoi nomi sono privati,
 // quindi può chiamare pulsanteAvvia anche se js/timer.js usa lo stesso nome.
@@ -16,6 +17,7 @@
 //   - BLOCCO DELL'OBIETTIVO
 //   - FINESTRELLA DEGLI OBIETTIVI
 //   - STATI DELL'OBIETTIVO
+//   - TEMPO LAVORATO
 //   - AVVIO DELLA PAGINA
 // =====================================================================
 
@@ -31,7 +33,7 @@ import {
   chiaveObiettivoScelto,
   leggiElenco
 } from "./archivio.js?v=avvia-1";
-import { formattaTempo, disegnaFiammine } from "./fiammine.js?v=moduli-1";
+import { oreMassime, formattaTempoRimasto, disegnaFiammine } from "./fiammine.js?v=tempo-1";
 
 
 // =====================================================================
@@ -45,11 +47,11 @@ const pulsanteCompleta = document.getElementById("home-goal-complete");
 const pulsanteScelta = document.getElementById("home-goal-picker");
 const nomeObiettivo = document.getElementById("home-goal-name");
 
-// Fiammine e tempo previsto.
+// Fiammine e tempo rimasto.
 const dettagliObiettivo = document.getElementById("home-goal-details");
 const iconeFiammine = document.querySelectorAll("#home-goal-flames svg");
 const numeroFiammine = document.getElementById("home-goal-flames-count");
-const minutiPrevisti = document.getElementById("home-goal-minutes");
+const tempoRimasto = document.getElementById("home-goal-minutes");
 
 // Finestrella con l'elenco degli obiettivi.
 const finestrellaObiettivi = document.getElementById("home-goal-panel");
@@ -57,7 +59,8 @@ const elencoSceltaObiettivi = document.getElementById("home-goal-options");
 const avvisoNessunObiettivo = document.getElementById("home-goal-empty");
 const modelloSceltaObiettivo = document.getElementById("home-goal-option-template");
 
-// I pulsanti del timer, gli stessi che usa js/timer.js.
+// Il tempo e i pulsanti del timer, gli stessi che usa js/timer.js.
+const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
 const pulsanteStop = document.getElementById("stop-button");
@@ -200,9 +203,10 @@ function mostraBloccoObiettivo() {
   pulsanteCompleta.disabled = senzaTempo;
   pulsanteCompleta.title = senzaTempo ? "Lavora sull'obiettivo prima di completarlo" : "Segna come completato";
 
-  // Le fiammine si disegnano come nella lista, con la funzione comune di js/fiammine.js.
+  // Le fiammine e il tempo rimasto si mostrano come nella lista, con le funzioni comuni
+  // di js/fiammine.js: mentre l'obiettivo è in corso cambiano a ogni secondo lavorato.
   disegnaFiammine(iconeFiammine, numeroFiammine, obiettivo);
-  minutiPrevisti.textContent = formattaTempo(obiettivo.fiammine);
+  tempoRimasto.textContent = formattaTempoRimasto(obiettivo);
 }
 
 
@@ -226,7 +230,7 @@ function riempiFinestrellaObiettivi() {
     pulsante.addEventListener("click", () => scegliObiettivo(obiettivo.id));
 
     voce.querySelector(".home-goal-option-name").textContent = obiettivo.nome;
-    voce.querySelector(".home-goal-option-time").textContent = formattaTempo(obiettivo.fiammine);
+    voce.querySelector(".home-goal-option-time").textContent = formattaTempoRimasto(obiettivo);
     // La cartella prende il colore del progetto, se il progetto esiste ancora.
     const progetto = progetti.find(progetto => progetto.id === obiettivo.progettoId);
     if (progetto !== undefined) {
@@ -373,8 +377,41 @@ function alternaCompletato() {
 
 
 // =====================================================================
+// SEZIONE TEMPO LAVORATO
+// js/timer.js annuncia ogni secondo con l'evento "secondo": il secondo
+// si aggiunge ai minuti lavorati dell'obiettivo in corso e viene salvato.
+// Così il tempo rimasto scende e, ogni 25 minuti, una fiammina diventa fatta.
+// =====================================================================
+
+// Aggiunge un secondo di lavoro all'obiettivo in corso, se ce n'è uno.
+function aggiungiSecondoLavorato() {
+  if (obiettivi === null) {
+    return;
+  }
+  // Senza un obiettivo in corso (nessuno scelto, o uno già completato) il timer conta da solo.
+  const obiettivo = obiettivi.find(obiettivo => obiettivo.stato === "in-corso");
+  if (obiettivo === undefined) {
+    return;
+  }
+  // I minuti hanno decimali: 1 secondo è 1/60 di minuto. Sommare 1/60 ogni volta
+  // accumulerebbe piccoli errori di arrotondamento, quindi passiamo dai secondi interi:
+  // Math.round riporta i minuti salvati a secondi, poi aggiungiamo 1.
+  // Math.min ferma il conto a 16 ore, il limite che la pagina Obiettivi accetta.
+  const secondi = Math.min(Math.round(obiettivo.minutiLavorati * 60) + 1, oreMassime * 60 * 60);
+  const elencoAggiornato = obiettivi.map(elemento =>
+    elemento.id === obiettivo.id ? { ...elemento, minutiLavorati: secondi / 60 } : elemento);
+  // Salviamo a ogni secondo: chiudendo la scheda all'improvviso si perde al massimo un secondo.
+  if (!salvaObiettivi(elencoAggiornato)) {
+    return;
+  }
+  obiettivi = elencoAggiornato;
+  mostraBloccoObiettivo();
+}
+
+
+// =====================================================================
 // SEZIONE AVVIO DELLA PAGINA
-// Collega il blocco, la finestrella e il pulsante Avvia alle funzioni
+// Collega il blocco, la finestrella, il cerchio e il timer alle funzioni
 // e mostra subito l'obiettivo scelto.
 // =====================================================================
 
@@ -389,6 +426,9 @@ pulsanteCompleta.addEventListener("click", alternaCompletato);
 pulsanteAvvia.addEventListener("click", avviaConObiettivo);
 pulsantePausa.addEventListener("click", fermaObiettivoInCorso);
 pulsanteStop.addEventListener("click", fermaObiettivoInCorso);
+
+// Tempo lavorato: l'evento "secondo" arriva da js/timer.js mentre il timer conta.
+timer.addEventListener("secondo", aggiungiSecondoLavorato);
 
 // Uscendo dalla Home (un link del menu, un'altra pagina, la scheda chiusa) il timer
 // si ferma con la pagina: pagehide scatta proprio in quel momento e ferma l'obiettivo.

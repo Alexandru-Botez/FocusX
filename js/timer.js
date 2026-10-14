@@ -45,7 +45,8 @@ let intervalloTimer = null;
 
 // =====================================================================
 // SEZIONE CONTEGGIO
-// Ogni secondo toglie un secondo e aggiorna il testo "mm:ss".
+// Ogni secondo toglie un secondo, aggiorna il testo "mm:ss"
+// e lo annuncia con l'evento "secondo".
 // =====================================================================
 
 // Scrive i secondi rimanenti nel formato "25:00".
@@ -66,7 +67,7 @@ function aggiornaTimer() {
   timer.textContent = minutiFormattati + ":" + secondiFormattati;
 }
 
-// Toglie un secondo; arrivato a zero, il timer riparte da 25 minuti.
+// Toglie un secondo e lo annuncia; arrivato a zero, il timer riparte da 25 minuti.
 function passaUnSecondo() {
   // Riassegniamo alla variabile il suo valore precedente meno un secondo.
   secondiRimanenti = secondiRimanenti - 1;
@@ -79,6 +80,11 @@ function passaUnSecondo() {
 
   // Le parentesi tonde eseguono la funzione che aggiorna il testo visibile.
   aggiornaTimer();
+
+  // dispatchEvent fa scattare sul timer un evento inventato da noi, "secondo", come un clic:
+  // chi lo ascolta con addEventListener sa che è passato un secondo di lavoro.
+  // Così js/home-obiettivo.js conta il tempo dell'obiettivo senza un secondo setInterval.
+  timer.dispatchEvent(new Event("secondo"));
 }
 
 

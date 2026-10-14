@@ -22,8 +22,8 @@ export const minutiPerFiammina = 25;
 // Le prime otto fiammine si cliccano direttamente; dalla nona si sceglie nella finestrella.
 // Nelle liste, oltre otto si vede una sola fiammina seguita dal numero.
 export const fiammineVisibili = 8;
-// Il limite è di tempo, non di fiammine: al massimo 16 ore, per la previsione
-// e in futuro anche per il tempo trascorso. Math.floor tiene solo le fiammine intere
+// Il limite è di tempo, non di fiammine: al massimo 16 ore, sia per la previsione
+// sia per il tempo lavorato. Math.floor tiene solo le fiammine intere
 // che ci stanno: con 25 minuti sono 38 (15 h 50 min), perché 39 supererebbero le 16 ore.
 export const oreMassime = 16;
 export const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
@@ -34,10 +34,8 @@ export const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
 // Trasformano un numero di fiammine nel testo che si legge nella pagina.
 // =====================================================================
 
-// Scrive il tempo di un certo numero di fiammine in ore e minuti.
-export function formattaTempo(fiammine) {
-  // 2 fiammine → "50 min"; 3 fiammine → "1 h 15 min"; 8 fiammine → "3 h 20 min".
-  const minuti = fiammine * minutiPerFiammina;
+// Scrive un numero intero di minuti in ore e minuti: 50 → "50 min"; 75 → "1 h 15 min".
+export function formattaMinuti(minuti) {
   // Math.floor arrotonda per difetto; % è il resto della divisione.
   const ore = Math.floor(minuti / 60);
   const resto = minuti % 60;
@@ -45,6 +43,25 @@ export function formattaTempo(fiammine) {
     return minuti + " min";
   }
   return resto === 0 ? ore + " h" : ore + " h " + resto + " min";
+}
+
+// Scrive il tempo di un certo numero di fiammine in ore e minuti.
+export function formattaTempo(fiammine) {
+  // 2 fiammine → "50 min"; 3 fiammine → "1 h 15 min"; 8 fiammine → "3 h 20 min".
+  return formattaMinuti(fiammine * minutiPerFiammina);
+}
+
+// Scrive il tempo che manca per finire le fiammine previste: scende mentre si lavora.
+export function formattaTempoRimasto(obiettivo) {
+  const minutiPrevisti = obiettivo.fiammine * minutiPerFiammina;
+  // Un obiettivo completato non ha più niente da fare. Negli altri casi togliamo il lavorato,
+  // e Math.max non scende sotto zero se si è lavorato più del previsto.
+  const minutiRimasti = obiettivo.stato === "completato"
+    ? 0
+    : Math.max(0, minutiPrevisti - obiettivo.minutiLavorati);
+  // Math.ceil arrotonda per eccesso: con 24 min e 30 s rimasti si legge ancora "25 min",
+  // e il numero scende solo quando è passato un minuto intero.
+  return formattaMinuti(Math.ceil(minutiRimasti));
 }
 
 // Scrive il numero di fiammine all'italiana, con al massimo un decimale.
@@ -67,9 +84,13 @@ export function disegnaFiammine(icone, numero, obiettivo) {
   const tante = obiettivo.fiammine > fiammineVisibili;
   const fiammineDaMostrare = tante ? 1 : obiettivo.fiammine;
   // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
-  // azzurra e tremolante) o is-done (fatta, piena e accesa). Il tempo lavorato non lo misuriamo
-  // ancora: un obiettivo completato ha tutte le fiammine fatte, gli altri nessuna.
-  const fiammineFatte = obiettivo.stato === "completato" ? obiettivo.fiammine : 0;
+  // azzurra e tremolante) o is-done (fatta, piena e accesa). Un obiettivo completato
+  // ha tutte le fiammine fatte; negli altri una fiammina è fatta per ogni 25 minuti lavorati.
+  // Math.floor tiene solo le fiammine intere: con 60 minuti lavorati ne sono fatte 2.
+  // Math.min non ne fa contare più di quelle previste, se si lavora oltre.
+  const fiammineFatte = obiettivo.stato === "completato"
+    ? obiettivo.fiammine
+    : Math.min(obiettivo.fiammine, Math.floor(obiettivo.minutiLavorati / minutiPerFiammina));
   // Oltre otto, la sola fiammina visibile le rappresenta tutte: è fatta solo quando
   // lo sono tutte, e altrimenti è lei quella da completare.
   const posizioneDaCompletare = tante ? 0 : fiammineFatte;

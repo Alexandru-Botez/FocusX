@@ -19,7 +19,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | [index.html](../index.html) | Contenuti, struttura della pagina, pulsanti e attributi di accessibilità. |
 | [css/styles.css](../css/styles.css) | Font, colori, layout, stati visivi e regole per gli schermi piccoli. |
 | [js/archivio.js](../js/archivio.js) | Modulo comune: chiavi di `localStorage` e `leggiElenco`. |
-| [js/fiammine.js](../js/fiammine.js) | Modulo comune: valore e limiti delle fiammine, `formattaTempo`, `disegnaFiammine`. |
+| [js/fiammine.js](../js/fiammine.js) | Modulo comune: valore e limiti delle fiammine, `formattaMinuti`, `formattaTempo`, `formattaTempoRimasto`, `disegnaFiammine`. |
 | [js/timer.js](../js/timer.js) | Comportamento del timer nella pagina principale. |
 | [js/home-obiettivo.js](../js/home-obiettivo.js) | Blocco dell'obiettivo scelto sopra il timer, nella pagina principale. |
 | [js/menu.js](../js/menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
@@ -408,8 +408,9 @@ Oltre otto fiammine il numero `.goal-flames-count` (🔥12) è arancione come la
 mentre l'obiettivo è in corso diventa azzurro insieme a lei, nella lista e nella pillola della Home.
 
 Le prime `fiammineFatte` sono fatte e quella in posizione `fiammineFatte` è da completare.
-Il tempo lavorato non è ancora misurato: `fiammineFatte` vale tutte le fiammine per un obiettivo
-completato e 0 negli altri casi. Oltre otto fiammine se ne vede una sola: è fatta solo quando lo sono
+`fiammineFatte` vale tutte le fiammine per un obiettivo completato; negli altri casi
+`Math.floor(minutiLavorati / minutiPerFiammina)`, cioè una fiammina ogni 25 minuti lavorati,
+senza superare le fiammine previste (`Math.min`). Oltre otto fiammine se ne vede una sola: è fatta solo quando lo sono
 tutte, altrimenti è lei quella da completare. La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
 come mezzanotte locale, e diventa rossa (`is-late`) se è passata e l'obiettivo non è completato:
 `dataDiOggi()` produce lo stesso formato `AAAA-MM-GG`, così le date si confrontano come testo.
@@ -422,8 +423,12 @@ Un solo obiettivo alla volta può essere in corso: nel `map` di `cambiaStato`, s
 `applicaStato` solo su quelle il cui `data-stato` è diverso dal nuovo stato.
 
 `minutiLavorati` è il tempo lavorato (anche con decimali, al massimo `oreMassime * 60`).
-Il timer non lo misura ancora, quindi vale 0: `creaObiettivo` lo imposta a 0 e `caricaObiettivi`
+Lo aumenta il timer della Home (vedi sotto); `creaObiettivo` lo imposta a 0 e `caricaObiettivi`
 dà 0 agli obiettivi salvati prima che esistesse, con `{ minutiLavorati: 0, ...obiettivo }`.
+Accanto alle fiammine `formattaTempoRimasto(obiettivo)` scrive il tempo che manca: i minuti
+previsti meno quelli lavorati, mai sotto zero (`Math.max`), 0 da completato. `Math.ceil`
+arrotonda per eccesso, così il numero scende solo dopo un minuto intero. `applicaStato` lo
+riscrive a ogni cambio di stato.
 `applicaStato` disattiva il cerchio (`disabled`) quando i minuti sono 0 e l'obiettivo non è
 completato; un obiettivo completato si può sempre riaprire. `cambiaStato` ripete il controllo.
 `cambiaStato` aggiorna solo la voce interessata con `applicaStato(voce, obiettivo)`,
@@ -497,6 +502,16 @@ Avvia con `pulsanteAvvia.click()`: partono il timer e `avviaConObiettivo`. Se il
 un altro obiettivo lo mette in corso. Valgono le regole della pagina Obiettivi: un solo
 obiettivo in corso e cerchio disattivato senza tempo lavorato. Le fiammine si disegnano
 con `disegnaFiammine`, la stessa funzione della lista, importata da `js/fiammine.js`.
+
+Il tempo lavorato lo conta la Home. A ogni secondo `passaUnSecondo()` di `js/timer.js` fa
+scattare sul paragrafo `#timer` un evento inventato, con `timer.dispatchEvent(new Event("secondo"))`.
+`js/home-obiettivo.js` lo ascolta con `timer.addEventListener("secondo", aggiungiSecondoLavorato)`:
+così i due moduli restano separati e c'è un solo `setInterval`. `aggiungiSecondoLavorato()`
+cerca l'obiettivo in corso e aggiunge un secondo ai suoi `minutiLavorati`. Per evitare gli errori
+di arrotondamento di tanti `+ 1/60`, passa dai secondi interi: `Math.round(minuti * 60) + 1`,
+poi divide per 60. `Math.min` ferma il conto a 16 ore, il limite che `caricaObiettivi` accetta.
+Il dato si salva a ogni secondo, poi `mostraBloccoObiettivo()` ridisegna fiammine e tempo rimasto.
+Anche la finestrella degli obiettivi mostra il tempo rimasto.
 
 ## Accessibilità
 
@@ -649,6 +664,12 @@ Per l'obiettivo nella Home controlla che:
   e la cartella del colore del progetto; Esc, un clic fuori o una scelta la chiudano.
 - Avvia metta in corso l'obiettivo scelto (bordo azzurro, fiammina tremolante) e fermi l'altro;
   a timer avviato, scegliere un altro obiettivo lo metta in corso.
+- A timer avviato i minuti lavorati crescano di un secondo alla volta e il tempo accanto alle
+  fiammine scenda di un minuto ogni minuto intero; Pausa e Stop fermino il conto.
+- Dopo 25 minuti lavorati la prima fiammina diventi fatta e la seconda tremoli; nella pagina
+  Obiettivi la voce mostri la stessa fiammina fatta e lo stesso tempo rimasto.
+- Completando un obiettivo il tempo diventi «0 min»; riaprendolo torni il tempo rimasto.
+- Il tempo lavorato non superi 16 ore (960 minuti).
 - Dopo una ricarica resti scelto lo stesso obiettivo; su un telefono il blocco non esca dallo schermo.
 
 Per il timer attuale controlla anche che:

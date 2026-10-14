@@ -37,8 +37,9 @@ import {
   oreMassime,
   fiammineMassime,
   formattaTempo,
+  formattaTempoRimasto,
   disegnaFiammine
-} from "./fiammine.js?v=moduli-1";
+} from "./fiammine.js?v=tempo-1";
 
 
 // =====================================================================
@@ -172,7 +173,7 @@ let idInModifica = null;
 // =====================================================================
 // SEZIONE FORMATTAZIONE DELLE DATE
 // Trasformano le date nel testo che si legge nella pagina.
-// Il testo del tempo delle fiammine, formattaTempo, arriva da js/fiammine.js.
+// I testi del tempo, formattaTempo e formattaTempoRimasto, arrivano da js/fiammine.js.
 // =====================================================================
 
 // Trasforma "2026-10-12" in una data leggibile, come "12 ott 2026".
@@ -227,9 +228,7 @@ function mostraObiettivi(idNuovo) {
     testoData.dateTime = obiettivo.data;
     testoData.textContent = formattaData(obiettivo.data);
 
-    // Le fiammine le disegna applicaStato, che le aggiorna anche a ogni cambio di stato.
-    voce.querySelector(".goal-minutes").textContent = formattaTempo(obiettivo.fiammine);
-
+    // Fiammine e tempo rimasto li scrive applicaStato, che li aggiorna anche a ogni cambio di stato.
     applicaStato(voce, obiettivo);
 
     const pulsanteModifica = voce.querySelector(".goal-edit");
@@ -267,7 +266,7 @@ function nascondiVoceInModifica() {
 // della Home sta contando: il play porta lì e fa partire il timer.
 // =====================================================================
 
-// Mostra lo stato di un obiettivo nella sua voce: pulsanti, data in ritardo e fiammine.
+// Mostra lo stato di un obiettivo nella sua voce: pulsanti, data in ritardo, fiammine e tempo.
 function applicaStato(voce, obiettivo) {
   // data-stato sul li decide l'aspetto nel CSS: bordo, nome barrato, colori dei pulsanti.
   voce.dataset.stato = obiettivo.stato;
@@ -291,6 +290,8 @@ function applicaStato(voce, obiettivo) {
     voce.querySelector(".goal-flames-count"),
     obiettivo
   );
+  // Il tempo che manca: le fiammine previste meno il tempo lavorato nella Home, 0 da completato.
+  voce.querySelector(".goal-minutes").textContent = formattaTempoRimasto(obiettivo);
 }
 
 // Il play porta alla Home: lì questo obiettivo è scelto e il timer parte da solo.
