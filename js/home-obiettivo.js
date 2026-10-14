@@ -33,7 +33,7 @@ import {
   chiaveObiettivoScelto,
   leggiElenco
 } from "./archivio.js?v=avvia-1";
-import { oreMassime, formattaTempoRimasto, disegnaFiammine } from "./fiammine.js?v=tempo-1";
+import { oreMassime, disegnaFiammine, mostraTempo } from "./fiammine.js?v=tempo-4";
 
 
 // =====================================================================
@@ -47,11 +47,11 @@ const pulsanteCompleta = document.getElementById("home-goal-complete");
 const pulsanteScelta = document.getElementById("home-goal-picker");
 const nomeObiettivo = document.getElementById("home-goal-name");
 
-// Fiammine e tempo rimasto.
+// Fiammine e tempo, lavorato / previsto.
 const dettagliObiettivo = document.getElementById("home-goal-details");
 const iconeFiammine = document.querySelectorAll("#home-goal-flames svg");
 const numeroFiammine = document.getElementById("home-goal-flames-count");
-const tempoRimasto = document.getElementById("home-goal-minutes");
+const tempoObiettivo = document.getElementById("home-goal-minutes");
 
 // Finestrella con l'elenco degli obiettivi.
 const finestrellaObiettivi = document.getElementById("home-goal-panel");
@@ -203,10 +203,10 @@ function mostraBloccoObiettivo() {
   pulsanteCompleta.disabled = senzaTempo;
   pulsanteCompleta.title = senzaTempo ? "Lavora sull'obiettivo prima di completarlo" : "Segna come completato";
 
-  // Le fiammine e il tempo rimasto si mostrano come nella lista, con le funzioni comuni
+  // Le fiammine e il tempo si mostrano come nella lista, con le funzioni comuni
   // di js/fiammine.js: mentre l'obiettivo è in corso cambiano a ogni secondo lavorato.
   disegnaFiammine(iconeFiammine, numeroFiammine, obiettivo);
-  tempoRimasto.textContent = formattaTempoRimasto(obiettivo);
+  mostraTempo(tempoObiettivo, obiettivo);
 }
 
 
@@ -230,7 +230,7 @@ function riempiFinestrellaObiettivi() {
     pulsante.addEventListener("click", () => scegliObiettivo(obiettivo.id));
 
     voce.querySelector(".home-goal-option-name").textContent = obiettivo.nome;
-    voce.querySelector(".home-goal-option-time").textContent = formattaTempoRimasto(obiettivo);
+    mostraTempo(voce.querySelector(".home-goal-option-time"), obiettivo);
     // La cartella prende il colore del progetto, se il progetto esiste ancora.
     const progetto = progetti.find(progetto => progetto.id === obiettivo.progettoId);
     if (progetto !== undefined) {
@@ -380,7 +380,7 @@ function alternaCompletato() {
 // SEZIONE TEMPO LAVORATO
 // js/timer.js annuncia ogni secondo con l'evento "secondo": il secondo
 // si aggiunge ai minuti lavorati dell'obiettivo in corso e viene salvato.
-// Così il tempo rimasto scende e, ogni 25 minuti, una fiammina diventa fatta.
+// Così il tempo lavorato cresce e, ogni 25 minuti, una fiammina diventa fatta.
 // =====================================================================
 
 // Aggiunge un secondo di lavoro all'obiettivo in corso, se ce n'è uno.

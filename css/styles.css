@@ -1462,9 +1462,30 @@ button:disabled {
   color: var(--flame);
 }
 
-/* nowrap tiene "3 h 20 min" su una riga sola. */
+/*
+  Il tempo è "lavorato / previsto": la barra e il previsto restano grigi, come il resto
+  dei dettagli; il lavorato è chiaro e più marcato, perché è il dato che cambia.
+  nowrap tiene "10 min / 3 h 20 min" su una riga sola.
+*/
 .goal-minutes {
   white-space: nowrap;
+}
+
+/* tabular-nums dà a ogni cifra la stessa larghezza: mentre il tempo cresce il testo non balla. */
+.goal-worked {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: color 300ms ease;
+}
+
+/*
+  In corso il lavorato diventa azzurro, come le fiammine: è il tempo che sta crescendo.
+  .goal-minutes limita la regola al tempo del blocco e della lista: la finestrella sta dentro
+  .home-goal, e senza questo diventerebbero azzurri anche gli obiettivi non in corso.
+*/
+:is(.goal, .home-goal)[data-stato="in-corso"] .goal-minutes .goal-worked {
+  color: var(--goal-progress);
 }
 
 /* Il numero accanto alla fiammina, quando sono più di otto: 🔥12, nello stesso arancione. */
@@ -1488,6 +1509,20 @@ button:disabled {
   stroke-width: 1.75;
   stroke-linejoin: round;
   transition: fill 400ms var(--ease-out), color 300ms ease, filter 400ms ease;
+}
+
+/*
+  Il riempimento parziale: il secondo use della fiammina, pieno e senza contorno.
+  clip-path: inset() lo taglia dall'alto e ne lascia vedere solo la parte bassa:
+  --riempimento, scritto da JavaScript, è la parte lavorata (20% = 5 minuti su 25).
+  Con 20% il taglio in alto è 100% - 20% = 80%. Il colore è quello della fiammina:
+  arancione, o azzurro mentre l'obiettivo è in corso.
+*/
+.goal-flame-icons .flame-fill {
+  fill: currentColor;
+  stroke: none;
+  clip-path: inset(calc(100% - var(--riempimento, 0%)) 0 0 0);
+  transition: clip-path 400ms var(--ease-out);
 }
 
 /*
@@ -1999,6 +2034,7 @@ button:disabled {
   .flame-picker .flame-option,
   .flame-count-icon,
   .goal-flame-icons svg,
+  .goal-flame-icons .flame-fill,
   .goal,
   .goal-name,
   .home-goal,

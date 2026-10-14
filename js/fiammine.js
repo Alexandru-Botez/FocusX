@@ -8,7 +8,7 @@
 // Sezioni, nell'ordine:
 //   - IMPOSTAZIONI DELLE FIAMMINE
 //   - TESTI
-//   - DISEGNO DELLE FIAMMINE
+//   - DISEGNO DELLE FIAMMINE E DEL TEMPO
 // =====================================================================
 
 
@@ -51,19 +51,6 @@ export function formattaTempo(fiammine) {
   return formattaMinuti(fiammine * minutiPerFiammina);
 }
 
-// Scrive il tempo che manca per finire le fiammine previste: scende mentre si lavora.
-export function formattaTempoRimasto(obiettivo) {
-  const minutiPrevisti = obiettivo.fiammine * minutiPerFiammina;
-  // Un obiettivo completato non ha più niente da fare. Negli altri casi togliamo il lavorato,
-  // e Math.max non scende sotto zero se si è lavorato più del previsto.
-  const minutiRimasti = obiettivo.stato === "completato"
-    ? 0
-    : Math.max(0, minutiPrevisti - obiettivo.minutiLavorati);
-  // Math.ceil arrotonda per eccesso: con 24 min e 30 s rimasti si legge ancora "25 min",
-  // e il numero scende solo quando è passato un minuto intero.
-  return formattaMinuti(Math.ceil(minutiRimasti));
-}
-
 // Scrive il numero di fiammine all'italiana, con al massimo un decimale.
 export function formattaNumeroFiammine(fiammine) {
   // Il numero con al massimo un decimale e la virgola italiana: 12 → "12", 12.4 → "12,4".
@@ -73,9 +60,10 @@ export function formattaNumeroFiammine(fiammine) {
 
 
 // =====================================================================
-// SEZIONE DISEGNO DELLE FIAMMINE
-// Mostra le fiammine di un obiettivo negli otto svg di una voce:
-// quante se ne vedono e quale aspetto ha ognuna.
+// SEZIONE DISEGNO DELLE FIAMMINE E DEL TEMPO
+// Mostra le fiammine di un obiettivo negli otto svg di una voce,
+// quante se ne vedono e quale aspetto ha ognuna, e il suo tempo:
+// lavorato / previsto.
 // =====================================================================
 
 // Disegna le fiammine di un obiettivo: icone sono gli otto svg, numero lo span del 🔥12.
@@ -84,13 +72,13 @@ export function disegnaFiammine(icone, numero, obiettivo) {
   const tante = obiettivo.fiammine > fiammineVisibili;
   const fiammineDaMostrare = tante ? 1 : obiettivo.fiammine;
   // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
-  // azzurra e tremolante) o is-done (fatta, piena e accesa). Un obiettivo completato
-  // ha tutte le fiammine fatte; negli altri una fiammina è fatta per ogni 25 minuti lavorati.
+  // azzurra e tremolante) o is-done (fatta, piena e accesa). Una fiammina è fatta per ogni
+  // 25 minuti lavorati, anche da completato: si può finire un obiettivo prima del previsto,
+  // e le fiammine mostrano il tempo davvero lavorato. Quella dopo le fatte si riempie
+  // in parte con il tempo che non arriva a una fiammina intera.
   // Math.floor tiene solo le fiammine intere: con 60 minuti lavorati ne sono fatte 2.
   // Math.min non ne fa contare più di quelle previste, se si lavora oltre.
-  const fiammineFatte = obiettivo.stato === "completato"
-    ? obiettivo.fiammine
-    : Math.min(obiettivo.fiammine, Math.floor(obiettivo.minutiLavorati / minutiPerFiammina));
+  const fiammineFatte = Math.min(obiettivo.fiammine, Math.floor(obiettivo.minutiLavorati / minutiPerFiammina));
   // Oltre otto, la sola fiammina visibile le rappresenta tutte: è fatta solo quando
   // lo sono tutte, e altrimenti è lei quella da completare.
   const posizioneDaCompletare = tante ? 0 : fiammineFatte;
@@ -104,8 +92,32 @@ export function disegnaFiammine(icone, numero, obiettivo) {
     fiammina.classList.toggle("is-done", fatta);
     fiammina.classList.toggle("is-current",
       obiettivo.stato === "in-corso" && !fatta && posizione === posizioneDaCompletare);
+
+    // Quanto è piena la fiammina, da 0 a 1, con il tempo lavorato oltre le fiammine fatte.
+    // Con 55 minuti su 4 fiammine: le prime 2 sono fatte, la terza ha 55 - 50 = 5 minuti
+    // su 25, cioè 0.2, e la quarta resta vuota. Oltre otto, la sola fiammina visibile
+    // si riempie con tutto il lavorato rispetto a tutto il previsto: 1 h su 5 h è 0.2.
+    let riempimento = 0;
+    if (tante) {
+      riempimento = Math.min(1, obiettivo.minutiLavorati / (obiettivo.fiammine * minutiPerFiammina));
+    } else if (posizione === fiammineFatte) {
+      riempimento = (obiettivo.minutiLavorati - fiammineFatte * minutiPerFiammina) / minutiPerFiammina;
+    }
+    // setProperty scrive una variabile CSS nello stile della fiammina: il CSS la legge
+    // con var(--riempimento) e taglia il riempimento a quell'altezza. 0.2 diventa "20%".
+    fiammina.style.setProperty("--riempimento", riempimento * 100 + "%");
   });
 
   numero.hidden = !tante;
   numero.textContent = formattaNumeroFiammine(obiettivo.fiammine);
+}
+
+// Scrive il tempo di un obiettivo come "lavorato / previsto", per esempio "10 min / 1 h 15 min".
+// contenitore è lo span che ha dentro .goal-worked e .goal-planned.
+export function mostraTempo(contenitore, obiettivo) {
+  // Math.floor conta solo i minuti interi: con 10 min e 40 s lavorati si legge "10 min".
+  // Il lavorato può superare il previsto: si può continuare finché non si completa.
+  contenitore.querySelector(".goal-worked").textContent =
+    formattaMinuti(Math.floor(obiettivo.minutiLavorati));
+  contenitore.querySelector(".goal-planned").textContent = formattaTempo(obiettivo.fiammine);
 }

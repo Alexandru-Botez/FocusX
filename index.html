@@ -29,10 +29,10 @@
     <meta name="theme-color" content="#000000">
     <title>Home</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=numero-blu-1">
+    <link rel="stylesheet" href="css/styles.css?v=tempo-4">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/timer.js?v=tempo-1"></script>
-    <script type="module" src="js/home-obiettivo.js?v=tempo-1"></script>
+    <script type="module" src="js/home-obiettivo.js?v=tempo-4"></script>
   </head>
 
   <body>
@@ -177,19 +177,24 @@
           <button id="home-goal-picker" class="home-goal-picker" type="button" aria-expanded="false" aria-controls="home-goal-panel">
             <span class="home-goal-title"><span id="home-goal-name" class="goal-name">Scegli un obiettivo</span></span>
             <span id="home-goal-details" class="goal-details home-goal-details" hidden>
-              <!-- Otto fiammine: JavaScript nasconde quelle in più e dà a ognuna il suo aspetto. -->
+              <!--
+                Otto fiammine: JavaScript nasconde quelle in più e dà a ognuna il suo aspetto.
+                In ognuna il primo use disegna il contorno, il secondo (flame-fill) il riempimento
+                parziale, che sale dal basso con il tempo lavorato.
+              -->
               <span id="home-goal-flames" class="goal-flame-icons" aria-hidden="true">
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
               </span>
               <span id="home-goal-flames-count" class="goal-flames-count" hidden></span>
-              <span id="home-goal-minutes" class="goal-minutes"></span>
+              <!-- Il tempo lavorato, in evidenza, e quello previsto: "10 min / 1 h 15 min". -->
+              <span id="home-goal-minutes" class="goal-minutes"><span class="goal-worked"></span> / <span class="goal-planned"></span></span>
             </span>
             <svg class="home-goal-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <!-- Una freccia verso il basso: il blocco si apre. -->
@@ -215,7 +220,7 @@
                   <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
                 </svg>
                 <span class="home-goal-option-name"></span>
-                <span class="home-goal-option-time"></span>
+                <span class="home-goal-option-time"><span class="goal-worked"></span> / <span class="goal-planned"></span></span>
               </button>
             </li>
           </template>

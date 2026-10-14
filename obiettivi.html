@@ -32,9 +32,9 @@
     <meta name="theme-color" content="#000000">
     <title>Obiettivi</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=numero-blu-1">
+    <link rel="stylesheet" href="css/styles.css?v=tempo-4">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
-    <script type="module" src="js/obiettivi.js?v=tempo-1"></script>
+    <script type="module" src="js/obiettivi.js?v=tempo-4"></script>
   </head>
 
   <body>
@@ -345,26 +345,28 @@
             <div class="goal-main">
               <p class="goal-title"><span class="goal-name"></span></p>
               <p class="goal-details">
-                <!-- Prima il tempo previsto (fiammine e minuti), poi la data e il progetto. -->
+                <!-- Prima le fiammine e il tempo, poi la data e il progetto. -->
                 <span class="goal-flames">
                   <!--
                     Otto fiammine: JavaScript nasconde quelle oltre il tempo previsto.
                     Oltre le otto ne resta una sola e goal-flames-count mostra il numero: 🔥12.
                     Ogni fiammina ha tre aspetti: vuota (da fare), is-current (da completare,
-                    azzurra e tremolante) e is-done (fatta, piena e accesa).
+                    azzurra e tremolante) e is-done (fatta, piena e accesa). Il secondo use,
+                    flame-fill, la riempie dal basso in parte: 5 minuti su 25 sono il 20%.
                   -->
                   <span class="goal-flame-icons" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
+                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
                   </span>
                   <span class="goal-flames-count"></span>
-                  <span class="goal-minutes"></span>
+                  <!-- Il tempo lavorato, in evidenza, e quello previsto: "10 min / 1 h 15 min". -->
+                  <span class="goal-minutes"><span class="goal-worked"></span> / <span class="goal-planned"></span></span>
                 </span>
                 <span class="goal-date">
                   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

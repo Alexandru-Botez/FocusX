@@ -37,9 +37,9 @@ import {
   oreMassime,
   fiammineMassime,
   formattaTempo,
-  formattaTempoRimasto,
-  disegnaFiammine
-} from "./fiammine.js?v=tempo-1";
+  disegnaFiammine,
+  mostraTempo
+} from "./fiammine.js?v=tempo-4";
 
 
 // =====================================================================
@@ -173,7 +173,7 @@ let idInModifica = null;
 // =====================================================================
 // SEZIONE FORMATTAZIONE DELLE DATE
 // Trasformano le date nel testo che si legge nella pagina.
-// I testi del tempo, formattaTempo e formattaTempoRimasto, arrivano da js/fiammine.js.
+// Il testo del tempo delle fiammine, formattaTempo, arriva da js/fiammine.js.
 // =====================================================================
 
 // Trasforma "2026-10-12" in una data leggibile, come "12 ott 2026".
@@ -228,7 +228,7 @@ function mostraObiettivi(idNuovo) {
     testoData.dateTime = obiettivo.data;
     testoData.textContent = formattaData(obiettivo.data);
 
-    // Fiammine e tempo rimasto li scrive applicaStato, che li aggiorna anche a ogni cambio di stato.
+    // Fiammine e tempo li scrive applicaStato, che li aggiorna anche a ogni cambio di stato.
     applicaStato(voce, obiettivo);
 
     const pulsanteModifica = voce.querySelector(".goal-edit");
@@ -290,8 +290,8 @@ function applicaStato(voce, obiettivo) {
     voce.querySelector(".goal-flames-count"),
     obiettivo
   );
-  // Il tempo che manca: le fiammine previste meno il tempo lavorato nella Home, 0 da completato.
-  voce.querySelector(".goal-minutes").textContent = formattaTempoRimasto(obiettivo);
+  // Il tempo lavorato nella Home e quello previsto: "10 min / 1 h 15 min".
+  mostraTempo(voce.querySelector(".goal-minutes"), obiettivo);
 }
 
 // Il play porta alla Home: lì questo obiettivo è scelto e il timer parte da solo.
