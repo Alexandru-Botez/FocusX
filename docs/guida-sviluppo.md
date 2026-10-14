@@ -7,7 +7,7 @@ Per scaricarlo e avviarlo, parti dal [README](../README.md).
 
 FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa lo ferma
 e Stop lo ferma riportando il tempo a 25 minuti.
-Il timer ricomincia automaticamente da 25 minuti quando i secondi rimanenti arrivano a zero.
+Quando i secondi rimanenti arrivano a zero la sessione finisce: il timer si ferma e torna a 25 minuti.
 La pagina Progetti consente di creare ed eliminare progetti con nome e colore, salvati nel browser.
 La pagina Obiettivi consente di creare obiettivi legati a un progetto e di cambiarne lo stato.
 Non c'è ancora una suite di test automatici nel repository.
@@ -157,7 +157,7 @@ Le cinque funzioni hanno responsabilità distinte:
 | `avviaTimer()` | Disabilita Avvia, abilita Pausa e Stop e avvia o riprende il conteggio. |
 | `pausaTimer()` | Ferma l'intervallo, abilita Avvia e disabilita Pausa, conservando i secondi rimasti. |
 | `fermaSessione()` | Ferma il timer, ripristina 1500 secondi e disabilita Stop. |
-| `passaUnSecondo()` | Sottrae un secondo, ripristina 1500 quando arriva a zero e aggiorna il testo. |
+| `passaUnSecondo()` | Sottrae un secondo, aggiorna il testo, annuncia `"secondo"`; a zero chiama `fermaSessione()` e annuncia `"sessione-finita"`. |
 | `aggiornaTimer()` | Converte i secondi rimanenti nel formato minuti:secondi. |
 
 `addEventListener("click", avviaTimer)` collega il clic alla funzione di avvio.
@@ -185,14 +185,17 @@ Il conteggio riparte solo quando premi nuovamente Avvia.
 | Dopo Stop | Disponibile | Disabilitato | Disabilitato |
 
 Stop si abilita al clic su Avvia, anche prima del primo aggiornamento del tempo.
-La ripartenza automatica a `25:00` mantiene il conteggio attivo e Stop disponibile.
+Alla fine della sessione i pulsanti tornano come dopo Stop: Avvia disponibile, Pausa e Stop disabilitati.
 
 Per visualizzare il tempo, `Math.floor()` ricava i minuti interi e `%` ricava i secondi restanti.
 `String()` converte i numeri in testo e `padStart(2, "0")` mantiene due cifre.
 Infine `textContent` aggiorna il paragrafo del timer.
 
-Al passaggio da un secondo rimanente a zero, il valore viene subito riportato a 1500:
-la pagina passa quindi da `00:01` a `25:00`, senza fermarsi su `00:00`.
+`durataSessione` vale `minutiPerFiammina * 60`, importato da `js/fiammine.js`: una sessione
+dura quanto una fiammina. Al passaggio da un secondo rimanente a zero, `passaUnSecondo()`
+annuncia prima l'ultimo `"secondo"`, così l'obiettivo riceve tutti i 25 minuti, poi chiama
+`fermaSessione()`, la stessa funzione di Stop: la pagina passa da `00:01` a `25:00`, ferma.
+Infine annuncia `"sessione-finita"`, che `js/home-obiettivo.js` usa per fermare l'obiettivo.
 Ricaricare la pagina riporta il timer allo stato iniziale.
 
 Questo primo esempio usa un intervallo semplice. Il browser può ritardare le esecuzioni,
@@ -517,7 +520,9 @@ con `disegnaFiammine`, la stessa funzione della lista, importata da `js/fiammine
 Il tempo lavorato lo conta la Home. A ogni secondo `passaUnSecondo()` di `js/timer.js` fa
 scattare sul paragrafo `#timer` un evento inventato, con `timer.dispatchEvent(new Event("secondo"))`.
 `js/home-obiettivo.js` lo ascolta con `timer.addEventListener("secondo", aggiungiSecondoLavorato)`:
-così i due moduli restano separati e c'è un solo `setInterval`. `aggiungiSecondoLavorato()`
+così i due moduli restano separati e c'è un solo `setInterval`. Alla fine della sessione
+`timer.addEventListener("sessione-finita", fermaObiettivoInCorso)` ferma l'obiettivo in corso,
+come Pausa e Stop: la fiammina appena finita è fatta e, non più in corso, torna arancione. `aggiungiSecondoLavorato()`
 cerca l'obiettivo in corso e aggiunge un secondo ai suoi `minutiLavorati`. Per evitare gli errori
 di arrotondamento di tanti `+ 1/60`, passa dai secondi interi: `Math.round(minuti * 60) + 1`,
 poi divide per 60. `Math.min` ferma il conto a 16 ore, il limite che `caricaObiettivi` accetta.
@@ -704,7 +709,9 @@ Per il timer attuale controlla anche che:
 - In pausa le cifre diventino grigie e tornino bianche con Avvia o Stop.
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.
 - Il formato mantenga due cifre per minuti e secondi.
-- Dopo 25 minuti il timer torni a `25:00` e continui.
+- Dopo 25 minuti il timer torni a `25:00` e si fermi, con Avvia disponibile e Pausa e Stop disabilitati.
+- Con un obiettivo in corso, alla fine della sessione la fiammina sia fatta e arancione,
+  l'obiettivo non sia più in corso e Avvia lo rimetta in corso sulla fiammina successiva.
 
 ## Aggiornamento della guida
 

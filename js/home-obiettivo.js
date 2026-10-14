@@ -3,8 +3,8 @@
 // Sopra il timer mostra l'obiettivo scelto: nome, cerchio per completarlo
 // e fiammine. Un clic sul blocco apre una finestrella con gli obiettivi
 // da fare. L'obiettivo è in corso solo mentre il timer conta: Avvia lo mette
-// in corso, Pausa e Stop lo fermano. Ogni secondo del timer si aggiunge
-// al tempo lavorato dell'obiettivo in corso.
+// in corso; Pausa, Stop e la fine della sessione lo fermano. Ogni secondo
+// del timer si aggiunge al tempo lavorato dell'obiettivo in corso.
 //
 // È un modulo, come gli altri file JavaScript: i suoi nomi sono privati,
 // quindi può chiamare pulsanteAvvia anche se js/timer.js usa lo stesso nome.
@@ -300,8 +300,8 @@ function scegliObiettivo(id) {
 // =====================================================================
 // SEZIONE STATI DELL'OBIETTIVO
 // In corso vuol dire "ci sto lavorando adesso": vale solo mentre il timer conta.
-// Avvia mette in corso l'obiettivo scelto; Pausa, Stop e l'apertura della
-// pagina, quando il timer è fermo, lo fermano. Il cerchio lo completa.
+// Avvia mette in corso l'obiettivo scelto; Pausa, Stop, la fine della sessione
+// e l'apertura della pagina, quando il timer è fermo, lo fermano. Il cerchio lo completa.
 // Valgono le regole della pagina Obiettivi: un solo obiettivo in corso
 // e niente completato senza tempo lavorato.
 // =====================================================================
@@ -337,7 +337,8 @@ function avviaConObiettivo() {
 }
 
 // Il timer si è fermato: l'obiettivo in corso torna non completato.
-// Serve per Pausa e Stop, e all'apertura della pagina, quando il timer parte fermo:
+// Serve per Pausa, Stop e la fine della sessione, e all'apertura della pagina,
+// quando il timer parte fermo:
 // un "in corso" rimasto salvato da prima (una ricarica, o il play della pagina Obiettivi)
 // non deve far sembrare che si stia lavorando.
 function fermaObiettivoInCorso() {
@@ -429,6 +430,9 @@ pulsanteStop.addEventListener("click", fermaObiettivoInCorso);
 
 // Tempo lavorato: l'evento "secondo" arriva da js/timer.js mentre il timer conta.
 timer.addEventListener("secondo", aggiungiSecondoLavorato);
+// A zero il timer si ferma da solo e annuncia "sessione-finita": l'obiettivo non è più
+// in corso e le fiammine fatte tornano arancioni. Con Avvia si lavora sulla prossima.
+timer.addEventListener("sessione-finita", fermaObiettivoInCorso);
 
 // Uscendo dalla Home (un link del menu, un'altra pagina, la scheda chiusa) il timer
 // si ferma con la pagina: pagehide scatta proprio in quel momento e ferma l'obiettivo.

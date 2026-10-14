@@ -1,17 +1,28 @@
 // =====================================================================
 // TIMER.JS: il timer della pagina Home (index.html)
-// Conta 25 minuti alla rovescia, con i pulsanti Avvia, Pausa e Stop,
-// e riparte da capo quando arriva a zero.
+// Conta alla rovescia la durata di una fiammina (25 minuti), con i pulsanti
+// Avvia, Pausa e Stop. Arrivato a zero la sessione finisce: il timer si ferma
+// e torna a 25:00, pronto per la prossima fiammina.
 // È un modulo: i suoi nomi sono privati, non si scontrano con quelli
 // degli altri file della pagina.
 //
 // Sezioni, nell'ordine:
+//   - IMPORTAZIONI
 //   - ELEMENTI DELLA PAGINA
 //   - IMPOSTAZIONI E DATI DEL TIMER
 //   - CONTEGGIO
 //   - PULSANTI AVVIA, PAUSA E STOP
 //   - AVVIO DELLA PAGINA
 // =====================================================================
+
+
+// =====================================================================
+// SEZIONE IMPORTAZIONI
+// La durata di una fiammina arriva dal modulo comune delle fiammine.
+// =====================================================================
+
+// Lo stesso ?v usato da js/home-obiettivo.js: così il modulo si carica una volta sola.
+import { minutiPerFiammina } from "./fiammine.js?v=tempo-4";
 
 
 // =====================================================================
@@ -32,8 +43,9 @@ const pulsanteStop = document.getElementById("stop-button");
 // La durata di una sessione e i valori che cambiano mentre il timer conta.
 // =====================================================================
 
+// Una sessione dura quanto una fiammina, così ogni sessione finita è una fiammina fatta.
 // Lavoriamo in secondi: 25 minuti sono 25 × 60 = 1500 secondi.
-const durataSessione = 25 * 60;
+const durataSessione = minutiPerFiammina * 60;
 
 // let permette di riassegnare il valore: questo numero diminuirà durante il timer.
 let secondiRimanenti = durataSessione;
@@ -46,7 +58,8 @@ let intervalloTimer = null;
 // =====================================================================
 // SEZIONE CONTEGGIO
 // Ogni secondo toglie un secondo, aggiorna il testo "mm:ss"
-// e lo annuncia con l'evento "secondo".
+// e lo annuncia con l'evento "secondo". A zero la sessione finisce
+// e lo annuncia con l'evento "sessione-finita".
 // =====================================================================
 
 // Scrive i secondi rimanenti nel formato "25:00".
@@ -67,16 +80,10 @@ function aggiornaTimer() {
   timer.textContent = minutiFormattati + ":" + secondiFormattati;
 }
 
-// Toglie un secondo e lo annuncia; arrivato a zero, il timer riparte da 25 minuti.
+// Toglie un secondo e lo annuncia; arrivato a zero, finisce la sessione.
 function passaUnSecondo() {
   // Riassegniamo alla variabile il suo valore precedente meno un secondo.
   secondiRimanenti = secondiRimanenti - 1;
-
-  // if esegue le istruzioni tra graffe solo quando la condizione è vera.
-  // Quando i secondi arrivano a zero, ripartiamo subito da 25 minuti.
-  if (secondiRimanenti === 0) {
-    secondiRimanenti = durataSessione;
-  }
 
   // Le parentesi tonde eseguono la funzione che aggiorna il testo visibile.
   aggiornaTimer();
@@ -85,6 +92,17 @@ function passaUnSecondo() {
   // chi lo ascolta con addEventListener sa che è passato un secondo di lavoro.
   // Così js/home-obiettivo.js conta il tempo dell'obiettivo senza un secondo setInterval.
   timer.dispatchEvent(new Event("secondo"));
+
+  // if esegue le istruzioni tra graffe solo quando la condizione è vera.
+  // A zero la sessione è finita: il timer si ferma e torna a 25:00, come con Stop,
+  // e aspetta Avvia per la prossima fiammina. L'ultimo secondo è già stato annunciato
+  // qui sopra, quindi l'obiettivo ha i suoi 25 minuti interi prima di fermarsi.
+  if (secondiRimanenti === 0) {
+    fermaSessione();
+    // Un secondo evento avvisa che la sessione è finita: js/home-obiettivo.js
+    // ferma l'obiettivo in corso, come dopo Pausa o Stop.
+    timer.dispatchEvent(new Event("sessione-finita"));
+  }
 }
 
 

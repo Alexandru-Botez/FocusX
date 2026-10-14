@@ -19,7 +19,9 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Conto alla rovescia di 25 minuti con i pulsanti Avvia, Pausa e Stop.
 - Pausa conserva il tempo rimasto e Avvia riprende da lì; in pausa le cifre diventano grigie.
 - Stop finisce la sessione: ferma il timer e lo riporta a `25:00`.
-- Arrivato a zero, il timer riparte da `25:00` e continua da solo.
+- Arrivato a zero la sessione finisce: il timer si ferma e torna a `25:00`, la durata
+  di una fiammina, pronto per la prossima. L'obiettivo in corso ha una fiammina in più
+  e smette di essere in corso; con Avvia si lavora sulla fiammina successiva.
 - Ogni pulsante è disponibile solo quando ha senso usarlo:
 
 | Stato | Avvia | Pausa | Stop |
@@ -135,7 +137,7 @@ FocusX/
 ├── js/                    Moduli JavaScript (type="module")
 │   ├── archivio.js         Comune: chiavi e lettura dei dati salvati
 │   ├── fiammine.js         Comune: valore, testi e disegno delle fiammine
-│   ├── timer.js            Timer: avvio, pausa, stop e ripartenza
+│   ├── timer.js            Timer: avvio, pausa, stop e fine della sessione
 │   ├── home-obiettivo.js   Home: obiettivo scelto sopra il timer
 │   ├── menu.js             Menu laterale, condiviso da tutte le pagine
 │   ├── progetti.js         Creazione, modifica, eliminazione e salvataggio dei progetti
