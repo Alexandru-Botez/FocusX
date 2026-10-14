@@ -404,6 +404,9 @@ la proprietà `hidden`). Ogni fiammina ha tre aspetti, decisi da `applicaStato` 
 - `is-done`, se è fatta: piena, con un alone `filter: drop-shadow` dello stesso colore, senza animazione.
   È arancione da completato e azzurra (`--goal-progress`) mentre l'obiettivo è in corso.
 
+Oltre otto fiammine il numero `.goal-flames-count` (🔥12) è arancione come la fiammina;
+mentre l'obiettivo è in corso diventa azzurro insieme a lei, nella lista e nella pillola della Home.
+
 Le prime `fiammineFatte` sono fatte e quella in posizione `fiammineFatte` è da completare.
 Il tempo lavorato non è ancora misurato: `fiammineFatte` vale tutte le fiammine per un obiettivo
 completato e 0 negli altri casi. Oltre otto fiammine se ne vede una sola: è fatta solo quando lo sono
@@ -618,6 +621,8 @@ Per gli obiettivi controlla che:
 - Un obiettivo da 12 fiammine mostri nell'elenco una sola fiammina seguita da «12»;
   fino a 8 fiammine si vedano tutte. Le fiammine siano vuote; in corso la prima diventi azzurra
   e tremoli; da completato siano tutte piene e accese, senza animazione.
+- Con più di 8 fiammine, in corso diventino azzurri sia la fiammina sia il numero,
+  nella lista e nella pillola della Home.
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
 - Senza data il modulo non venga inviato e il browser segnali il campo; una data passata sia rossa
   finché l'obiettivo non è completato.

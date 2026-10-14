@@ -1542,6 +1542,14 @@ button:disabled {
   color: var(--goal-progress);
 }
 
+/*
+  Oltre otto fiammine se ne vede una sola, seguita dal numero: 🔥12. In corso la fiammina
+  diventa azzurra, e il numero la segue, così icona e numero restano dello stesso colore.
+*/
+:is(.goal, .home-goal)[data-stato="in-corso"] .goal-flames-count {
+  color: var(--goal-progress);
+}
+
 /* [data-stato="in-corso"] seleziona il li con quell'attributo, scritto da JavaScript. */
 .goal[data-stato="in-corso"] {
   border-color: var(--goal-progress);
