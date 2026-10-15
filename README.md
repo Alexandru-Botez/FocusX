@@ -73,7 +73,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Ogni obiettivo ricorda il tempo lavorato: ogni secondo del timer della Home si aggiunge
   all'obiettivo in corso, fino a 16 ore. Si può lavorare oltre il previsto, finché non lo completi:
   il tempo lavorato è in evidenza, azzurro mentre l'obiettivo è in corso.
-  Senza tempo lavorato il cerchio è disattivato.
+  Con meno di un minuto lavorato il cerchio è disattivato.
 - La matita accanto al play apre lo stesso modulo con i dati dell'obiettivo, per modificare
   nome, progetto, data e fiammine; lo stato non cambia. Durante la modifica la voce è nascosta.
 - Nel modulo di modifica, il pulsante rosso Elimina cancella l'obiettivo.

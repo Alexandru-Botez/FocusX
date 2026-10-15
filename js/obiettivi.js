@@ -38,8 +38,9 @@ import {
   fiammineMassime,
   formattaTempo,
   disegnaFiammine,
-  mostraTempo
-} from "./fiammine.js?v=tempo-4";
+  mostraTempo,
+  lavoroInsufficiente
+} from "./fiammine.js?v=minuto-1";
 
 
 // =====================================================================
@@ -273,11 +274,11 @@ function applicaStato(voce, obiettivo) {
   voce.querySelector(".goal-start").setAttribute("aria-pressed", String(obiettivo.stato === "in-corso"));
   const pulsanteCompleta = voce.querySelector(".goal-complete");
   pulsanteCompleta.setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
-  // Senza tempo lavorato non si può completare. Un obiettivo già completato resta
-  // cliccabile, così si può sempre riaprire.
-  const senzaTempo = obiettivo.minutiLavorati === 0 && obiettivo.stato !== "completato";
+  // Con meno di un minuto lavorato non si può completare. Un obiettivo già completato
+  // resta cliccabile, così si può sempre riaprire.
+  const senzaTempo = lavoroInsufficiente(obiettivo) && obiettivo.stato !== "completato";
   pulsanteCompleta.disabled = senzaTempo;
-  pulsanteCompleta.title = senzaTempo ? "Lavora sull'obiettivo prima di completarlo" : "Segna come completato";
+  pulsanteCompleta.title = senzaTempo ? "Lavora almeno un minuto prima di completarlo" : "Segna come completato";
 
   // Le date nel formato "2026-10-12" si possono confrontare come testo: "minore" vuol dire prima.
   const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
@@ -329,8 +330,8 @@ function cambiaStato(id, statoScelto) {
 
   // Premere di nuovo il pulsante dello stato attuale riporta l'obiettivo a "non completato".
   const nuovoStato = obiettivo.stato === statoScelto ? "non-completato" : statoScelto;
-  // Il cerchio è disattivato senza tempo lavorato; il controllo resta anche qui, per sicurezza.
-  if (nuovoStato === "completato" && obiettivo.minutiLavorati === 0) {
+  // Il cerchio è disattivato sotto il minuto lavorato; il controllo resta anche qui, per sicurezza.
+  if (nuovoStato === "completato" && lavoroInsufficiente(obiettivo)) {
     return;
   }
 

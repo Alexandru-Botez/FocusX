@@ -443,8 +443,9 @@ si continua a lavorare finché non si completa. Nel CSS `.goal-worked` è chiaro
 `font-variant-numeric: tabular-nums`, che dà a tutte le cifre la stessa larghezza; in corso è
 azzurro come le fiammine. La barra e il previsto restano grigi. `applicaStato` lo riscrive
 a ogni cambio di stato.
-`applicaStato` disattiva il cerchio (`disabled`) quando i minuti sono 0 e l'obiettivo non è
-completato; un obiettivo completato si può sempre riaprire. `cambiaStato` ripete il controllo.
+`applicaStato` disattiva il cerchio (`disabled`) quando `lavoroInsufficiente(obiettivo)`, da
+`js/fiammine.js`, dice che i minuti lavorati sono meno di `minutiPerCompletare` (1 minuto)
+e l'obiettivo non è completato; un obiettivo completato si può sempre riaprire. `cambiaStato` ripete il controllo.
 `cambiaStato` aggiorna solo la voce interessata con `applicaStato(voce, obiettivo)`,
 che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `data-stato`:
 in corso il bordo è azzurro; completato il nome viene barrato da uno sfondo che passa
@@ -514,7 +515,7 @@ salva il suo id con `chiaveObiettivoScelto` (esportata da `js/archivio.js`) e ap
 dall'indirizzo con `history.replaceState`, così una ricarica non fa ripartire il timer, e preme
 Avvia con `pulsanteAvvia.click()`: partono il timer e `avviaConObiettivo`. Se il timer sta già contando, anche scegliere
 un altro obiettivo lo mette in corso. Valgono le regole della pagina Obiettivi: un solo
-obiettivo in corso e cerchio disattivato senza tempo lavorato. Le fiammine si disegnano
+obiettivo in corso e cerchio disattivato sotto il minuto lavorato. Le fiammine si disegnano
 con `disegnaFiammine`, la stessa funzione della lista, importata da `js/fiammine.js`.
 
 Il tempo lavorato lo conta la Home. A ogni secondo `passaUnSecondo()` di `js/timer.js` fa
@@ -667,7 +668,7 @@ Per gli obiettivi controlla che:
 - La matita apra il modulo compilato, anche con più di 8 fiammine, e nasconda la voce; Annulla la
   faccia ricomparire. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
 - Mettendo in corso un obiettivo, quello che era in corso torni non completato.
-- Con 0 minuti lavorati il cerchio sia disattivato; un obiettivo già completato si possa riaprire,
+- Con meno di 60 secondi lavorati il cerchio sia disattivato e al sessantesimo si attivi; un obiettivo già completato si possa riaprire,
   e poi il cerchio si disattivi.
 - Con lo stesso nome (anche con maiuscole diverse) e lo stesso progetto di un altro obiettivo,
   Salva sia disattivato e compaia l'avviso; cambiando nome o progetto torni attivo.

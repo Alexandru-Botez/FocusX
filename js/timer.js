@@ -22,7 +22,7 @@
 // =====================================================================
 
 // Lo stesso ?v usato da js/home-obiettivo.js: così il modulo si carica una volta sola.
-import { minutiPerFiammina } from "./fiammine.js?v=tempo-4";
+import { minutiPerFiammina } from "./fiammine.js?v=minuto-1";
 
 
 // =====================================================================

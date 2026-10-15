@@ -27,6 +27,15 @@ export const fiammineVisibili = 8;
 // che ci stanno: con 25 minuti sono 38 (15 h 50 min), perché 39 supererebbero le 16 ore.
 export const oreMassime = 16;
 export const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
+// Per completare un obiettivo bisogna averci lavorato almeno un minuto (60 secondi).
+export const minutiPerCompletare = 1;
+
+// Dice se un obiettivo ha troppo poco tempo lavorato per essere completato.
+// < e non <=: con 60 secondi esatti minutiLavorati vale 1, e 1 < 1 è falso, quindi si può.
+// Con 59 secondi vale 0,98..., e 0,98 < 1 è vero: il cerchio resta disattivato.
+export function lavoroInsufficiente(obiettivo) {
+  return obiettivo.minutiLavorati < minutiPerCompletare;
+}
 
 
 // =====================================================================

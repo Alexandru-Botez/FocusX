@@ -33,7 +33,12 @@ import {
   chiaveObiettivoScelto,
   leggiElenco
 } from "./archivio.js?v=avvia-1";
-import { oreMassime, disegnaFiammine, mostraTempo } from "./fiammine.js?v=tempo-4";
+import {
+  oreMassime,
+  disegnaFiammine,
+  mostraTempo,
+  lavoroInsufficiente
+} from "./fiammine.js?v=minuto-1";
 
 
 // =====================================================================
@@ -194,14 +199,15 @@ function mostraBloccoObiettivo() {
   pulsanteScelta.setAttribute("aria-label", "Obiettivo: " + obiettivo.nome + ". Cambia obiettivo");
   dettagliObiettivo.hidden = false;
 
-  // Il cerchio segue le stesse regole della lista: senza tempo lavorato non si completa,
-  // ma un obiettivo già completato si può sempre riaprire.
+  // Il cerchio segue le stesse regole della lista: sotto il minuto lavorato non si completa,
+  // ma un obiettivo già completato si può sempre riaprire. Mentre il timer conta questa
+  // funzione gira a ogni secondo: al sessantesimo il cerchio si attiva da solo.
   pulsanteCompleta.hidden = false;
   pulsanteCompleta.setAttribute("aria-pressed", String(obiettivo.stato === "completato"));
   pulsanteCompleta.setAttribute("aria-label", "Segna come completato " + obiettivo.nome);
-  const senzaTempo = obiettivo.minutiLavorati === 0 && obiettivo.stato !== "completato";
+  const senzaTempo = lavoroInsufficiente(obiettivo) && obiettivo.stato !== "completato";
   pulsanteCompleta.disabled = senzaTempo;
-  pulsanteCompleta.title = senzaTempo ? "Lavora sull'obiettivo prima di completarlo" : "Segna come completato";
+  pulsanteCompleta.title = senzaTempo ? "Lavora almeno un minuto prima di completarlo" : "Segna come completato";
 
   // Le fiammine e il tempo si mostrano come nella lista, con le funzioni comuni
   // di js/fiammine.js: mentre l'obiettivo è in corso cambiano a ogni secondo lavorato.
@@ -361,8 +367,8 @@ function alternaCompletato() {
     return;
   }
   const nuovoStato = obiettivo.stato === "completato" ? "non-completato" : "completato";
-  // Il cerchio è disattivato senza tempo lavorato; il controllo resta anche qui, per sicurezza.
-  if (nuovoStato === "completato" && obiettivo.minutiLavorati === 0) {
+  // Il cerchio è disattivato sotto il minuto lavorato; il controllo resta anche qui, per sicurezza.
+  if (nuovoStato === "completato" && lavoroInsufficiente(obiettivo)) {
     return;
   }
   const elencoAggiornato = obiettivi.map(elemento =>
