@@ -22,7 +22,7 @@
 // Il codice comune ad altre pagine, scritto una volta sola nei moduli.
 // =====================================================================
 
-import { chiaveProgetti, leggiElenco } from "./archivio.js?v=avvia-1";
+import { chiaveProgetti, leggiElenco } from "./archivio.js?v=timer-1";
 
 
 // =====================================================================

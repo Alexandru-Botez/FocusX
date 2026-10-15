@@ -1,7 +1,7 @@
 // =====================================================================
 // ARCHIVIO.JS: il codice comune per leggere i dati salvati nel browser
 // È un modulo: non è collegato a una pagina, ma viene importato da
-// js/progetti.js, js/obiettivi.js e js/home-obiettivo.js.
+// js/progetti.js, js/obiettivi.js, js/home-obiettivo.js e js/timer.js.
 // Solo i nomi scritti con export si possono importare dagli altri file.
 //
 // Sezioni, nell'ordine:
@@ -12,7 +12,7 @@
 
 // =====================================================================
 // SEZIONE CHIAVI DEI DATI
-// I nomi con cui progetti e obiettivi sono salvati in localStorage.
+// I nomi con cui progetti, obiettivi e timer sono salvati in localStorage.
 // "focusx." li distingue da eventuali altri dati dello stesso sito.
 // =====================================================================
 
@@ -20,6 +20,8 @@ export const chiaveProgetti = "focusx.progetti.v1";
 export const chiaveObiettivi = "focusx.obiettivi.v1";
 // L'obiettivo scelto nella Home: lo scrive anche il play della pagina Obiettivi.
 export const chiaveObiettivoScelto = "focusx.home.obiettivo.v1";
+// Il timer della Home: quando finisce la sessione, i secondi rimasti, se è avviata.
+export const chiaveTimer = "focusx.timer.v1";
 
 
 // =====================================================================

@@ -31,7 +31,7 @@ import {
   chiaveObiettivi,
   chiaveObiettivoScelto,
   leggiElenco
-} from "./archivio.js?v=avvia-1";
+} from "./archivio.js?v=timer-1";
 import {
   fiammineVisibili,
   oreMassime,

@@ -4,7 +4,8 @@
 // e fiammine. Un clic sul blocco apre una finestrella con gli obiettivi
 // da fare. L'obiettivo è in corso solo mentre il timer conta: Avvia lo mette
 // in corso; Pausa, Stop e la fine della sessione lo fermano. Ogni secondo
-// del timer si aggiunge al tempo lavorato dell'obiettivo in corso.
+// del timer si aggiunge al tempo lavorato dell'obiettivo in corso, anche quelli
+// passati su un'altra pagina: il timer continua a contare.
 //
 // È un modulo, come gli altri file JavaScript: i suoi nomi sono privati,
 // quindi può chiamare pulsanteAvvia anche se js/timer.js usa lo stesso nome.
@@ -32,7 +33,7 @@ import {
   chiaveObiettivi,
   chiaveObiettivoScelto,
   leggiElenco
-} from "./archivio.js?v=avvia-1";
+} from "./archivio.js?v=timer-1";
 import {
   oreMassime,
   disegnaFiammine,
@@ -307,7 +308,7 @@ function scegliObiettivo(id) {
 // SEZIONE STATI DELL'OBIETTIVO
 // In corso vuol dire "ci sto lavorando adesso": vale solo mentre il timer conta.
 // Avvia mette in corso l'obiettivo scelto; Pausa, Stop, la fine della sessione
-// e l'apertura della pagina, quando il timer è fermo, lo fermano. Il cerchio lo completa.
+// e l'apertura della pagina a timer fermo lo fermano. Il cerchio lo completa.
 // Valgono le regole della pagina Obiettivi: un solo obiettivo in corso
 // e niente completato senza tempo lavorato.
 // =====================================================================
@@ -343,9 +344,8 @@ function avviaConObiettivo() {
 }
 
 // Il timer si è fermato: l'obiettivo in corso torna non completato.
-// Serve per Pausa, Stop e la fine della sessione, e all'apertura della pagina,
-// quando il timer parte fermo:
-// un "in corso" rimasto salvato da prima (una ricarica, o il play della pagina Obiettivi)
+// Serve per Pausa, Stop e la fine della sessione, e all'apertura della pagina
+// quando il timer è fermo: un "in corso" rimasto salvato da prima
 // non deve far sembrare che si stia lavorando.
 function fermaObiettivoInCorso() {
   if (obiettivi === null || !obiettivi.some(obiettivo => obiettivo.stato === "in-corso")) {
@@ -385,13 +385,14 @@ function alternaCompletato() {
 
 // =====================================================================
 // SEZIONE TEMPO LAVORATO
-// js/timer.js annuncia ogni secondo con l'evento "secondo": il secondo
-// si aggiunge ai minuti lavorati dell'obiettivo in corso e viene salvato.
+// js/timer.js annuncia i secondi lavorati con l'evento "secondi-lavorati":
+// di solito 1, ma tornando da un'altra pagina anche tutti quelli passati via.
+// Si aggiungono ai minuti lavorati dell'obiettivo in corso e vengono salvati.
 // Così il tempo lavorato cresce e, ogni 25 minuti, una fiammina diventa fatta.
 // =====================================================================
 
-// Aggiunge un secondo di lavoro all'obiettivo in corso, se ce n'è uno.
-function aggiungiSecondoLavorato() {
+// Aggiunge all'obiettivo in corso, se ce n'è uno, i secondi annunciati dal timer.
+function aggiungiSecondiLavorati(evento) {
   if (obiettivi === null) {
     return;
   }
@@ -400,14 +401,16 @@ function aggiungiSecondoLavorato() {
   if (obiettivo === undefined) {
     return;
   }
-  // I minuti hanno decimali: 1 secondo è 1/60 di minuto. Sommare 1/60 ogni volta
+  // I minuti hanno decimali: 1 secondo è 1/60 di minuto. Sommare frazioni ogni volta
   // accumulerebbe piccoli errori di arrotondamento, quindi passiamo dai secondi interi:
-  // Math.round riporta i minuti salvati a secondi, poi aggiungiamo 1.
+  // Math.round riporta i minuti salvati a secondi, poi aggiungiamo quelli nuovi,
+  // che il CustomEvent porta in evento.detail.
   // Math.min ferma il conto a 16 ore, il limite che la pagina Obiettivi accetta.
-  const secondi = Math.min(Math.round(obiettivo.minutiLavorati * 60) + 1, oreMassime * 60 * 60);
+  const secondi = Math.min(Math.round(obiettivo.minutiLavorati * 60) + evento.detail, oreMassime * 60 * 60);
   const elencoAggiornato = obiettivi.map(elemento =>
     elemento.id === obiettivo.id ? { ...elemento, minutiLavorati: secondi / 60 } : elemento);
-  // Salviamo a ogni secondo: chiudendo la scheda all'improvviso si perde al massimo un secondo.
+  // Salviamo a ogni annuncio: chiudendo la scheda all'improvviso non si perde niente,
+  // perché i secondi non ancora annunciati arrivano alla prossima apertura della Home.
   if (!salvaObiettivi(elencoAggiornato)) {
     return;
   }
@@ -434,30 +437,42 @@ pulsanteAvvia.addEventListener("click", avviaConObiettivo);
 pulsantePausa.addEventListener("click", fermaObiettivoInCorso);
 pulsanteStop.addEventListener("click", fermaObiettivoInCorso);
 
-// Tempo lavorato: l'evento "secondo" arriva da js/timer.js mentre il timer conta.
-timer.addEventListener("secondo", aggiungiSecondoLavorato);
+// Tempo lavorato: l'evento "secondi-lavorati" arriva da js/timer.js mentre il timer conta
+// e, all'apertura della pagina, con i secondi passati altrove.
+timer.addEventListener("secondi-lavorati", aggiungiSecondiLavorati);
 // A zero il timer si ferma da solo e annuncia "sessione-finita": l'obiettivo non è più
 // in corso e le fiammine fatte tornano arancioni. Con Avvia si lavora sulla prossima.
 timer.addEventListener("sessione-finita", fermaObiettivoInCorso);
 
-// Uscendo dalla Home (un link del menu, un'altra pagina, la scheda chiusa) il timer
-// si ferma con la pagina: pagehide scatta proprio in quel momento e ferma l'obiettivo.
-window.addEventListener("pagehide", fermaObiettivoInCorso);
-
-// All'apertura il timer è fermo: nessun obiettivo può essere in corso.
+// Uscendo dalla Home il timer non si ferma più: l'obiettivo resta in corso.
+// js/timer.js è partito prima di questo file e ha già rimesso i pulsanti come erano:
+// se Pausa è disattivata il timer è fermo, e nessun obiettivo può essere in corso.
 // idScelto è già stato calcolato, quindi l'obiettivo che era in corso resta scelto.
-fermaObiettivoInCorso();
+if (pulsantePausa.disabled) {
+  fermaObiettivoInCorso();
+}
 // Il blocco compare subito, con l'obiettivo scelto l'ultima volta.
 mostraBloccoObiettivo();
 
 // Arrivando dal play della pagina Obiettivi l'indirizzo è index.html?avvia:
 // URLSearchParams legge la parte dopo il ?, e has dice se c'è "avvia".
-const parametri = new URLSearchParams(location.search);
-if (parametri.has("avvia") && idScelto !== null) {
+// Aspettiamo DOMContentLoaded, come js/timer.js: il timer ha già ripreso il conteggio
+// e dato i secondi passati altrove all'obiettivo che era in corso, prima del cambio.
+document.addEventListener("DOMContentLoaded", () => {
+  const parametri = new URLSearchParams(location.search);
+  if (!parametri.has("avvia") || idScelto === null) {
+    return;
+  }
   // replaceState toglie ?avvia dall'indirizzo, senza ricaricare: così una ricarica
   // della pagina non fa ripartire il timer da solo.
   history.replaceState(null, "", location.pathname);
-  // click() preme Avvia come farebbe l'utente: partono sia il timer di js/timer.js
-  // sia avviaConObiettivo, che mette in corso l'obiettivo scelto.
-  pulsanteAvvia.click();
-}
+  if (pulsanteAvvia.disabled) {
+    // Il timer sta già contando: Avvia è disattivato e un clic non farebbe niente.
+    // Basta mettere in corso l'obiettivo scelto, che prende il posto di quello di prima.
+    mettiInCorso(idScelto);
+  } else {
+    // click() preme Avvia come farebbe l'utente: partono sia il timer di js/timer.js
+    // sia avviaConObiettivo, che mette in corso l'obiettivo scelto.
+    pulsanteAvvia.click();
+  }
+});

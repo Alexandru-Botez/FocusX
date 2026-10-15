@@ -147,35 +147,35 @@ Il `meta` `theme-color` nei due file HTML colora di nero la barra del browser su
 ## Primo passo JavaScript
 
 Il tempo viene conservato come un numero di secondi, non come il testo mostrato nella pagina.
-`durataSessione` vale `25 * 60`, cioè 1500. `secondiRimanenti` parte da questo valore
-e diminuisce durante il conto alla rovescia.
+`durataSessione` vale `minutiPerFiammina * 60`, importato da `js/fiammine.js`: 1500 secondi,
+una sessione dura quanto una fiammina.
 
-Le cinque funzioni hanno responsabilità distinte:
+Il timer non conta togliendo un secondo alla volta, ma guardando l'orologio. Avvia salva in
+`fineSessione` l'ora in cui la sessione finirà, `Date.now() + secondiRimanenti * 1000`, in
+millisecondi. Mentre conta, `calcolaSecondiRimanenti()` ricava i secondi che mancano con
+`Math.ceil((fineSessione - Date.now()) / 1000)`: il risultato è giusto anche se il browser
+ritarda l'intervallo, in una scheda in background, dopo una ricarica o un cambio di pagina.
+`fineSessione` vale `null` quando il timer è fermo: in pausa `secondiRimanenti` resta fisso,
+ed è da lì che Avvia ricalcola la nuova fine.
+
+I quattro valori del timer (`fineSessione`, `secondiRimanenti`, `sessioneAvviata`,
+`secondiAnnunciati`) sono salvati in `localStorage` con la chiave `focusx.timer.v1`
+(`chiaveTimer`, da `js/archivio.js`) a ogni cambiamento, con `salvaTimer()`. All'apertura
+della Home `caricaTimer()` li rilegge e li controlla: se mancano o non sono validi, il timer
+parte da 25:00, fermo.
 
 | Funzione | Responsabilità |
 | --- | --- |
-| `avviaTimer()` | Disabilita Avvia, abilita Pausa e Stop e avvia o riprende il conteggio. |
-| `pausaTimer()` | Ferma l'intervallo, abilita Avvia e disabilita Pausa, conservando i secondi rimasti. |
-| `fermaSessione()` | Ferma il timer, ripristina 1500 secondi e disabilita Stop. |
-| `passaUnSecondo()` | Sottrae un secondo, aggiorna il testo, annuncia `"secondo"`; a zero chiama `fermaSessione()` e annuncia `"sessione-finita"`. |
+| `avviaTimer()` | Calcola `fineSessione`, segna la sessione come avviata, salva e fa partire l'intervallo. |
+| `pausaTimer()` | Ricalcola i secondi rimasti, annuncia quelli lavorati, ferma l'intervallo e mette `fineSessione` a `null`. |
+| `fermaSessione()` | Richiama `pausaTimer()`, poi riporta i secondi a 1500 e chiude la sessione. |
+| `aggiornaConteggio()` | Ricalcola i secondi dall'orologio, aggiorna il testo, annuncia i secondi lavorati; a zero chiude la sessione. |
+| `annunciaSecondiLavorati()` | Fa scattare `"secondi-lavorati"` con i secondi trascorsi non ancora annunciati. |
+| `aggiornaPulsanti()` | Abilita e disabilita Avvia, Pausa e Stop secondo lo stato. |
 | `aggiornaTimer()` | Converte i secondi rimanenti nel formato minuti:secondi. |
 
-`addEventListener("click", avviaTimer)` collega il clic alla funzione di avvio.
-`setInterval(passaUnSecondo, 1000)` richiede un'esecuzione ogni secondo e restituisce
-un identificatore, che viene conservato in `intervalloTimer`.
-Avvia viene disabilitato durante il conteggio; una condizione impedisce anche di creare
-un secondo intervallo se la funzione viene richiamata mentre uno è già attivo.
-
-`clearInterval(intervalloTimer)` interrompe le chiamate periodiche quando premi Pausa.
-Il valore `secondiRimanenti` resta intatto e `intervalloTimer` torna a `null`,
-che nel progetto indica l'assenza di un intervallo attivo.
-Premendo Avvia viene creato un nuovo intervallo a partire dal tempo conservato.
-
-`fermaSessione()` richiama `pausaTimer()` per fermare il conteggio senza duplicare quelle istruzioni.
-Poi assegna `durataSessione` a `secondiRimanenti` e richiama `aggiornaTimer()`:
-il testo torna subito a `25:00`, senza attendere un altro secondo.
-Stop viene disabilitato.
-Il conteggio riparte solo quando premi nuovamente Avvia.
+`setInterval(aggiornaConteggio, 250)` guarda l'orologio quattro volte al secondo, così il numero
+cambia appena scatta il secondo. `clearInterval(intervalloTimer)` lo ferma con Pausa e Stop.
 
 | Stato | Avvia | Pausa | Stop |
 | --- | --- | --- | --- |
@@ -184,24 +184,29 @@ Il conteggio riparte solo quando premi nuovamente Avvia.
 | Timer in pausa dopo l'avvio | Disponibile | Disabilitato | Disponibile |
 | Dopo Stop | Disponibile | Disabilitato | Disabilitato |
 
-Stop si abilita al clic su Avvia, anche prima del primo aggiornamento del tempo.
-Alla fine della sessione i pulsanti tornano come dopo Stop: Avvia disponibile, Pausa e Stop disabilitati.
+Il timer conta quando `fineSessione` non è `null`; Stop è disponibile finché `sessioneAvviata`
+è vero, anche in pausa. Alla fine della sessione i pulsanti tornano come dopo Stop.
 
 Per visualizzare il tempo, `Math.floor()` ricava i minuti interi e `%` ricava i secondi restanti.
 `String()` converte i numeri in testo e `padStart(2, "0")` mantiene due cifre.
 Infine `textContent` aggiorna il paragrafo del timer.
 
-`durataSessione` vale `minutiPerFiammina * 60`, importato da `js/fiammine.js`: una sessione
-dura quanto una fiammina. Al passaggio da un secondo rimanente a zero, `passaUnSecondo()`
-annuncia prima l'ultimo `"secondo"`, così l'obiettivo riceve tutti i 25 minuti, poi chiama
-`fermaSessione()`, la stessa funzione di Stop: la pagina passa da `00:01` a `25:00`, ferma.
-Infine annuncia `"sessione-finita"`, che `js/home-obiettivo.js` usa per fermare l'obiettivo.
-Ricaricare la pagina riporta il timer allo stato iniziale.
+I secondi lavorati passano all'obiettivo con un evento. `secondiAnnunciati` ricorda quanti
+secondi della sessione sono già stati annunciati: `annunciaSecondiLavorati()` calcola i secondi
+trascorsi (`durataSessione - secondiRimanenti`), toglie quelli già annunciati e fa scattare
+`new CustomEvent("secondi-lavorati", { detail: secondiNuovi })`. Di solito `detail` vale 1;
+tornando da un'altra pagina vale tutti i secondi passati via. Quando i secondi arrivano a zero,
+`aggiornaConteggio()` annuncia prima gli ultimi secondi, così l'obiettivo riceve tutti i 25 minuti,
+poi chiama `fermaSessione()` e infine annuncia `"sessione-finita"`.
 
-Questo primo esempio usa un intervallo semplice. Il browser può ritardare le esecuzioni,
-per esempio in una scheda in background: non è ancora un conteggio basato sul tempo reale trascorso.
-Vedi [setInterval su MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/setInterval)
-e [clearInterval su MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/clearInterval)
+All'apertura della pagina `js/timer.js` rimette subito testo e pulsanti come erano, così
+`js/home-obiettivo.js`, che parte dopo, sa se il timer sta contando. Il conteggio riprende invece
+a `DOMContentLoaded`, che scatta dopo che tutti i moduli sono partiti: a quel punto
+`js/home-obiettivo.js` ascolta già `"secondi-lavorati"` e riceve il tempo passato altrove.
+Se la sessione è finita nel frattempo, `aggiornaConteggio()` la chiude subito.
+Vedi [Date.now su MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now),
+[CustomEvent su MDN](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent),
+[setInterval su MDN](https://developer.mozilla.org/en-US/docs/Web/API/Window/setInterval)
 e [padStart su MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart).
 
 ## Menu laterale e icona hamburger
@@ -346,7 +351,7 @@ si vede già nella lista. Il paragrafo `#projects-message` (e `#goals-message` n
 Obiettivi) resta vuoto e si riempie solo con gli errori di lettura o salvataggio.
 Queste funzioni potranno essere adattate alle richieste verso un futuro backend.
 
-Il cambio di pagina interrompe il timer: tornando a `index.html`, il tempo riparte dallo stato iniziale.
+Il cambio di pagina non interrompe il timer: tornando a `index.html` riprende dal tempo giusto.
 
 ## Prima versione degli obiettivi
 
@@ -504,30 +509,34 @@ aprendo la Home si mostra quello, oppure l'obiettivo in corso.
 In corso vuol dire che il timer sta contando su quell'obiettivo. Avvia mette in corso
 l'obiettivo scelto: `js/home-obiettivo.js` aggiunge un proprio listener al pulsante, senza
 modificare `js/timer.js`. Pausa e Stop chiamano `fermaObiettivoInCorso()`, che riporta
-l'obiettivo in corso a non completato; la stessa funzione parte all'apertura della pagina,
-perché il timer parte fermo e un «in corso» salvato da prima sarebbe falso, e all'evento
-`pagehide`, quando si lascia la pagina e il timer si ferma con lei. L'obiettivo resta comunque
-scelto, perché `idScelto` viene calcolato prima.
+l'obiettivo in corso a non completato. La stessa funzione parte all'apertura della pagina,
+ma solo se il timer è fermo (Pausa disattivata): un «in corso» salvato da prima sarebbe falso.
+Se il timer sta contando l'obiettivo resta in corso, anche dopo una ricarica o un'altra pagina.
+L'obiettivo resta comunque scelto, perché `idScelto` viene calcolato prima.
 
 Il play della pagina Obiettivi chiama `avviaNellaHome(id)`: riapre l'obiettivo se era completato,
 salva il suo id con `chiaveObiettivoScelto` (esportata da `js/archivio.js`) e apre
-`index.html?avvia`. All'apertura la Home legge il parametro con `URLSearchParams`, lo toglie
-dall'indirizzo con `history.replaceState`, così una ricarica non fa ripartire il timer, e preme
-Avvia con `pulsanteAvvia.click()`: partono il timer e `avviaConObiettivo`. Se il timer sta già contando, anche scegliere
+`index.html?avvia`. La Home, a `DOMContentLoaded`, legge il parametro con `URLSearchParams` e
+lo toglie dall'indirizzo con `history.replaceState`, così una ricarica non fa ripartire il timer.
+Se il timer è fermo preme Avvia con `pulsanteAvvia.click()`: partono il timer e `avviaConObiettivo`.
+Se sta già contando chiama `mettiInCorso(idScelto)`: il timer continua sul nuovo obiettivo,
+dopo aver dato a quello di prima i secondi passati sulla pagina Obiettivi. Se il timer sta già contando, anche scegliere
 un altro obiettivo lo mette in corso. Valgono le regole della pagina Obiettivi: un solo
 obiettivo in corso e cerchio disattivato sotto il minuto lavorato. Le fiammine si disegnano
 con `disegnaFiammine`, la stessa funzione della lista, importata da `js/fiammine.js`.
 
-Il tempo lavorato lo conta la Home. A ogni secondo `passaUnSecondo()` di `js/timer.js` fa
-scattare sul paragrafo `#timer` un evento inventato, con `timer.dispatchEvent(new Event("secondo"))`.
-`js/home-obiettivo.js` lo ascolta con `timer.addEventListener("secondo", aggiungiSecondoLavorato)`:
-così i due moduli restano separati e c'è un solo `setInterval`. Alla fine della sessione
+Il tempo lavorato lo conta la Home. `js/timer.js` fa scattare sul paragrafo `#timer` l'evento
+`"secondi-lavorati"`, con il numero di secondi in `detail`. `js/home-obiettivo.js` lo ascolta con
+`timer.addEventListener("secondi-lavorati", aggiungiSecondiLavorati)`: così i due moduli restano
+separati e c'è un solo `setInterval`. Alla fine della sessione
 `timer.addEventListener("sessione-finita", fermaObiettivoInCorso)` ferma l'obiettivo in corso,
-come Pausa e Stop: la fiammina appena finita è fatta e, non più in corso, torna arancione. `aggiungiSecondoLavorato()`
-cerca l'obiettivo in corso e aggiunge un secondo ai suoi `minutiLavorati`. Per evitare gli errori
-di arrotondamento di tanti `+ 1/60`, passa dai secondi interi: `Math.round(minuti * 60) + 1`,
-poi divide per 60. `Math.min` ferma il conto a 16 ore, il limite che `caricaObiettivi` accetta.
-Il dato si salva a ogni secondo, poi `mostraBloccoObiettivo()` ridisegna fiammine e tempo.
+come Pausa e Stop: la fiammina appena finita è fatta e, non più in corso, torna arancione. `aggiungiSecondiLavorati(evento)`
+cerca l'obiettivo in corso e aggiunge `evento.detail` secondi ai suoi `minutiLavorati`. Per evitare
+gli errori di arrotondamento delle frazioni, passa dai secondi interi:
+`Math.round(minuti * 60) + evento.detail`, poi divide per 60. `Math.min` ferma il conto a 16 ore, il limite che `caricaObiettivi` accetta.
+Il dato si salva a ogni annuncio, poi `mostraBloccoObiettivo()` ridisegna fiammine e tempo.
+Nella pagina Obiettivi il tempo dell'obiettivo in corso non cresce da solo: si aggiorna
+tornando nella Home, che riceve i secondi passati altrove.
 Anche la finestrella degli obiettivi mostra «lavorato / previsto».
 
 ## Accessibilità
@@ -696,7 +705,7 @@ Per l'obiettivo nella Home controlla che:
 Per il timer attuale controlla anche che:
 
 - Il tempo resti a `25:00` prima di premere Avvia.
-- Il primo aggiornamento mostri `24:59`, poi `24:58`.
+- Il primo aggiornamento mostri `24:59`, poi `24:58`, senza saltare secondi.
 - Avvia sia disabilitato durante il conto alla rovescia.
 - Pausa sia disabilitato all'apertura e abilitato durante il conteggio.
 - Dopo un clic su Pausa, il tempo resti fermo e Avvia torni disponibile.
@@ -706,6 +715,14 @@ Per il timer attuale controlla anche che:
 - Premendo Stop durante il conteggio o in pausa, il tempo torni a `25:00` e resti fermo.
 - Dopo Stop, Avvia sia disponibile e Pausa e Stop siano disabilitati.
 - Avvia dopo Stop riparta da `25:00` con un solo intervallo.
+- Ricaricando la pagina mentre il timer conta, il tempo continui da dove deve essere
+  e l'obiettivo resti in corso; ricaricando in pausa, il tempo resti fermo e Stop disponibile.
+- Andando nella pagina Obiettivi e tornando dopo qualche secondo, il timer sia avanzato
+  di quei secondi e l'obiettivo in corso li abbia ricevuti.
+- Se la sessione finisce mentre sei su un'altra pagina, tornando il timer sia a `25:00`, fermo,
+  e l'obiettivo abbia la sua fiammina e non sia più in corso.
+- Il play della pagina Obiettivi, a timer avviato, metta in corso il nuovo obiettivo
+  senza far ripartire il timer.
 - Passando il mouse su Stop abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - In pausa le cifre diventino grigie e tornino bianche con Avvia o Stop.
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.

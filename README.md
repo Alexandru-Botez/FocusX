@@ -19,6 +19,9 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Conto alla rovescia di 25 minuti con i pulsanti Avvia, Pausa e Stop.
 - Pausa conserva il tempo rimasto e Avvia riprende da lì; in pausa le cifre diventano grigie.
 - Stop finisce la sessione: ferma il timer e lo riporta a `25:00`.
+- Il timer continua anche cambiando pagina, ricaricando o chiudendo la scheda: tornando
+  nella Home mostra il tempo giusto, e l'obiettivo in corso riceve i minuti passati altrove.
+  Anche la pausa resta dopo una ricarica.
 - Arrivato a zero la sessione finisce: il timer si ferma e torna a `25:00`, la durata
   di una fiammina, pronto per la prossima. L'obiettivo in corso ha una fiammina in più
   e smette di essere in corso; con Avvia si lavora sulla fiammina successiva.
@@ -94,7 +97,6 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 ### Limiti attuali
 
 - Nel menu Statistica e Impostazioni non hanno ancora una destinazione.
-- Cambiare pagina interrompe il timer: tornando si riparte da `25:00`.
 - I progetti hanno solo nome e colore, e l'eliminazione non chiede conferma.
 - Eliminando un progetto, i suoi obiettivi restano e mostrano «Progetto eliminato».
 - Il tempo lavorato si conta solo con la Home aperta, a ogni secondo del timer.
