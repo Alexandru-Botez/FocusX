@@ -21,6 +21,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | [js/archivio.js](../js/archivio.js) | Modulo comune: chiavi di `localStorage` e `leggiElenco`. |
 | [js/fiammine.js](../js/fiammine.js) | Modulo comune: valore e limiti delle fiammine, `formattaMinuti`, `formattaTempo`, `disegnaFiammine`, `mostraTempo`. |
 | [js/timer.js](../js/timer.js) | Comportamento del timer nella pagina principale. |
+| [js/timer-salvato.js](../js/timer-salvato.js) | Modulo comune: `durataSessione`, `leggiTimer`, `scriviTimer`, `calcolaSecondiRimanenti`, `secondiNonAnnunciati`. |
 | [js/home-obiettivo.js](../js/home-obiettivo.js) | Blocco dell'obiettivo scelto sopra il timer, nella pagina principale. |
 | [js/menu.js](../js/menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
 | [progetti.html](../progetti.html) | Pagina Progetti, modulo, lista e modello di una voce. |
@@ -161,8 +162,10 @@ ed è da lì che Avvia ricalcola la nuova fine.
 I quattro valori del timer (`fineSessione`, `secondiRimanenti`, `sessioneAvviata`,
 `secondiAnnunciati`) sono salvati in `localStorage` con la chiave `focusx.timer.v1`
 (`chiaveTimer`, da `js/archivio.js`) a ogni cambiamento, con `salvaTimer()`. All'apertura
-della Home `caricaTimer()` li rilegge e li controlla: se mancano o non sono validi, il timer
-parte da 25:00, fermo.
+della Home `caricaTimer()` li rilegge. Lettura, controllo e scrittura stanno nel modulo comune
+`js/timer-salvato.js` (`leggiTimer`, `scriviTimer`), insieme a `durataSessione` e
+`calcolaSecondiRimanenti(fine)`, perché li usa anche la pagina Obiettivi: `leggiTimer()`
+controlla ogni campo e, se qualcosa manca o non è valido, restituisce un timer fermo a 25:00.
 
 | Funzione | Responsabilità |
 | --- | --- |
@@ -535,8 +538,15 @@ cerca l'obiettivo in corso e aggiunge `evento.detail` secondi ai suoi `minutiLav
 gli errori di arrotondamento delle frazioni, passa dai secondi interi:
 `Math.round(minuti * 60) + evento.detail`, poi divide per 60. `Math.min` ferma il conto a 16 ore, il limite che `caricaObiettivi` accetta.
 Il dato si salva a ogni annuncio, poi `mostraBloccoObiettivo()` ridisegna fiammine e tempo.
-Nella pagina Obiettivi il tempo dell'obiettivo in corso non cresce da solo: si aggiorna
-tornando nella Home, che riceve i secondi passati altrove.
+Il tempo lo conta solo la Home, ma la pagina Obiettivi lo mostra in diretta. Ogni secondo
+`aggiornaObiettivoInCorso()` ridisegna la voce dell'obiettivo in corso con
+`conTempoInDiretta(obiettivo)`, che aggiunge ai minuti salvati i secondi del timer non ancora
+dati all'obiettivo: `secondiNonAnnunciati(leggiTimer())`, cioè secondi trascorsi meno
+`annunciati`. È solo da mostrare: non salva niente, così la Home resta l'unica a contare.
+Prima di cambiare uno stato con il cerchio, `cambiaStato` chiama `salvaTempoInDiretta()`:
+salva quei secondi nell'obiettivo e alza `annunciati` nel timer salvato della stessa quantità,
+così la Home non li conta una seconda volta. Senza questo passaggio, completando l'obiettivo
+in corso dalla pagina Obiettivi i suoi ultimi secondi andrebbero persi.
 Anche la finestrella degli obiettivi mostra «lavorato / previsto».
 
 ## Accessibilità
@@ -723,6 +733,10 @@ Per il timer attuale controlla anche che:
   e l'obiettivo abbia la sua fiammina e non sia più in corso.
 - Il play della pagina Obiettivi, a timer avviato, metta in corso il nuovo obiettivo
   senza far ripartire il timer.
+- Con il timer avviato, nella pagina Obiettivi il tempo e la fiammina dell'obiettivo in corso
+  crescano ogni secondo, e il cerchio si attivi al sessantesimo secondo lavorato.
+- Completando dalla pagina Obiettivi l'obiettivo in corso, il suo tempo salvato includa
+  i secondi in diretta e, tornando nella Home, non cresca di nuovo.
 - Passando il mouse su Stop abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - In pausa le cifre diventino grigie e tornino bianche con Avvia o Stop.
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.

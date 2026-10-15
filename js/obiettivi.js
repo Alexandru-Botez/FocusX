@@ -13,6 +13,7 @@
 //   - FORMATTAZIONE DELLE DATE
 //   - ELENCO DEGLI OBIETTIVI
 //   - STATI DEGLI OBIETTIVI
+//   - TEMPO IN DIRETTA
 //   - SCELTA DELLE FIAMMINE
 //   - FINESTRELLA DELLE FIAMMINE
 //   - CONTROLLO DEI DOPPIONI
@@ -41,6 +42,7 @@ import {
   mostraTempo,
   lavoroInsufficiente
 } from "./fiammine.js?v=minuto-1";
+import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=diretta-1";
 
 
 // =====================================================================
@@ -230,7 +232,8 @@ function mostraObiettivi(idNuovo) {
     testoData.textContent = formattaData(obiettivo.data);
 
     // Fiammine e tempo li scrive applicaStato, che li aggiorna anche a ogni cambio di stato.
-    applicaStato(voce, obiettivo);
+    // conTempoInDiretta aggiunge all'obiettivo in corso i secondi che il timer sta contando.
+    applicaStato(voce, conTempoInDiretta(obiettivo));
 
     const pulsanteModifica = voce.querySelector(".goal-edit");
     pulsanteModifica.setAttribute("aria-label", "Modifica " + obiettivo.nome);
@@ -323,6 +326,11 @@ function avviaNellaHome(id) {
 
 // Cambia lo stato di un obiettivo dopo un clic sul cerchio, e lo salva.
 function cambiaStato(id, statoScelto) {
+  // Prima si salvano i secondi che il timer ha contato per l'obiettivo in corso:
+  // completandolo smetterebbe di essere in corso, e quei secondi andrebbero persi.
+  if (!salvaTempoInDiretta()) {
+    return;
+  }
   const obiettivo = obiettivi.find(obiettivo => obiettivo.id === id);
   if (obiettivo === undefined) {
     return;
@@ -355,13 +363,74 @@ function cambiaStato(id, statoScelto) {
   for (const voce of elencoObiettivi.children) {
     const aggiornato = obiettivi.find(elemento => elemento.id === voce.dataset.id);
     if (voce.dataset.stato !== aggiornato.stato) {
-      applicaStato(voce, aggiornato);
+      applicaStato(voce, conTempoInDiretta(aggiornato));
     }
     // is-updated abilita la piccola animazione dei pulsanti, solo dopo un clic.
     if (voce.dataset.id === id) {
       voce.classList.add("is-updated");
     }
   }
+}
+
+
+// =====================================================================
+// SEZIONE TEMPO IN DIRETTA
+// Il tempo lo conta solo la Home. Mentre il timer conta, questa pagina legge
+// il timer salvato e aggiunge all'obiettivo in corso i secondi che la Home
+// non gli ha ancora dato: così il suo tempo e le sue fiammine crescono anche qui.
+// =====================================================================
+
+// Restituisce l'obiettivo con il tempo di adesso: per quello in corso, i minuti salvati
+// più i secondi contati dal timer e non ancora dati. Gli altri restano come sono.
+// Non salva niente: serve solo a mostrarlo.
+function conTempoInDiretta(obiettivo) {
+  if (obiettivo.stato !== "in-corso") {
+    return obiettivo;
+  }
+  const secondiNuovi = secondiNonAnnunciati(leggiTimer());
+  if (secondiNuovi === 0) {
+    return obiettivo;
+  }
+  // Come nella Home: si passa dai secondi interi, e non si superano le 16 ore.
+  const secondi = Math.min(Math.round(obiettivo.minutiLavorati * 60) + secondiNuovi, oreMassime * 60 * 60);
+  return { ...obiettivo, minutiLavorati: secondi / 60 };
+}
+
+// Ridisegna la voce dell'obiettivo in corso con il tempo di adesso. Parte ogni secondo.
+function aggiornaObiettivoInCorso() {
+  const obiettivo = obiettivi.find(obiettivo => obiettivo.stato === "in-corso");
+  if (obiettivo === undefined) {
+    return;
+  }
+  for (const voce of elencoObiettivi.children) {
+    if (voce.dataset.id === obiettivo.id) {
+      applicaStato(voce, conTempoInDiretta(obiettivo));
+    }
+  }
+}
+
+// Salva davvero i secondi in diretta nell'obiettivo in corso, e segna nel timer
+// che sono stati dati, così la Home non li conta una seconda volta.
+// Serve prima di cambiare uno stato. Restituisce false se il salvataggio non riesce.
+function salvaTempoInDiretta() {
+  const obiettivo = obiettivi.find(obiettivo => obiettivo.stato === "in-corso");
+  if (obiettivo === undefined) {
+    return true;
+  }
+  const timerSalvato = leggiTimer();
+  const secondiNuovi = secondiNonAnnunciati(timerSalvato);
+  if (secondiNuovi === 0) {
+    return true;
+  }
+  const aggiornato = conTempoInDiretta(obiettivo);
+  const elencoAggiornato = obiettivi.map(elemento => elemento.id === obiettivo.id ? aggiornato : elemento);
+  if (!salvaObiettivi(elencoAggiornato)) {
+    return false;
+  }
+  obiettivi = elencoAggiornato;
+  // La stessa "ricevuta" della Home: i secondi dati salgono di quelli appena salvati.
+  scriviTimer({ ...timerSalvato, annunciati: timerSalvato.annunciati + secondiNuovi });
+  return true;
 }
 
 
@@ -772,3 +841,6 @@ document.addEventListener("keydown", chiudiFinestrellaConEsc);
 
 // La lista compare subito, con gli obiettivi salvati.
 mostraObiettivi();
+
+// Ogni secondo l'obiettivo in corso si aggiorna con il tempo che il timer della Home sta contando.
+setInterval(aggiornaObiettivoInCorso, 1000);

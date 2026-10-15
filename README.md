@@ -21,7 +21,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Stop finisce la sessione: ferma il timer e lo riporta a `25:00`.
 - Il timer continua anche cambiando pagina, ricaricando o chiudendo la scheda: tornando
   nella Home mostra il tempo giusto, e l'obiettivo in corso riceve i minuti passati altrove.
-  Anche la pausa resta dopo una ricarica.
+  Anche la pausa resta dopo una ricarica. Nella pagina Obiettivi il tempo e le fiammine
+  dell'obiettivo in corso crescono in diretta, secondo per secondo.
 - Arrivato a zero la sessione finisce: il timer si ferma e torna a `25:00`, la durata
   di una fiammina, pronto per la prossima. L'obiettivo in corso ha una fiammina in più
   e smette di essere in corso; con Avvia si lavora sulla fiammina successiva.
@@ -140,6 +141,7 @@ FocusX/
 │   ├── archivio.js         Comune: chiavi e lettura dei dati salvati
 │   ├── fiammine.js         Comune: valore, testi e disegno delle fiammine
 │   ├── timer.js            Timer: avvio, pausa, stop e fine della sessione
+│   ├── timer-salvato.js    Comune: lettura e scrittura del timer salvato, conti sull'orologio
 │   ├── home-obiettivo.js   Home: obiettivo scelto sopra il timer
 │   ├── menu.js             Menu laterale, condiviso da tutte le pagine
 │   ├── progetti.js         Creazione, modifica, eliminazione e salvataggio dei progetti
