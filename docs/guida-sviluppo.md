@@ -506,7 +506,8 @@ con `:is(.goal, .home-goal)`, così fiammine, nome barrato e cerchio hanno lo st
 Un clic sul pulsante apre `#home-goal-panel` appena sotto il blocco (`position: absolute`),
 riempito da `riempiFinestrellaObiettivi()` con gli obiettivi non completati, copiando
 `template#home-goal-option-template`. La finestrella si chiude scegliendo un obiettivo,
-con un clic fuori o con Esc. L'id scelto è salvato con la chiave `focusx.home.obiettivo.v1`;
+con un clic fuori o con Esc. Non ha un titolo: la lista ha già il nome accessibile
+«Obiettivi da fare» (`aria-label`). L'id scelto è salvato con la chiave `focusx.home.obiettivo.v1`;
 aprendo la Home si mostra quello, oppure l'obiettivo in corso.
 
 In corso vuol dire che il timer sta contando su quell'obiettivo. Avvia mette in corso

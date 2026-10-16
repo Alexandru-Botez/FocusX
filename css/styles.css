@@ -1857,14 +1857,6 @@ button:disabled {
   animation: apri-finestrella 160ms var(--ease-out);
 }
 
-.home-goal-panel-title {
-  margin: 6px 10px 8px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .home-goal-options {
   display: grid;
   gap: 2px;
@@ -1914,8 +1906,9 @@ button:disabled {
   white-space: nowrap;
 }
 
+/* Senza titolo sopra, il messaggio ha lo stesso spazio sopra e sotto. */
 .home-goal-panel-empty {
-  margin: 4px 10px 8px;
+  margin: 6px 10px;
   color: var(--muted);
   font-size: 0.875rem;
   line-height: 1.5;
