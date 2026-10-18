@@ -23,9 +23,15 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   nella Home mostra il tempo giusto, e l'obiettivo in corso riceve i minuti passati altrove.
   Anche la pausa resta dopo una ricarica. Nella pagina Obiettivi il tempo e le fiammine
   dell'obiettivo in corso crescono in diretta, secondo per secondo.
-- Arrivato a zero la sessione finisce: il timer si ferma e torna a `25:00`, la durata
-  di una fiammina, pronto per la prossima. L'obiettivo in corso ha una fiammina in più
-  e smette di essere in corso; con Avvia si lavora sulla fiammina successiva.
+- Dopo ogni fiammina viene una pausa di 5 minuti. Arrivata a zero la fiammina, il timer
+  passa a `05:00`, fermo: la pausa parte con Avvia. Finita la pausa, torna a una fiammina
+  da `25:00`, ferma, pronta per Avvia. L'obiettivo in corso ha una fiammina in più e smette
+  di essere in corso; durante la pausa nessun obiettivo riceve tempo.
+- La modalità si riconosce a colpo d'occhio: sopra le cifre un'etichetta dice «Fiammina»,
+  arancione con la fiammina, o «Pausa», lilla con una tazzina. In pausa anche le cifre
+  e Avvia sono lilla e la pillola dell'obiettivo si attenua.
+- In pausa Stop diventa «Salta la pausa», con l'icona ⏭: riporta subito a una fiammina.
+  Anche il play della pagina Obiettivi salta la pausa e fa partire una fiammina.
 - Ogni pulsante è disponibile solo quando ha senso usarlo:
 
 | Stato | Avvia | Pausa | Stop |
@@ -33,6 +39,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 | All'apertura e dopo Stop | Disponibile | Disabilitato | Disabilitato |
 | Conteggio in corso | Disabilitato | Disponibile | Disponibile |
 | In pausa | Disponibile | Disabilitato | Disponibile |
+| Pausa tra fiammine, prima di Avvia | Disponibile | Disabilitato | Disponibile (salta) |
 
 ### Progetti
 

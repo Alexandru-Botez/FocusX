@@ -63,6 +63,9 @@
   --goal-progress: #4dabf7;
   --goal-done: #69db7c;
 
+  /* Lilla: la pausa tra una fiammina e l'altra, calma e diversa da tutti gli altri colori. */
+  --break: #b197fc;
+
   /* Sfondo del pannello, leggermente più chiaro rispetto alla pagina. */
   --surface: #0f0f0f;
 
@@ -453,17 +456,71 @@ section {
   /* Se il font lo supporta, usa cifre tutte della stessa larghezza: il timer non oscilla. */
   font-variant-numeric: tabular-nums;
 
-  /* Il passaggio al grigio della pausa, e il ritorno al bianco, sono graduali. */
+  /* I cambi di colore (pausa, sospeso) sono graduali. */
   transition: color 300ms ease;
 }
 
 /*
-  In pausa Avvia e Stop sono entrambi disponibili: solo in quello stato le cifre diventano grigie.
-  Prima dell'avvio Stop è disabilitato; durante il conteggio lo è Avvia.
-  Leggiamo lo stato dai pulsanti con :has e :enabled, senza modificare JavaScript.
+  L'etichetta della modalità, sopra le cifre: una piccola pillola con icona e nome.
+  currentColor è arancione nella fiammina e lilla nella pausa: bordo e sfondo
+  sono lo stesso colore, mescolato con il trasparente da color-mix.
 */
-section:has(#start-button:enabled):has(#stop-button:enabled) #timer {
+.timer-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  padding: 4px 12px;
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  border-radius: 999px;
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  color: var(--flame);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: color 300ms ease, border-color 300ms ease, background-color 300ms ease;
+}
+
+.timer-mode-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.timer-mode-flame {
+  fill: currentColor;
+}
+
+.timer-mode-cup {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Si vede solo l'icona della modalità attuale: la fiammina o la tazzina. */
+#timer-section[data-modalita="fiammina"] .timer-mode-cup,
+#timer-section[data-modalita="pausa"] .timer-mode-flame {
+  display: none;
+}
+
+/* In pausa l'etichetta e le cifre diventano lilla: si vede subito che non è una fiammina. */
+#timer-section[data-modalita="pausa"] .timer-mode,
+#timer-section[data-modalita="pausa"] #timer {
+  color: var(--break);
+}
+
+/*
+  Fermato con il pulsante Pausa, a sessione iniziata, le cifre diventano grigie.
+  data-conteggio lo scrive js/timer.js. Questa regola viene dopo quella lilla
+  e ha la stessa specificità: vince lei, anche durante la pausa.
+*/
+#timer-section[data-conteggio="sospeso"] #timer {
   color: var(--muted);
+}
+
+/* Durante la pausa non si lavora: la pillola dell'obiettivo si attenua, ma resta usabile. */
+#timer-section[data-modalita="pausa"] .home-goal:not(:hover, :focus-within) {
+  opacity: 0.5;
 }
 
 /* Contenitore comune dei pulsanti Avvia, Pausa e Stop. */
@@ -682,6 +739,25 @@ button svg {
   }
 }
 
+/* In pausa Avvia diventa lilla, come le cifre: si avvia il riposo, non una fiammina. */
+#timer-section[data-modalita="pausa"] #start-button {
+  border-color: var(--break);
+  background-color: var(--break);
+}
+
+@media (hover: hover) {
+  #timer-section[data-modalita="pausa"] #start-button:hover:not(:disabled) {
+    /* color-mix scurisce il lilla mescolandolo con un po' di nero. */
+    background-color: color-mix(in srgb, var(--break) 85%, black);
+  }
+}
+
+/* Stop mostra il quadrato nella fiammina e l'icona "salta" nella pausa. */
+#timer-section[data-modalita="fiammina"] #stop-button .skip-icon,
+#timer-section[data-modalita="pausa"] #stop-button .stop-icon {
+  display: none;
+}
+
 /*
   Stop è un cerchio come Pausa, con un quadrato al centro.
   Finisce la sessione, quindi al passaggio del mouse diventa rosso come il cestino.
@@ -693,6 +769,12 @@ button svg {
     border-color: var(--danger);
     /* L'icona nera mantiene un buon contrasto con lo sfondo rosso chiaro. */
     color: var(--background);
+  }
+
+  /* Saltare la pausa non cancella niente: niente rosso, ma il lilla della pausa. */
+  #timer-section[data-modalita="pausa"] #stop-button:hover:not(:disabled) {
+    background-color: var(--break);
+    border-color: var(--break);
   }
 }
 
@@ -1701,7 +1783,7 @@ button:disabled {
   border-radius: 999px;
   background-color: var(--surface);
   text-align: left;
-  transition: border-color 300ms ease, background-color var(--transition-fast) ease;
+  transition: border-color 300ms ease, background-color var(--transition-fast) ease, opacity 300ms ease;
 }
 
 /*
@@ -2018,6 +2100,7 @@ button:disabled {
   body::after,
   button,
   #timer,
+  .timer-mode,
   .brand-link,
   .brand-logo-link,
   .project-form input[type="text"],

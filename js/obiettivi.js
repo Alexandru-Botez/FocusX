@@ -42,7 +42,7 @@ import {
   mostraTempo,
   lavoroInsufficiente
 } from "./fiammine.js?v=minuto-1";
-import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=diretta-1";
+import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=pausa-1";
 
 
 // =====================================================================

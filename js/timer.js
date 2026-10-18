@@ -1,8 +1,9 @@
 // =====================================================================
 // TIMER.JS: il timer della pagina Home (index.html)
-// Conta alla rovescia la durata di una fiammina (25 minuti), con i pulsanti
-// Avvia, Pausa e Stop. Arrivato a zero la sessione finisce: il timer si ferma
-// e torna a 25:00, pronto per la prossima fiammina.
+// Alterna due modalità: la fiammina, 25 minuti di lavoro, e la pausa, 5 minuti
+// di riposo. Arrivata a zero una fiammina, il timer passa alla pausa; finita la
+// pausa, torna alla fiammina. Ogni volta si ferma e aspetta Avvia.
+// Stop chiude la fiammina, o salta la pausa, e riporta a una fiammina da 25:00.
 // Il timer continua anche cambiando pagina o ricaricando: salva nel browser
 // l'ora in cui la sessione finirà, e a ogni apertura calcola quanto manca.
 // È un modulo: i suoi nomi sono privati, non si scontrano con quelli
@@ -14,6 +15,7 @@
 //   - DATI DEL TIMER
 //   - SALVATAGGIO NEL BROWSER
 //   - CONTEGGIO
+//   - FIAMMINA E PAUSA
 //   - PULSANTI AVVIA, PAUSA E STOP
 //   - AVVIO DELLA PAGINA
 // =====================================================================
@@ -21,17 +23,17 @@
 
 // =====================================================================
 // SEZIONE IMPORTAZIONI
-// La durata, la lettura e la scrittura del timer e il conto dei secondi rimanenti
+// Le durate, la lettura e la scrittura del timer e il conto dei secondi rimanenti
 // arrivano da js/timer-salvato.js, che li condivide con la pagina Obiettivi.
 // =====================================================================
 
 // Lo stesso ?v usato da js/obiettivi.js: così il modulo si carica una volta sola.
 import {
-  durataSessione,
+  durataDi,
   leggiTimer,
   scriviTimer,
   calcolaSecondiRimanenti
-} from "./timer-salvato.js?v=diretta-1";
+} from "./timer-salvato.js?v=pausa-1";
 
 
 // =====================================================================
@@ -41,6 +43,8 @@ import {
 
 // const dichiara un nome che non riassegneremo.
 // getElementById trova l'elemento HTML che ha l'id indicato tra virgolette.
+const sezioneTimer = document.getElementById("timer-section");
+const testoModalita = document.getElementById("timer-mode-text");
 const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
@@ -49,22 +53,25 @@ const pulsanteStop = document.getElementById("stop-button");
 
 // =====================================================================
 // SEZIONE DATI DEL TIMER
-// I valori che cambiano mentre il timer conta: sono questi quattro
-// che vengono salvati nel browser. La durata, 1500 secondi, arriva da js/timer-salvato.js.
+// I valori che cambiano mentre il timer conta: sono questi cinque
+// che vengono salvati nel browser. Le durate arrivano da js/timer-salvato.js.
 // =====================================================================
 
+// "fiammina" mentre si lavora, "pausa" mentre ci si riposa.
+let modalita = "fiammina";
+
 // L'ora in cui la sessione finirà, in millisecondi (come Date.now()), mentre il timer conta.
-// null quando il timer è fermo: in pausa, dopo Stop o prima di cominciare.
+// null quando il timer è fermo: con il pulsante Pausa, dopo Stop o prima di cominciare.
 let fineSessione = null;
 
 // I secondi che mancano alla fine. Mentre il timer conta si ricalcolano da fineSessione;
-// in pausa restano fermi, ed è da qui che Avvia riparte.
-let secondiRimanenti = durataSessione;
+// quando è fermo restano fermi, ed è da qui che Avvia riparte.
+let secondiRimanenti = durataDi(modalita);
 
-// true da Avvia fino a Stop o alla fine della sessione, anche in pausa: abilita Stop.
+// true da Avvia fino a Stop o alla fine della sessione, anche da fermo: abilita Stop.
 let sessioneAvviata = false;
 
-// Quanti secondi di questa sessione sono già stati passati all'obiettivo in corso.
+// Quanti secondi di questa fiammina sono già stati passati all'obiettivo in corso.
 // La differenza con i secondi trascorsi dice quanti annunciarne ancora (vedi annunciaSecondiLavorati).
 let secondiAnnunciati = 0;
 
@@ -78,9 +85,10 @@ let intervalloTimer = null;
 // non li perdono, e la Home li rilegge all'apertura.
 // =====================================================================
 
-// Mette i quattro dati in un oggetto e lo scrive nel browser con scriviTimer.
+// Mette i cinque dati in un oggetto e lo scrive nel browser con scriviTimer.
 function salvaTimer() {
   scriviTimer({
+    modalita: modalita,
     fine: fineSessione,
     rimanenti: secondiRimanenti,
     avviata: sessioneAvviata,
@@ -89,9 +97,10 @@ function salvaTimer() {
 }
 
 // Rilegge i dati salvati con leggiTimer, che li controlla:
-// se mancano o non sono validi, restituisce un timer fermo a 25:00.
+// se mancano o non sono validi, restituisce una fiammina ferma a 25:00.
 function caricaTimer() {
   const dati = leggiTimer();
+  modalita = dati.modalita;
   fineSessione = dati.fine;
   secondiRimanenti = dati.rimanenti;
   sessioneAvviata = dati.avviata;
@@ -104,8 +113,8 @@ function caricaTimer() {
 // Il tempo non si conta togliendo un secondo alla volta, ma guardando l'orologio:
 // i secondi rimanenti sono la distanza tra adesso e fineSessione. Così il conto
 // è giusto anche dopo una ricarica, un'altra pagina o una scheda in background.
-// I secondi lavorati si annunciano con l'evento "secondi-lavorati";
-// a zero la sessione finisce e lo annuncia con l'evento "sessione-finita".
+// I secondi lavorati si annunciano con l'evento "secondi-lavorati", solo in una fiammina;
+// a zero la sessione finisce (vedi la sezione FIAMMINA E PAUSA).
 // =====================================================================
 
 // Scrive i secondi rimanenti nel formato "25:00".
@@ -121,7 +130,11 @@ function aggiornaTimer() {
 // Passa all'obiettivo i secondi trascorsi che non ha ancora ricevuto.
 // Di solito è 1, ma tornando da un'altra pagina possono essere molti di più.
 function annunciaSecondiLavorati() {
-  const secondiTrascorsi = durataSessione - secondiRimanenti;
+  // In pausa non si lavora: nessun secondo va all'obiettivo.
+  if (modalita !== "fiammina") {
+    return;
+  }
+  const secondiTrascorsi = durataDi(modalita) - secondiRimanenti;
   const secondiNuovi = secondiTrascorsi - secondiAnnunciati;
   if (secondiNuovi <= 0) {
     return;
@@ -142,17 +155,59 @@ function aggiornaConteggio() {
   // ancora in corso, riceve anche l'ultimo secondo.
   annunciaSecondiLavorati();
   if (secondiRimanenti === 0) {
-    fermaSessione();
-    // js/home-obiettivo.js ferma l'obiettivo in corso, come dopo Pausa o Stop.
-    timer.dispatchEvent(new Event("sessione-finita"));
+    finisciSessione();
   }
 }
 
 // Fa partire il controllo dell'orologio.
 function avviaIntervallo() {
   // Quattro controlli al secondo: il numero cambia appena scatta il secondo,
-  // anche ses il browser ritarda un po' l'intervallo.
+  // anche se il browser ritarda un po' l'intervallo.
   intervalloTimer = setInterval(aggiornaConteggio, 250);
+}
+
+
+// =====================================================================
+// SEZIONE FIAMMINA E PAUSA
+// Il passaggio da una modalità all'altra e come si vede nella pagina.
+// =====================================================================
+
+// Prepara una sessione nuova nella modalità indicata: ferma, piena, da avviare con Avvia.
+function impostaModalita(nuovaModalita) {
+  modalita = nuovaModalita;
+  // Tutti i secondi della modalità da contare, nessuno ancora annunciato.
+  secondiRimanenti = durataDi(modalita);
+  secondiAnnunciati = 0;
+  sessioneAvviata = false;
+  salvaTimer();
+  aggiornaTimer();
+  aggiornaPulsanti();
+  mostraModalita();
+}
+
+// Il tempo è arrivato a zero: dopo una fiammina viene la pausa, dopo la pausa una fiammina.
+function finisciSessione() {
+  // Lo ricordiamo prima di cambiare modalità: dopo, modalita dice già quella nuova.
+  const eraFiammina = modalita === "fiammina";
+  pausaTimer();
+  impostaModalita(eraFiammina ? "pausa" : "fiammina");
+  if (eraFiammina) {
+    // js/home-obiettivo.js ferma l'obiettivo in corso, come dopo Pausa o Stop:
+    // la fiammina appena finita è fatta, e durante la pausa non si lavora.
+    timer.dispatchEvent(new Event("sessione-finita"));
+  }
+}
+
+// Mostra nella pagina in quale modalità è il timer.
+function mostraModalita() {
+  // data-modalita sulla sezione decide i colori nel CSS: arancione per la fiammina,
+  // lilla per la pausa. js/home-obiettivo.js lo legge per sapere se si sta lavorando.
+  sezioneTimer.dataset.modalita = modalita;
+  testoModalita.textContent = modalita === "pausa" ? "Pausa" : "Fiammina";
+  // In pausa Stop serve a saltarla: il nome lo dice ai lettori di schermo e nel suggerimento.
+  const nomeStop = modalita === "pausa" ? "Salta la pausa" : "Stop";
+  pulsanteStop.setAttribute("aria-label", nomeStop);
+  pulsanteStop.title = nomeStop;
 }
 
 
@@ -168,16 +223,26 @@ function aggiornaPulsanti() {
   const staContando = fineSessione !== null;
   pulsanteAvvia.disabled = staContando;
   pulsantePausa.disabled = !staContando;
-  pulsanteStop.disabled = !sessioneAvviata;
+  // Stop serve dopo Avvia; in pausa serve sempre, per saltarla anche senza avviarla.
+  pulsanteStop.disabled = !sessioneAvviata && modalita !== "pausa";
+  // data-conteggio dice al CSS se il timer conta, è fermo con il pulsante Pausa o non è partito:
+  // "sospeso" fa diventare grigie le cifre.
+  if (staContando) {
+    sezioneTimer.dataset.conteggio = "attivo";
+  } else if (sessioneAvviata) {
+    sezioneTimer.dataset.conteggio = "sospeso";
+  } else {
+    sezioneTimer.dataset.conteggio = "fermo";
+  }
 }
 
-// Avvia il conteggio, o lo riprende dopo una pausa.
+// Avvia il conteggio, o lo riprende dopo il pulsante Pausa.
 function avviaTimer() {
   // Se il timer sta già contando, return termina la funzione senza crearne un altro.
   if (fineSessione !== null) {
     return;
   }
-  // La fine è adesso più i secondi che mancano: dopo una pausa sono quelli rimasti.
+  // La fine è adesso più i secondi che mancano: dopo il pulsante Pausa sono quelli rimasti.
   fineSessione = Date.now() + secondiRimanenti * 1000;
   sessioneAvviata = true;
   salvaTimer();
@@ -203,18 +268,11 @@ function pausaTimer() {
   aggiornaPulsanti();
 }
 
-// Stop, e la fine della sessione: ferma il conteggio e riporta il timer a 25:00.
+// Stop: chiude la fiammina, o salta la pausa, e prepara una fiammina nuova da 25:00.
 function fermaSessione() {
-  // Riutilizziamo Pausa per fermare il conteggio; in pausa non fa niente.
+  // Riutilizziamo Pausa per fermare il conteggio; da fermo non fa niente.
   pausaTimer();
-
-  // Una sessione nuova: tutti i secondi da contare, nessuno ancora annunciato.
-  secondiRimanenti = durataSessione;
-  secondiAnnunciati = 0;
-  sessioneAvviata = false;
-  salvaTimer();
-  aggiornaTimer();
-  aggiornaPulsanti();
+  impostaModalita("fiammina");
 }
 
 
@@ -223,14 +281,15 @@ function fermaSessione() {
 // Rilegge il timer salvato e collega i pulsanti alle funzioni.
 // =====================================================================
 
-// Subito: il timer e i pulsanti come erano prima di lasciare la pagina.
-// Così js/home-obiettivo.js, che parte dopo, sa già se il timer sta contando.
+// Subito: il timer, i pulsanti e la modalità come erano prima di lasciare la pagina.
+// Così js/home-obiettivo.js, che parte dopo, sa già se il timer sta contando e su cosa.
 caricaTimer();
 if (fineSessione !== null) {
   secondiRimanenti = calcolaSecondiRimanenti(fineSessione);
 }
 aggiornaTimer();
 aggiornaPulsanti();
+mostraModalita();
 
 pulsanteAvvia.addEventListener("click", avviaTimer);
 pulsantePausa.addEventListener("click", pausaTimer);

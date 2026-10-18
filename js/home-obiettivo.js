@@ -6,6 +6,7 @@
 // in corso; Pausa, Stop e la fine della sessione lo fermano. Ogni secondo
 // del timer si aggiunge al tempo lavorato dell'obiettivo in corso, anche quelli
 // passati su un'altra pagina: il timer continua a contare.
+// Durante la pausa tra una fiammina e l'altra non si lavora: nessun obiettivo è in corso.
 //
 // È un modulo, come gli altri file JavaScript: i suoi nomi sono privati,
 // quindi può chiamare pulsanteAvvia anche se js/timer.js usa lo stesso nome.
@@ -65,7 +66,9 @@ const elencoSceltaObiettivi = document.getElementById("home-goal-options");
 const avvisoNessunObiettivo = document.getElementById("home-goal-empty");
 const modelloSceltaObiettivo = document.getElementById("home-goal-option-template");
 
-// Il tempo e i pulsanti del timer, gli stessi che usa js/timer.js.
+// Il timer e i suoi pulsanti, gli stessi che usa js/timer.js. La sezione dice,
+// con data-modalita, se il timer è in una fiammina o in pausa.
+const sezioneTimer = document.getElementById("timer-section");
 const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
@@ -295,8 +298,8 @@ function scegliObiettivo(id) {
   idScelto = id;
   salvaObiettivoScelto(id);
   chiudiFinestrellaObiettivi();
-  // Se il timer sta già contando, si sta lavorando sul nuovo obiettivo: va subito in corso.
-  if (!pulsantePausa.disabled) {
+  // Se si sta già lavorando, si lavora sul nuovo obiettivo: va subito in corso.
+  if (staLavorando()) {
     mettiInCorso(id);
   }
   mostraBloccoObiettivo();
@@ -312,6 +315,12 @@ function scegliObiettivo(id) {
 // Valgono le regole della pagina Obiettivi: un solo obiettivo in corso
 // e niente completato senza tempo lavorato.
 // =====================================================================
+
+// Dice se si sta lavorando: il timer conta (Pausa è attivo) ed è in una fiammina.
+// js/timer.js scrive la modalità in data-modalita sulla sezione del timer.
+function staLavorando() {
+  return !pulsantePausa.disabled && sezioneTimer.dataset.modalita === "fiammina";
+}
 
 // Mette in corso un obiettivo: quello che era in corso si ferma, come nella pagina Obiettivi.
 function mettiInCorso(id) {
@@ -336,9 +345,10 @@ function mettiInCorso(id) {
   mostraBloccoObiettivo();
 }
 
-// Premendo Avvia sul timer, l'obiettivo scelto va in corso.
+// Premendo Avvia sul timer, l'obiettivo scelto va in corso. Avviando la pausa no:
+// js/timer.js è partito prima, quindi staLavorando dice già su cosa si conta.
 function avviaConObiettivo() {
-  if (idScelto !== null) {
+  if (idScelto !== null && staLavorando()) {
     mettiInCorso(idScelto);
   }
 }
@@ -445,10 +455,10 @@ timer.addEventListener("secondi-lavorati", aggiungiSecondiLavorati);
 timer.addEventListener("sessione-finita", fermaObiettivoInCorso);
 
 // Uscendo dalla Home il timer non si ferma più: l'obiettivo resta in corso.
-// js/timer.js è partito prima di questo file e ha già rimesso i pulsanti come erano:
-// se Pausa è disattivata il timer è fermo, e nessun obiettivo può essere in corso.
+// js/timer.js è partito prima di questo file e ha già rimesso pulsanti e modalità come erano:
+// se non si sta lavorando (timer fermo, o in pausa), nessun obiettivo può essere in corso.
 // idScelto è già stato calcolato, quindi l'obiettivo che era in corso resta scelto.
-if (pulsantePausa.disabled) {
+if (!staLavorando()) {
   fermaObiettivoInCorso();
 }
 // Il blocco compare subito, con l'obiettivo scelto l'ultima volta.
@@ -466,6 +476,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // replaceState toglie ?avvia dall'indirizzo, senza ricaricare: così una ricarica
   // della pagina non fa ripartire il timer da solo.
   history.replaceState(null, "", location.pathname);
+  // Il play vuol dire "lavoro adesso": se il timer è in pausa, Stop la salta
+  // e riporta a una fiammina da 25:00, che parte qui sotto con Avvia.
+  if (sezioneTimer.dataset.modalita === "pausa") {
+    pulsanteStop.click();
+  }
   if (pulsanteAvvia.disabled) {
     // Il timer sta già contando: Avvia è disattivato e un clic non farebbe niente.
     // Basta mettere in corso l'obiettivo scelto, che prende il posto di quello di prima.

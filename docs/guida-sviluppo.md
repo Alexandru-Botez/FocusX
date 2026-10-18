@@ -7,7 +7,8 @@ Per scaricarlo e avviarlo, parti dal [README](../README.md).
 
 FocusX usa JavaScript: Avvia fa partire o riprende il conto alla rovescia, Pausa lo ferma
 e Stop lo ferma riportando il tempo a 25 minuti.
-Quando i secondi rimanenti arrivano a zero la sessione finisce: il timer si ferma e torna a 25 minuti.
+Quando una fiammina arriva a zero, il timer passa a una pausa di 5 minuti; finita la pausa,
+torna a una fiammina da 25 minuti. Ogni volta si ferma e aspetta Avvia.
 La pagina Progetti consente di creare ed eliminare progetti con nome e colore, salvati nel browser.
 La pagina Obiettivi consente di creare obiettivi legati a un progetto e di cambiarne lo stato.
 Non c'è ancora una suite di test automatici nel repository.
@@ -21,7 +22,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | [js/archivio.js](../js/archivio.js) | Modulo comune: chiavi di `localStorage` e `leggiElenco`. |
 | [js/fiammine.js](../js/fiammine.js) | Modulo comune: valore e limiti delle fiammine, `formattaMinuti`, `formattaTempo`, `disegnaFiammine`, `mostraTempo`. |
 | [js/timer.js](../js/timer.js) | Comportamento del timer nella pagina principale. |
-| [js/timer-salvato.js](../js/timer-salvato.js) | Modulo comune: `durataSessione`, `leggiTimer`, `scriviTimer`, `calcolaSecondiRimanenti`, `secondiNonAnnunciati`. |
+| [js/timer-salvato.js](../js/timer-salvato.js) | Modulo comune: `minutiPausa`, `durataFiammina`, `durataPausa`, `durataDi`, `leggiTimer`, `scriviTimer`, `calcolaSecondiRimanenti`, `secondiNonAnnunciati`. |
 | [js/home-obiettivo.js](../js/home-obiettivo.js) | Blocco dell'obiettivo scelto sopra il timer, nella pagina principale. |
 | [js/menu.js](../js/menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
 | [progetti.html](../progetti.html) | Pagina Progetti, modulo, lista e modello di una voce. |
@@ -109,6 +110,7 @@ Per cambiare la palette, parti dalle variabili in `:root`:
 | `--border-strong` | Bordo dei campi di testo al passaggio del mouse. |
 | `--transition-fast` | Durata comune (180 millisecondi) dei cambi di colore, bordo, opacità e pressione. |
 | `--ease-out` | Curva di accelerazione degli elementi che entrano: veloce all'inizio, lenta alla fine. |
+| `--break` | Lilla della pausa tra le fiammine: etichetta, cifre e Avvia. |
 
 `--header-height` riserva lo spazio sopra le voci del pannello: 100 pixel
 su desktop e 92 su mobile, più 12 pixel di separazione. Se cambi altezza del logo, del pulsante Menu o padding
@@ -130,7 +132,8 @@ con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 | Transizioni dei pulsanti | `button` anima colore, bordo, opacità e `transform` in `--transition-fast`. |
 | Pressione | `button:active` riduce il pulsante al 94% (97% per i pulsanti dei progetti); il Menu è escluso. |
 | Hover solo con puntatore | Gli hover sono dentro `@media (hover: hover)`: su touch l'evidenziazione non resta dopo il tocco. |
-| Cifre grigie in pausa | `section:has(#start-button:enabled):has(#stop-button:enabled) #timer` usa `--muted`. |
+| Cifre grigie in pausa | `#timer-section[data-conteggio="sospeso"] #timer` usa `--muted`; `data-conteggio` lo scrive `aggiornaPulsanti()`. |
+| Fiammina e pausa | `#timer-section[data-modalita="pausa"]` colora di `--break` etichetta, cifre e Avvia, mostra la tazzina e l'icona «salta» su Stop e attenua `.home-goal`. |
 | Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
 | Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 240 millisecondi. |
 | Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`; 8px separano le voci. |
@@ -148,8 +151,19 @@ Il `meta` `theme-color` nei due file HTML colora di nero la barra del browser su
 ## Primo passo JavaScript
 
 Il tempo viene conservato come un numero di secondi, non come il testo mostrato nella pagina.
-`durataSessione` vale `minutiPerFiammina * 60`, importato da `js/fiammine.js`: 1500 secondi,
-una sessione dura quanto una fiammina.
+Il timer alterna due modalità, salvate in `modalita`: `"fiammina"`, che dura
+`durataFiammina` (`minutiPerFiammina * 60`, 1500 secondi), e `"pausa"`, che dura `durataPausa`
+(`minutiPausa * 60`, 300 secondi). `durataDi(modalita)` restituisce quella giusta; `minutiPausa`
+vale 5 ed è il punto da cambiare per una pausa diversa, in futuro dalle Impostazioni.
+
+Quando una fiammina arriva a zero, `finisciSessione()` chiama `impostaModalita("pausa")`:
+il timer va a 05:00, fermo, e la pausa parte solo con Avvia. Poi annuncia `"sessione-finita"`.
+Quando arriva a zero la pausa, `impostaModalita("fiammina")` riporta a 25:00, fermo.
+Stop (`fermaSessione()`) chiama sempre `impostaModalita("fiammina")`: in una fiammina la chiude,
+in pausa la salta. In pausa Stop è disponibile anche prima di Avvia e si chiama «Salta la pausa».
+Durante la pausa `annunciaSecondiLavorati()` esce subito: nessun secondo va all'obiettivo.
+`mostraModalita()` scrive `data-modalita` sulla sezione `#timer-section` e il testo dell'etichetta
+`#timer-mode` («Fiammina» o «Pausa», annunciato dai lettori di schermo con `aria-live="polite"`).
 
 Il timer non conta togliendo un secondo alla volta, ma guardando l'orologio. Avvia salva in
 `fineSessione` l'ora in cui la sessione finirà, `Date.now() + secondiRimanenti * 1000`, in
@@ -159,22 +173,27 @@ ritarda l'intervallo, in una scheda in background, dopo una ricarica o un cambio
 `fineSessione` vale `null` quando il timer è fermo: in pausa `secondiRimanenti` resta fisso,
 ed è da lì che Avvia ricalcola la nuova fine.
 
-I quattro valori del timer (`fineSessione`, `secondiRimanenti`, `sessioneAvviata`,
+I cinque valori del timer (`modalita`, `fineSessione`, `secondiRimanenti`, `sessioneAvviata`,
 `secondiAnnunciati`) sono salvati in `localStorage` con la chiave `focusx.timer.v1`
 (`chiaveTimer`, da `js/archivio.js`) a ogni cambiamento, con `salvaTimer()`. All'apertura
 della Home `caricaTimer()` li rilegge. Lettura, controllo e scrittura stanno nel modulo comune
-`js/timer-salvato.js` (`leggiTimer`, `scriviTimer`), insieme a `durataSessione` e
+`js/timer-salvato.js` (`leggiTimer`, `scriviTimer`), insieme alle durate e a
 `calcolaSecondiRimanenti(fine)`, perché li usa anche la pagina Obiettivi: `leggiTimer()`
-controlla ogni campo e, se qualcosa manca o non è valido, restituisce un timer fermo a 25:00.
+controlla ogni campo e, se qualcosa manca o non è valido, restituisce una fiammina ferma a 25:00.
+Un timer salvato prima della pausa non ha `modalita`: `dati?.modalita ?? "fiammina"` lo legge
+come una fiammina.
 
 | Funzione | Responsabilità |
 | --- | --- |
 | `avviaTimer()` | Calcola `fineSessione`, segna la sessione come avviata, salva e fa partire l'intervallo. |
 | `pausaTimer()` | Ricalcola i secondi rimasti, annuncia quelli lavorati, ferma l'intervallo e mette `fineSessione` a `null`. |
-| `fermaSessione()` | Richiama `pausaTimer()`, poi riporta i secondi a 1500 e chiude la sessione. |
+| `fermaSessione()` | Stop: richiama `pausaTimer()`, poi `impostaModalita("fiammina")`. |
+| `finisciSessione()` | A zero: dopo una fiammina passa alla pausa e annuncia `"sessione-finita"`; dopo la pausa torna alla fiammina. |
+| `impostaModalita(nuova)` | Prepara una sessione nuova, ferma e piena, nella modalità indicata. |
+| `mostraModalita()` | Scrive `data-modalita`, il testo dell'etichetta e il nome di Stop. |
 | `aggiornaConteggio()` | Ricalcola i secondi dall'orologio, aggiorna il testo, annuncia i secondi lavorati; a zero chiude la sessione. |
 | `annunciaSecondiLavorati()` | Fa scattare `"secondi-lavorati"` con i secondi trascorsi non ancora annunciati. |
-| `aggiornaPulsanti()` | Abilita e disabilita Avvia, Pausa e Stop secondo lo stato. |
+| `aggiornaPulsanti()` | Abilita e disabilita Avvia, Pausa e Stop secondo lo stato e scrive `data-conteggio`. |
 | `aggiornaTimer()` | Converte i secondi rimanenti nel formato minuti:secondi. |
 
 `setInterval(aggiornaConteggio, 250)` guarda l'orologio quattro volte al secondo, così il numero
@@ -186,9 +205,10 @@ cambia appena scatta il secondo. `clearInterval(intervalloTimer)` lo ferma con P
 | Conteggio in corso | Disabilitato | Disponibile | Disponibile |
 | Timer in pausa dopo l'avvio | Disponibile | Disabilitato | Disponibile |
 | Dopo Stop | Disponibile | Disabilitato | Disabilitato |
+| Pausa tra fiammine, prima di Avvia | Disponibile | Disabilitato | Disponibile («Salta la pausa») |
 
 Il timer conta quando `fineSessione` non è `null`; Stop è disponibile finché `sessioneAvviata`
-è vero, anche in pausa. Alla fine della sessione i pulsanti tornano come dopo Stop.
+è vero, anche in pausa, e sempre durante la pausa tra fiammine.
 
 Per visualizzare il tempo, `Math.floor()` ricava i minuti interi e `%` ricava i secondi restanti.
 `String()` converte i numeri in testo e `padStart(2, "0")` mantiene due cifre.
@@ -196,11 +216,11 @@ Infine `textContent` aggiorna il paragrafo del timer.
 
 I secondi lavorati passano all'obiettivo con un evento. `secondiAnnunciati` ricorda quanti
 secondi della sessione sono già stati annunciati: `annunciaSecondiLavorati()` calcola i secondi
-trascorsi (`durataSessione - secondiRimanenti`), toglie quelli già annunciati e fa scattare
+trascorsi (`durataDi(modalita) - secondiRimanenti`), toglie quelli già annunciati e fa scattare
 `new CustomEvent("secondi-lavorati", { detail: secondiNuovi })`. Di solito `detail` vale 1;
 tornando da un'altra pagina vale tutti i secondi passati via. Quando i secondi arrivano a zero,
 `aggiornaConteggio()` annuncia prima gli ultimi secondi, così l'obiettivo riceve tutti i 25 minuti,
-poi chiama `fermaSessione()` e infine annuncia `"sessione-finita"`.
+poi chiama `finisciSessione()`.
 
 All'apertura della pagina `js/timer.js` rimette subito testo e pulsanti come erano, così
 `js/home-obiettivo.js`, che parte dopo, sa se il timer sta contando. Il conteggio riprende invece
@@ -514,7 +534,11 @@ In corso vuol dire che il timer sta contando su quell'obiettivo. Avvia mette in 
 l'obiettivo scelto: `js/home-obiettivo.js` aggiunge un proprio listener al pulsante, senza
 modificare `js/timer.js`. Pausa e Stop chiamano `fermaObiettivoInCorso()`, che riporta
 l'obiettivo in corso a non completato. La stessa funzione parte all'apertura della pagina,
-ma solo se il timer è fermo (Pausa disattivata): un «in corso» salvato da prima sarebbe falso.
+ma solo se non si sta lavorando: un «in corso» salvato da prima sarebbe falso.
+`staLavorando()` lo dice guardando il timer: Pausa attivo (il timer conta) e
+`data-modalita="fiammina"` sulla sezione del timer. Durante la pausa tra fiammine nessun
+obiettivo va in corso: `avviaConObiettivo` e `scegliObiettivo` controllano `staLavorando()`.
+Il play della pagina Obiettivi, se il timer è in pausa, preme prima Stop per saltarla.
 Se il timer sta contando l'obiettivo resta in corso, anche dopo una ricarica o un'altra pagina.
 L'obiettivo resta comunque scelto, perché `idScelto` viene calcolato prima.
 
@@ -740,9 +764,16 @@ Per il timer attuale controlla anche che:
   i secondi in diretta e, tornando nella Home, non cresca di nuovo.
 - Passando il mouse su Stop abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - In pausa le cifre diventino grigie e tornino bianche con Avvia o Stop.
+- Alla fine di una fiammina il timer passi a `05:00`, fermo, con l'etichetta «Pausa» lilla,
+  cifre e Avvia lilla, la tazzina, Stop con l'icona «salta» e la pillola attenuata.
+- Avviando la pausa nessun obiettivo vada in corso e nessun secondo venga aggiunto.
+- «Salta la pausa» riporti a una fiammina da `25:00`; alla fine della pausa il timer
+  torni a `25:00`, fermo, con l'etichetta «Fiammina» arancione.
+- Ricaricando durante la pausa, la pausa continui; il play della pagina Obiettivi la salti
+  e faccia partire una fiammina sull'obiettivo.
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.
 - Il formato mantenga due cifre per minuti e secondi.
-- Dopo 25 minuti il timer torni a `25:00` e si fermi, con Avvia disponibile e Pausa e Stop disabilitati.
+- Dopo 25 minuti il timer passi alla pausa e si fermi, con Avvia e «Salta la pausa» disponibili.
 - Con un obiettivo in corso, alla fine della sessione la fiammina sia fatta e arancione,
   l'obiettivo non sia più in corso e Avvia lo rimetta in corso sulla fiammina successiva.
 

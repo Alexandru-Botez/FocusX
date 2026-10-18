@@ -29,10 +29,10 @@
     <meta name="theme-color" content="#000000">
     <title>Home</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=finestrella-1">
+    <link rel="stylesheet" href="css/styles.css?v=pausa-1">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
-    <script type="module" src="js/timer.js?v=diretta-1"></script>
-    <script type="module" src="js/home-obiettivo.js?v=timer-1"></script>
+    <script type="module" src="js/timer.js?v=pausa-1"></script>
+    <script type="module" src="js/home-obiettivo.js?v=pausa-1"></script>
   </head>
 
   <body>
@@ -150,7 +150,11 @@
          JavaScript: js/timer.js.
          ================================================================= -->
     <main>
-      <section aria-label="Timer Pomodoro">
+      <!--
+        data-modalita ("fiammina" o "pausa") e data-conteggio ("fermo", "attivo" o "sospeso")
+        li aggiorna js/timer.js: il CSS ne ricava i colori del timer.
+      -->
+      <section id="timer-section" aria-label="Timer Pomodoro" data-modalita="fiammina" data-conteggio="fermo">
         <!-- ===============================================================
              SEZIONE OBIETTIVO SCELTO
              L'obiettivo su cui si lavora, in una pillola: cerchio per
@@ -225,6 +229,22 @@
           </template>
         </div>
 
+        <!--
+          La modalità del timer: fiammina (arancione, con la fiammina) o pausa (lilla, con la tazzina).
+          Il CSS mostra l'icona giusta; JavaScript scrive il testo. aria-live="polite"
+          fa annunciare ai lettori di schermo il passaggio da una modalità all'altra.
+        -->
+        <p id="timer-mode" class="timer-mode" aria-live="polite">
+          <svg class="timer-mode-icon timer-mode-flame" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+          <svg class="timer-mode-icon timer-mode-cup" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <!-- Una tazzina: il corpo, il manico e due fili di vapore. -->
+            <path d="M5 10h11v4a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"></path>
+            <path d="M16 11.5h1.5a2.5 2.5 0 0 1 0 5H16"></path>
+            <path d="M9 3.5v3M12.5 3.5v3"></path>
+          </svg>
+          <span id="timer-mode-text">Fiammina</span>
+        </p>
+
         <!-- aria-live="off" evita che i lettori di schermo annuncino ogni secondo del conto alla rovescia. -->
         <p id="timer" role="timer" aria-live="off">25:00</p>
 
@@ -243,10 +263,17 @@
             </svg>
           </button>
 
-          <!-- Stop finisce la sessione: ferma il timer e lo riporta a 25:00. -->
+          <!--
+            Stop finisce la fiammina e riporta il timer a 25:00. In pausa la salta:
+            il CSS mostra l'icona "salta" (triangolo e barra) al posto del quadrato.
+          -->
           <button id="stop-button" type="button" aria-label="Stop" title="Stop" disabled>
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <svg class="stop-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"></rect>
+            </svg>
+            <svg class="skip-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M6 6l9 6-9 6z" fill="currentColor"></path>
+              <rect x="16" y="6" width="2.5" height="12" rx="1" fill="currentColor"></rect>
             </svg>
           </button>
         </div>
