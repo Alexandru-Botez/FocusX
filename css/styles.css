@@ -925,10 +925,9 @@ button:disabled {
 
 /*
   [type="text"] seleziona solo il campo del nome: i radio dei colori hanno regole proprie.
-  Nella pagina Obiettivi lo stesso aspetto vale per la data e per il menu a tendina.
+  Nella pagina Obiettivi lo stesso aspetto vale per il menu a tendina e, con regole sue, per la data.
 */
 .project-form input[type="text"],
-.project-form input[type="date"],
 .project-form select {
   /* min-width: 0 permette al campo di restringersi senza allargare la pagina. */
   min-width: 0;
@@ -944,7 +943,6 @@ button:disabled {
 
 @media (hover: hover) {
   .project-form input[type="text"]:hover,
-  .project-form input[type="date"]:hover,
   .project-form select:hover {
     border-color: var(--border-strong);
   }
@@ -952,7 +950,6 @@ button:disabled {
 
 /* Con il focus il bordo diventa bianco e si unisce al contorno, senza lasciare una riga grigia. */
 .project-form input[type="text"]:focus-visible,
-.project-form input[type="date"]:focus-visible,
 .project-form select:focus-visible {
   border-color: var(--text);
   outline-offset: 0;
@@ -1230,6 +1227,193 @@ button:disabled {
   transform: translateY(-50%);
   fill: currentColor;
   pointer-events: none;
+}
+
+/* ---------- Calendario della data prevista ---------- */
+
+/* Il contenitore fa da riferimento per la finestrella, che si apre sotto il campo. */
+.date-picker {
+  position: relative;
+}
+
+/*
+  Il pulsante ha lo stesso aspetto dei campi del modulo: largo, angoli da 8px, bordo grigio.
+  È più specifico di button, che lo farebbe tondo da 56px.
+*/
+.project-form .date-picker-button {
+  width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: left;
+}
+
+/* Un campo largo non si rimpicciolisce quando lo premi: lo fanno solo i pulsanti tondi. */
+.project-form .date-picker-button:active:not(:disabled) {
+  transform: none;
+}
+
+@media (hover: hover) {
+  .project-form .date-picker-button:hover {
+    border-color: var(--border-strong);
+  }
+}
+
+/* Il focus come quello degli altri campi: bordo bianco unito al contorno. */
+.project-form .date-picker-button:focus-visible {
+  border-color: var(--text);
+  outline-offset: 0;
+  outline-width: 1px;
+}
+
+/* L'icona del calendario è disegnata con il contorno, del colore del testo. */
+.date-picker-button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Senza una data, il testo è grigio come il segnaposto di un campo. */
+.date-picker-text.is-empty {
+  color: var(--muted);
+}
+
+/*
+  La finestrella si apre sotto il campo, allineata a destra.
+  max() sceglie il valore più grande: larga come il campo, ma almeno 288px.
+  Non ha display: con hidden il browser la nasconde da solo.
+*/
+.date-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2;
+  width: max(100%, 288px);
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: var(--surface);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.7);
+  /* L'ingrandimento parte dall'angolo vicino al campo, non dal centro. */
+  transform-origin: top right;
+  animation: apri-finestrella 160ms var(--ease-out);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* In alto: freccia indietro, mese, freccia avanti. */
+.date-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.date-panel-month {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* ::first-letter mette la maiuscola solo alla prima lettera: "ottobre" diventa "Ottobre". */
+.date-panel-month::first-letter {
+  text-transform: uppercase;
+}
+
+.date-panel .date-panel-nav {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background-color: transparent;
+}
+
+.date-panel-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Giorni della settimana e giorni del mese: sette colonne uguali. */
+.date-panel-weekdays,
+.date-panel-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  justify-items: center;
+}
+
+.date-panel-weekdays span {
+  padding: 4px 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* Ogni giorno è un cerchietto da 36px senza bordo. */
+.date-panel .date-day {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background-color: transparent;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* I giorni passati si possono scegliere, ma più spenti. */
+.date-panel .date-day.is-past {
+  color: var(--muted);
+}
+
+/* Oggi ha un anello arancione: inset disegna l'ombra dentro il cerchio, come un bordo. */
+.date-panel .date-day[aria-current="date"] {
+  box-shadow: inset 0 0 0 1px var(--flame);
+  color: var(--flame);
+}
+
+/* Il giorno scelto è pieno, del colore delle fiammine. */
+.date-panel .date-day[aria-pressed="true"] {
+  background-color: var(--flame);
+  color: var(--background);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .date-panel .date-panel-nav:hover,
+  .date-panel .date-day:hover:not([aria-pressed="true"]) {
+    background-color: var(--hover);
+  }
+
+  .date-panel .date-panel-today:hover {
+    background-color: var(--hover);
+  }
+}
+
+.date-panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.date-panel .date-panel-today {
+  width: auto;
+  height: auto;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--flame);
+  font-size: 0.875rem;
 }
 
 /* Spazio a sinistra del testo per la cartella: 12px di margine + 18px di icona + 10px. */
@@ -2324,7 +2508,7 @@ button:disabled {
   .brand-link,
   .brand-logo-link,
   .project-form input[type="text"],
-  .project-form input[type="date"],
+  .project-form .date-picker-button,
   .project-form select,
   .project-colors input,
   .flame-picker .flame-option,
@@ -2344,6 +2528,7 @@ button:disabled {
   .goal.is-new,
   .flame-option svg,
   .flame-panel,
+  .date-panel,
   .goal-flame-icons svg.is-current,
   .home-goal-panel,
   .settings-dialog[open],

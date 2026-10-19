@@ -44,6 +44,7 @@ import {
 } from "./fiammine.js?v=imp-1";
 import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=imp-1";
 import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
+import { apriCalendario, chiudiCalendario, scriviData } from "./calendario.js?v=cal-1";
 
 
 // =====================================================================
@@ -66,6 +67,7 @@ const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
 const campoNomeObiettivo = document.getElementById("goal-name");
 const sceltaProgetto = document.getElementById("goal-project");
 const iconaProgettoScelto = document.getElementById("goal-project-icon");
+// Il campo nascosto del calendario: il suo value è la data scelta, per esempio "2026-10-19".
 const campoData = document.getElementById("goal-date");
 
 // Fiammine e finestrella.
@@ -675,7 +677,8 @@ function apriModificaObiettivo(id) {
   // e required chiede di sceglierne un altro prima di salvare.
   sceltaProgetto.value = obiettivo.progettoId;
   aggiornaIconaProgetto();
-  campoData.value = obiettivo.data;
+  // scriviData riempie il campo nascosto e scrive la data nel pulsante del calendario.
+  scriviData(obiettivo.data);
 
   if (obiettivo.fiammine > fiammineVisibili) {
     // Oltre otto il radio con quel valore non esiste: si sceglie la nona fiammina
@@ -705,6 +708,9 @@ function chiudiModuloObiettivo() {
   pulsanteNuovoObiettivo.hidden = false;
   // reset riporta nome e data vuoti e la scelta su una fiammina, come scritto nell'HTML.
   moduloObiettivo.reset();
+  // reset non svuota un campo nascosto: la data la svuotiamo noi, e chiudiamo il calendario.
+  scriviData("");
+  chiudiCalendario();
   // reset non riporta il value della nona fiammina, cambiato da JavaScript: lo facciamo noi.
   chiudiFinestrellaFiammine();
   impostaPiuFiammine(fiammineVisibili + 1);
@@ -731,11 +737,17 @@ function inviaModuloObiettivo(evento) {
     return;
   }
 
+  // Il calendario non è un campo required del browser: se manca la data, lo apriamo noi.
+  if (campoData.value === "") {
+    apriCalendario();
+    return;
+  }
+
   // I dati scritti nel modulo, uguali per la creazione e per la modifica.
   const dati = {
     nome: nome,
     progettoId: sceltaProgetto.value,
-    // required nell'HTML garantisce che qui la data ci sia sempre.
+    // Il controllo qui sopra garantisce che la data ci sia sempre.
     data: campoData.value,
     fiammine: Number(moduloObiettivo.elements.fiammine.value)
   };

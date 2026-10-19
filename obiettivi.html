@@ -32,10 +32,10 @@
     <meta name="theme-color" content="#000000">
     <title>Obiettivi</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=imp-4">
+    <link rel="stylesheet" href="css/styles.css?v=cal-1">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/impostazioni.js?v=imp-1"></script>
-    <script type="module" src="js/obiettivi.js?v=imp-1"></script>
+    <script type="module" src="js/obiettivi.js?v=cal-1"></script>
   </head>
 
   <body>
@@ -202,9 +202,47 @@
               </div>
             </div>
             <div class="goal-field">
-              <label for="goal-date">Data prevista</label>
-              <!-- La data è obbligatoria (required); il valore ha la forma 2026-10-12. -->
-              <input id="goal-date" name="data" type="date" required>
+              <label for="goal-date-button">Data prevista</label>
+              <!--
+                Il campo data del browser non si può adattare allo stile del sito:
+                al suo posto c'è un pulsante che apre un calendario nostro.
+                La data scelta va nel campo nascosto #goal-date, con la forma 2026-10-12.
+                JavaScript: js/calendario.js.
+              -->
+              <div id="goal-date-picker" class="date-picker">
+                <button id="goal-date-button" class="date-picker-button" type="button"
+                  aria-haspopup="dialog" aria-expanded="false" aria-controls="goal-date-panel">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <!-- Un calendario: il foglio, la riga in alto e i due anelli. -->
+                    <rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect>
+                    <path d="M3.5 10h17M8 3v4M16 3v4"></path>
+                  </svg>
+                  <span id="goal-date-text" class="date-picker-text is-empty">Scegli una data</span>
+                </button>
+                <input id="goal-date" name="data" type="hidden">
+
+                <!-- La finestrella del calendario: mese, giorni della settimana, giorni e Oggi. -->
+                <div id="goal-date-panel" class="date-panel" role="dialog" aria-label="Scegli la data prevista" hidden>
+                  <div class="date-panel-header">
+                    <button id="goal-date-prev" class="date-panel-nav" type="button" aria-label="Mese precedente">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"></path></svg>
+                    </button>
+                    <!-- aria-live annuncia il mese nuovo quando si cambia con le frecce. -->
+                    <p id="goal-date-month" class="date-panel-month" aria-live="polite"></p>
+                    <button id="goal-date-next" class="date-panel-nav" type="button" aria-label="Mese successivo">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"></path></svg>
+                    </button>
+                  </div>
+                  <div class="date-panel-weekdays" aria-hidden="true">
+                    <span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
+                  </div>
+                  <!-- JavaScript crea un pulsante per ogni giorno del mese mostrato. -->
+                  <div id="goal-date-days" class="date-panel-days"></div>
+                  <div class="date-panel-footer">
+                    <button id="goal-date-today" class="date-panel-today" type="button">Oggi</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

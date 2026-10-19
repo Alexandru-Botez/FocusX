@@ -31,6 +31,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | [js/progetti.js](../js/progetti.js) | Creazione, modifica, eliminazione, visualizzazione e salvataggio locale dei progetti. |
 | [obiettivi.html](../obiettivi.html) | Pagina Obiettivi, modulo con le fiammine, lista e modello di una voce. |
 | [js/obiettivi.js](../js/obiettivi.js) | Creazione, modifica, stati, visualizzazione e salvataggio locale degli obiettivi. |
+| [js/calendario.js](../js/calendario.js) | Calendario della data prevista nel modulo degli obiettivi: `apriCalendario`, `chiudiCalendario`, `scriviData`. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto con fiamma bianca e occhi neri inclinati e concentrati. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app e le voci del menu. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
@@ -395,14 +396,31 @@ Se il progetto non esiste più, la voce mostra «Progetto eliminato».
 Senza progetti, il pulsante Crea obiettivo è nascosto e un avviso porta alla pagina Progetti.
 
 Il modulo contiene il nome, un `select` con un `option` per progetto (creato da
-`apriModuloObiettivo()` con `new Option(nome, id)`), un `input type="date"` obbligatorio
-(`required`: senza data il browser blocca l'invio, come per il nome)
+`apriModuloObiettivo()` con `new Option(nome, id)`), la data prevista (vedi sotto)
 e otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
 `<use href="#flame-icon">`, che richiama un unico `symbol` definito all'inizio del `body`.
 Il radio è invisibile ma resta usabile con Tab e frecce; il CSS spegne le fiammine dopo quella
 scelta con `.flame-option:has(input:checked) ~ .flame-option`. `minutiPerFiammina`, in `js/fiammine.js`, vale 25:
 `formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` del modulo
 e nelle voci.
+
+Per la data prevista, il campo data del browser (`input type="date"`) ha un calendario che
+il CSS non può cambiare.
+Al suo posto c'è `#goal-date-picker`, gestito da `js/calendario.js`: un pulsante
+`#goal-date-button`, che mostra la data scelta, e un campo nascosto `#goal-date`, che ne tiene
+il valore nel formato `2026-10-19`, lo stesso salvato negli obiettivi. Un campo nascosto non
+può essere `required`: `inviaModuloObiettivo` controlla `campoData.value === ""` e, se manca,
+apre il calendario. `form.reset()` non svuota un campo nascosto, quindi `chiudiModuloObiettivo`
+chiama `scriviData("")`; `apriModificaObiettivo` chiama `scriviData(obiettivo.data)`.
+
+La finestrella `#goal-date-panel` ha il mese, i giorni della settimana dal lunedì e la griglia
+`#goal-date-days`, che `disegnaMese` riempie a ogni cambio: `giorniDelMese(anno, mese)` dice
+quante caselle vuote vanno prima del giorno 1 e quanti giorni ha il mese. Ogni giorno è un
+pulsante con `data-data`, `aria-pressed` (il giorno scelto) e `aria-current="date"` (oggi),
+che il CSS colora. Solo un giorno ha `tabIndex = 0`: gli altri si raggiungono con le frecce
+(`spostaFocus`), e `new Date(anno, mese, giorno + passo)` passa da solo al mese vicino.
+Il cambio di mese fa scorrere i giorni con `element.animate()`, saltato se il sistema chiede
+meno animazioni (`prefers-reduced-motion`).
 
 Le voci di un `select` possono contenere solo testo, quindi la cartella colorata del progetto
 scelto è un `svg` a parte (`#goal-project-icon`), posizionato dentro il campo a sinistra;
@@ -818,6 +836,15 @@ Per il timer attuale controlla anche che:
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.
 - Il formato mantenga due cifre per minuti e secondi.
 - Dopo 25 minuti il timer passi alla pausa e si fermi, con Avvia e «Salta la pausa» disponibili.
+
+Per il calendario della data controlla che:
+
+- Il campo mostri «Scegli una data» in grigio e, cliccato, apra il calendario sul mese di oggi.
+- Le frecce ‹ › cambino mese e il giorno 1 cada sotto il giorno della settimana giusto.
+- Un clic su un giorno lo scriva nel campo («3 novembre 2026») e chiuda il calendario.
+- Da tastiera le frecce si muovano fra i giorni, anche oltre la fine del mese; Esc chiuda.
+- Salvando senza data il calendario si apra e l'obiettivo non venga creato.
+- Annulla svuoti la data; la matita di un obiettivo la riempia.
 
 Per le impostazioni controlla che:
 

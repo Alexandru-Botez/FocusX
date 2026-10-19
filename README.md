@@ -61,6 +61,9 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Una pagina dedicata, raggiungibile dal menu; per creare un obiettivo serve almeno un progetto.
 - Crea obiettivo apre un modulo con nome, progetto, data prevista (obbligatoria) e tempo previsto.
   Nel campo del progetto, la cartella a sinistra del nome prende il colore del progetto scelto.
+- La data si sceglie in un calendario nello stile del sito: si cambia mese con le frecce,
+  oggi ha un anello arancione e il giorno scelto è pieno. Funziona anche da tastiera
+  (frecce per muoversi, Invio per scegliere, Esc per chiudere).
 - Il tempo si sceglie in fiammine intere: per ora ogni fiammina vale 25 minuti.
   Le prime otto si cliccano; la nona, con il +, apre una finestrella con − e +
   per sceglierne di più, fino a 16 ore (38 fiammine). Il numero nella finestrella
@@ -161,6 +164,7 @@ FocusX/
 │   ├── impostazioni-salvate.js  Comune: durate scelte dall'utente, limiti, lettura e scrittura
 │   ├── impostazioni.js     Finestra delle impostazioni, su tutte le pagine
 │   ├── home-obiettivo.js   Home: obiettivo scelto sopra il timer
+│   ├── calendario.js       Obiettivi: calendario della data prevista
 │   ├── menu.js             Menu laterale, condiviso da tutte le pagine
 │   ├── progetti.js         Creazione, modifica, eliminazione e salvataggio dei progetti
 │   └── obiettivi.js        Creazione, modifica, stati e salvataggio degli obiettivi
