@@ -925,10 +925,9 @@ button:disabled {
 
 /*
   [type="text"] seleziona solo il campo del nome: i radio dei colori hanno regole proprie.
-  Nella pagina Obiettivi lo stesso aspetto vale per il menu a tendina e, con regole sue, per la data.
+  Nella pagina Obiettivi progetto e data sono pulsanti con lo stesso aspetto (vedi più sotto).
 */
-.project-form input[type="text"],
-.project-form select {
+.project-form input[type="text"] {
   /* min-width: 0 permette al campo di restringersi senza allargare la pagina. */
   min-width: 0;
   width: 100%;
@@ -942,15 +941,13 @@ button:disabled {
 }
 
 @media (hover: hover) {
-  .project-form input[type="text"]:hover,
-  .project-form select:hover {
+  .project-form input[type="text"]:hover {
     border-color: var(--border-strong);
   }
 }
 
 /* Con il focus il bordo diventa bianco e si unisce al contorno, senza lasciare una riga grigia. */
-.project-form input[type="text"]:focus-visible,
-.project-form select:focus-visible {
+.project-form input[type="text"]:focus-visible {
   border-color: var(--text);
   outline-offset: 0;
   outline-width: 1px;
@@ -1208,27 +1205,6 @@ button:disabled {
   min-width: 0;
 }
 
-/* Il contenitore fa da riferimento per la cartella, posizionata dentro il campo a sinistra. */
-.goal-project-picker {
-  position: relative;
-}
-
-/*
-  La cartella sta sopra il select, centrata in verticale: top 50% la porta a metà altezza
-  e translateY(-50%) la risale di metà della sua altezza.
-  pointer-events: none lascia passare i clic al select, che si apre anche cliccando sull'icona.
-*/
-.goal-project-picker-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  width: 18px;
-  height: 18px;
-  transform: translateY(-50%);
-  fill: currentColor;
-  pointer-events: none;
-}
-
 /* ---------- Calendario della data prevista ---------- */
 
 /* Il contenitore fa da riferimento per la finestrella, che si apre sotto il campo. */
@@ -1237,10 +1213,11 @@ button:disabled {
 }
 
 /*
-  Il pulsante ha lo stesso aspetto dei campi del modulo: largo, angoli da 8px, bordo grigio.
-  È più specifico di button, che lo farebbe tondo da 56px.
+  I pulsanti della data e del progetto hanno lo stesso aspetto dei campi del modulo:
+  larghi, angoli da 8px, bordo grigio. Sono più specifici di button, che li farebbe tondi da 56px.
 */
-.project-form .date-picker-button {
+.project-form .date-picker-button,
+.project-form .project-picker-button {
   width: 100%;
   height: auto;
   justify-content: flex-start;
@@ -1251,18 +1228,21 @@ button:disabled {
 }
 
 /* Un campo largo non si rimpicciolisce quando lo premi: lo fanno solo i pulsanti tondi. */
-.project-form .date-picker-button:active:not(:disabled) {
+.project-form .date-picker-button:active:not(:disabled),
+.project-form .project-picker-button:active:not(:disabled) {
   transform: none;
 }
 
 @media (hover: hover) {
-  .project-form .date-picker-button:hover {
+  .project-form .date-picker-button:hover,
+  .project-form .project-picker-button:hover {
     border-color: var(--border-strong);
   }
 }
 
 /* Il focus come quello degli altri campi: bordo bianco unito al contorno. */
-.project-form .date-picker-button:focus-visible {
+.project-form .date-picker-button:focus-visible,
+.project-form .project-picker-button:focus-visible {
   border-color: var(--text);
   outline-offset: 0;
   outline-width: 1px;
@@ -1416,9 +1396,143 @@ button:disabled {
   font-size: 0.875rem;
 }
 
-/* Spazio a sinistra del testo per la cartella: 12px di margine + 18px di icona + 10px. */
-.goal-project-picker select {
-  padding-left: 40px;
+/* ---------- Scelta del progetto ---------- */
+
+/* Il contenitore fa da riferimento per l'elenco, che si apre sotto il campo. */
+.project-picker {
+  position: relative;
+}
+
+/* La cartella del pulsante: piena, del colore del progetto scelto (lo scrive JavaScript). */
+.project-picker-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+/*
+  Il nome occupa lo spazio che resta (flex: 1) e spinge la freccia a destra.
+  Un nome troppo lungo finisce con "…" invece di andare a capo.
+*/
+.project-picker-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Senza un progetto, il testo è grigio come il segnaposto di un campo. */
+.project-picker-text.is-empty {
+  color: var(--muted);
+}
+
+.project-picker-chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate var(--transition-fast) ease;
+}
+
+/* Con l'elenco aperto la freccia si gira verso l'alto. */
+.project-picker-button[aria-expanded="true"] .project-picker-chevron {
+  rotate: 180deg;
+}
+
+/*
+  L'elenco si apre sotto il campo, largo come lui. Con tanti progetti non supera
+  i 240px di altezza e scorre. Come il calendario, non ha display: hidden lo nasconde.
+*/
+.project-picker-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: var(--surface);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.7);
+  transform-origin: top left;
+  animation: apri-finestrella 160ms var(--ease-out);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Una voce è una riga larga: cartella, nome e spunta. Più specifica di button, che la farebbe tonda. */
+.project-picker-list .project-option {
+  width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background-color: transparent;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+.project-picker-list .project-option:active:not(:disabled) {
+  transform: none;
+}
+
+/* Con la tastiera la voce raggiunta si accende, e il contorno sta dentro la riga. */
+.project-picker-list .project-option:focus-visible {
+  background-color: var(--hover);
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .project-picker-list .project-option:hover {
+    background-color: var(--hover);
+  }
+}
+
+/* La cartella di ogni voce ha il colore del suo progetto (lo scrive JavaScript). */
+.project-option-folder {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.project-option-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* La spunta c'è sempre, ma si vede solo sulla voce scelta: così i nomi restano allineati. */
+.project-option-check {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+
+.project-option[aria-selected="true"] {
+  font-weight: 600;
+}
+
+.project-option[aria-selected="true"] .project-option-check {
+  opacity: 1;
 }
 
 .flame-picker {
@@ -2509,7 +2623,8 @@ button:disabled {
   .brand-logo-link,
   .project-form input[type="text"],
   .project-form .date-picker-button,
-  .project-form select,
+  .project-form .project-picker-button,
+  .project-picker-chevron,
   .project-colors input,
   .flame-picker .flame-option,
   .flame-count-icon,
@@ -2529,6 +2644,7 @@ button:disabled {
   .flame-option svg,
   .flame-panel,
   .date-panel,
+  .project-picker-list,
   .goal-flame-icons svg.is-current,
   .home-goal-panel,
   .settings-dialog[open],

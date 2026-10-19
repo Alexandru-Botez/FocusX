@@ -44,7 +44,8 @@ import {
 } from "./fiammine.js?v=imp-1";
 import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=imp-1";
 import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
-import { apriCalendario, chiudiCalendario, scriviData } from "./calendario.js?v=cal-1";
+import { apriCalendario, chiudiCalendario, scriviData } from "./calendario.js?v=prog-1";
+import { apriProgetti, chiudiProgetti, riempiProgetti, scriviProgetto } from "./scelta-progetto.js?v=prog-1";
 
 
 // =====================================================================
@@ -65,8 +66,8 @@ const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
 
 // Campi del modulo.
 const campoNomeObiettivo = document.getElementById("goal-name");
+// Il campo nascosto della scelta del progetto: il suo value è l'id del progetto scelto.
 const sceltaProgetto = document.getElementById("goal-project");
-const iconaProgettoScelto = document.getElementById("goal-project-icon");
 // Il campo nascosto del calendario: il suo value è la data scelta, per esempio "2026-10-19".
 const campoData = document.getElementById("goal-date");
 
@@ -233,7 +234,8 @@ function mostraObiettivi(idNuovo) {
     // Ogni obiettivo ha una data: la scriviamo leggibile e, in datetime, nel formato 2026-10-12.
     const testoData = voce.querySelector(".goal-date-text");
     testoData.dateTime = obiettivo.data;
-    testoData.textContent = formattaData(obiettivo.data);
+    // Se la data è oggi si legge "Oggi", più immediato di "19 ott 2026".
+    testoData.textContent = obiettivo.data === dataDiOggi() ? "Oggi" : formattaData(obiettivo.data);
 
     // Fiammine e tempo li scrive applicaStato, che li aggiorna anche a ogni cambio di stato.
     // conTempoInDiretta aggiunge all'obiettivo in corso i secondi che il timer sta contando.
@@ -631,25 +633,11 @@ function controllaDoppione() {
 // e salvando, il modulo richiama il controllo dei doppioni.
 // =====================================================================
 
-// Colora la cartella accanto al menu con il colore del progetto scelto.
-function aggiornaIconaProgetto() {
-  // value del select è l'id del progetto scelto: cerchiamo il progetto per leggerne il colore.
-  const progetto = progetti.find(progetto => progetto.id === sceltaProgetto.value);
-  if (progetto !== undefined) {
-    iconaProgettoScelto.style.color = progetto.colore;
-  }
-}
-
 // Mostra il modulo vuoto e riempie il menu con i progetti.
 function apriModuloObiettivo() {
-  // Il menu a tendina riceve un option per ogni progetto: value è l'id, il testo è il nome.
-  sceltaProgetto.replaceChildren();
-  for (const progetto of progetti) {
-    // new Option(testo, valore) crea un elemento option già pronto.
-    sceltaProgetto.append(new Option(progetto.nome, progetto.id));
-  }
-  // Il primo progetto è già selezionato: la cartella prende subito il suo colore.
-  aggiornaIconaProgetto();
+  // L'elenco dei progetti riceve una voce per ogni progetto, e il primo è già scelto:
+  // la cartella del campo prende subito il suo colore.
+  riempiProgetti(progetti);
 
   moduloObiettivo.hidden = false;
   pulsanteNuovoObiettivo.hidden = true;
@@ -673,10 +661,9 @@ function apriModificaObiettivo(id) {
 
   // Il modulo si riempie con i dati dell'obiettivo.
   campoNomeObiettivo.value = obiettivo.nome;
-  // Se il progetto è stato eliminato, nel menu non c'è: il select resta vuoto
-  // e required chiede di sceglierne un altro prima di salvare.
-  sceltaProgetto.value = obiettivo.progettoId;
-  aggiornaIconaProgetto();
+  // Se il progetto è stato eliminato, nell'elenco non c'è: il campo resta vuoto
+  // e al salvataggio si apre l'elenco per sceglierne un altro.
+  scriviProgetto(obiettivo.progettoId);
   // scriviData riempie il campo nascosto e scrive la data nel pulsante del calendario.
   scriviData(obiettivo.data);
 
@@ -711,6 +698,7 @@ function chiudiModuloObiettivo() {
   // reset non svuota un campo nascosto: la data la svuotiamo noi, e chiudiamo il calendario.
   scriviData("");
   chiudiCalendario();
+  chiudiProgetti();
   // reset non riporta il value della nona fiammina, cambiato da JavaScript: lo facciamo noi.
   chiudiFinestrellaFiammine();
   impostaPiuFiammine(fiammineVisibili + 1);
@@ -737,7 +725,12 @@ function inviaModuloObiettivo(evento) {
     return;
   }
 
-  // Il calendario non è un campo required del browser: se manca la data, lo apriamo noi.
+  // Progetto e data non sono campi required del browser: se mancano, apriamo noi la scelta.
+  if (sceltaProgetto.value === "") {
+    apriProgetti();
+    return;
+  }
+
   if (campoData.value === "") {
     apriCalendario();
     return;
@@ -845,11 +838,10 @@ pulsanteAnnullaObiettivo.addEventListener("click", chiudiModuloObiettivo);
 pulsanteEliminaObiettivo.addEventListener("click", eliminaObiettivo);
 moduloObiettivo.addEventListener("submit", inviaModuloObiettivo);
 campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
-// change scatta quando l'utente sceglie un altro progetto nel menu a tendina.
-sceltaProgetto.addEventListener("change", aggiornaIconaProgetto);
 
 // Controllo dei doppioni.
-// input risale dal campo del nome e dal menu dei progetti fino al form.
+// input risale fino al form dal campo del nome e dalla scelta del progetto
+// (js/scelta-progetto.js lo fa partire a ogni scelta).
 moduloObiettivo.addEventListener("input", controllaDoppione);
 
 // Fiammine.

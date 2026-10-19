@@ -189,9 +189,15 @@ function chiudiCalendarioFuori(evento) {
 export function scriviData(valore) {
   campoData.value = valore;
   const vuota = valore === "";
-  testoData.textContent = vuota
-    ? "Scegli una data"
-    : daTesto(valore).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+  if (vuota) {
+    testoData.textContent = "Scegli una data";
+  } else if (valore === oggiComeTesto()) {
+    // Se la data scelta è oggi si legge "Oggi", come nella lista degli obiettivi.
+    testoData.textContent = "Oggi";
+  } else {
+    testoData.textContent = daTesto(valore)
+      .toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+  }
   // is-empty rende grigio il testo "Scegli una data", come il segnaposto di un campo.
   testoData.classList.toggle("is-empty", vuota);
 }

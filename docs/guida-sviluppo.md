@@ -32,6 +32,7 @@ Non c'è ancora una suite di test automatici nel repository.
 | [obiettivi.html](../obiettivi.html) | Pagina Obiettivi, modulo con le fiammine, lista e modello di una voce. |
 | [js/obiettivi.js](../js/obiettivi.js) | Creazione, modifica, stati, visualizzazione e salvataggio locale degli obiettivi. |
 | [js/calendario.js](../js/calendario.js) | Calendario della data prevista nel modulo degli obiettivi: `apriCalendario`, `chiudiCalendario`, `scriviData`. |
+| [js/scelta-progetto.js](../js/scelta-progetto.js) | Elenco per scegliere il progetto nel modulo degli obiettivi: `riempiProgetti`, `scriviProgetto`, `apriProgetti`, `chiudiProgetti`. |
 | [focusx-mark.svg](../assets/focusx-mark.svg) | Logo vettoriale compatto con fiamma bianca e occhi neri inclinati e concentrati. |
 | [ADLaMDisplay-Regular.ttf](../assets/fonts/ADLaMDisplay-Regular.ttf) | Font usato per il nome dell'app e le voci del menu. |
 | [ADLaMDisplay-OFL.txt](../assets/fonts/ADLaMDisplay-OFL.txt) | Licenza del font. |
@@ -395,8 +396,7 @@ da `focusx.progetti.v1` a ogni visualizzazione, quindi restano aggiornati se il 
 Se il progetto non esiste più, la voce mostra «Progetto eliminato».
 Senza progetti, il pulsante Crea obiettivo è nascosto e un avviso porta alla pagina Progetti.
 
-Il modulo contiene il nome, un `select` con un `option` per progetto (creato da
-`apriModuloObiettivo()` con `new Option(nome, id)`), la data prevista (vedi sotto)
+Il modulo contiene il nome, la scelta del progetto e la data prevista (vedi sotto)
 e otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
 `<use href="#flame-icon">`, che richiama un unico `symbol` definito all'inizio del `body`.
 Il radio è invisibile ma resta usabile con Tab e frecce; il CSS spegne le fiammine dopo quella
@@ -422,10 +422,19 @@ che il CSS colora. Solo un giorno ha `tabIndex = 0`: gli altri si raggiungono co
 Il cambio di mese fa scorrere i giorni con `element.animate()`, saltato se il sistema chiede
 meno animazioni (`prefers-reduced-motion`).
 
-Le voci di un `select` possono contenere solo testo, quindi la cartella colorata del progetto
-scelto è un `svg` a parte (`#goal-project-icon`), posizionato dentro il campo a sinistra;
-`pointer-events: none` lascia arrivare i clic al `select`. `aggiornaIconaProgetto()` la colora
-all'apertura del modulo e a ogni evento `change` del menu a tendina.
+Anche il progetto non usa il menu a tendina del browser (`select`): il suo elenco non si può
+adattare allo stile del sito e le sue voci possono contenere solo testo. Al suo posto c'è
+`#goal-project-picker`, gestito da `js/scelta-progetto.js` con lo stesso schema del calendario:
+un pulsante `#goal-project-button` (cartella colorata, nome, freccia), un campo nascosto
+`#goal-project` con l'id del progetto scelto e un elenco `#goal-project-list` (`role="listbox"`).
+`apriModuloObiettivo` chiama `riempiProgetti(progetti)`, che crea una voce per progetto dal
+`<template id="goal-project-option-template">` e sceglie il primo; `apriModificaObiettivo` chiama
+`scriviProgetto(obiettivo.progettoId)`, che con un progetto eliminato svuota il campo e mostra
+«Scegli un progetto». Al salvataggio, senza progetto si apre l'elenco. Ogni voce è un pulsante
+`role="option"` con `aria-selected`, che il CSS mostra con la spunta. Scrivere `value` da
+JavaScript non genera eventi: a ogni scelta il modulo fa partire `input`, che risale al form e
+richiama `controllaDoppione`. Sul campo chiuso le frecce aprono l'elenco; dentro, frecce, Home e
+Fine si muovono fra le voci.
 
 Oltre le prime otto fiammine (`fiammineVisibili`), la nona `#goal-flames-more` è un radio come
 le altre, ma il suo `value` cambia: è il numero scelto, da 9 a `fiammineMassime`, quindi
@@ -477,6 +486,8 @@ Nella Home, mentre si lavora, il riempimento sale a ogni secondo. Oltre otto fia
 tutte, altrimenti è lei quella da completare. La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
 come mezzanotte locale, e diventa rossa (`is-late`) se è passata e l'obiettivo non è completato:
 `dataDiOggi()` produce lo stesso formato `AAAA-MM-GG`, così le date si confrontano come testo.
+Se la data è proprio oggi (`obiettivo.data === dataDiOggi()`) si legge «Oggi» invece di
+`formattaData`; lo stesso fa `scriviData` nel pulsante del calendario.
 
 Gli stati sono `non-completato`, `in-corso` e `completato`, elencati nell'array `statiValidi`:
 `caricaObiettivi` usa `statiValidi.includes(stato)` per controllare l'archivio. I pulsanti `.goal-start` e `.goal-complete` chiamano `cambiaStato(id, stato)`:
@@ -845,6 +856,17 @@ Per il calendario della data controlla che:
 - Da tastiera le frecce si muovano fra i giorni, anche oltre la fine del mese; Esc chiuda.
 - Salvando senza data il calendario si apra e l'obiettivo non venga creato.
 - Annulla svuoti la data; la matita di un obiettivo la riempia.
+- Scegliendo oggi, il campo e la voce nella lista mostrino «Oggi».
+
+Per la scelta del progetto controlla che:
+
+- Il campo mostri il primo progetto, con la cartella del suo colore; un clic apra l'elenco
+  con la spunta sul progetto scelto e la freccia girata verso l'alto.
+- Un clic su una voce la scelga, cambi il colore della cartella e chiuda l'elenco.
+- Con un nome già usato in un progetto, cambiare progetto faccia sparire l'avviso dei doppioni.
+- Da tastiera la freccia giù sul campo apra l'elenco, le frecce si muovano, Invio scelga ed Esc chiuda.
+- Modificando un obiettivo con il progetto eliminato, il campo mostri «Scegli un progetto»
+  e Salva apra l'elenco.
 
 Per le impostazioni controlla che:
 

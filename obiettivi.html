@@ -32,10 +32,10 @@
     <meta name="theme-color" content="#000000">
     <title>Obiettivi</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=cal-1">
+    <link rel="stylesheet" href="css/styles.css?v=prog-1">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/impostazioni.js?v=imp-1"></script>
-    <script type="module" src="js/obiettivi.js?v=cal-1"></script>
+    <script type="module" src="js/obiettivi.js?v=prog-1"></script>
   </head>
 
   <body>
@@ -188,17 +188,44 @@
           <!-- Su schermi larghi progetto e data stanno affiancati; su telefono uno sotto l'altro. -->
           <div class="goal-form-row">
             <div class="goal-field">
-              <label for="goal-project">Progetto</label>
+              <label for="goal-project-button">Progetto</label>
               <!--
-                JavaScript crea un option per ogni progetto. Le voci di un select possono
-                contenere solo testo: la cartella colorata è un svg a parte, sovrapposto
-                a sinistra del campo, che JavaScript colora con il colore del progetto scelto.
+                Il menu a tendina del browser (select) non si può adattare allo stile del sito
+                e le sue voci possono contenere solo testo: al suo posto c'è un pulsante
+                che apre un elenco nostro, con la cartella colorata di ogni progetto.
+                L'id del progetto scelto va nel campo nascosto #goal-project.
+                JavaScript: js/scelta-progetto.js.
               -->
-              <div class="goal-project-picker">
-                <svg id="goal-project-icon" class="goal-project-picker-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
-                </svg>
-                <select id="goal-project" name="progetto" required></select>
+              <div id="goal-project-picker" class="project-picker">
+                <button id="goal-project-button" class="project-picker-button" type="button"
+                  aria-haspopup="listbox" aria-expanded="false" aria-controls="goal-project-list">
+                  <!-- La cartella prende il colore del progetto scelto. -->
+                  <svg id="goal-project-icon" class="project-picker-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+                  </svg>
+                  <span id="goal-project-text" class="project-picker-text is-empty">Scegli un progetto</span>
+                  <!-- La freccia in basso: si gira verso l'alto quando l'elenco è aperto. -->
+                  <svg class="project-picker-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M6 9l6 6 6-6"></path>
+                  </svg>
+                </button>
+                <input id="goal-project" name="progetto" type="hidden">
+
+                <!-- L'elenco dei progetti: JavaScript crea una voce per ogni progetto, dal modello qui sotto. -->
+                <div id="goal-project-list" class="project-picker-list" role="listbox" aria-label="Progetti" hidden></div>
+
+                <!-- Il modello di una voce: cartella colorata, nome e spunta per quella scelta. -->
+                <template id="goal-project-option-template">
+                  <button class="project-option" type="button" role="option" aria-selected="false" tabindex="-1">
+                    <svg class="project-option-folder" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+                    </svg>
+                    <span class="project-option-name"></span>
+                    <svg class="project-option-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+                    </svg>
+                  </button>
+                </template>
               </div>
             </div>
             <div class="goal-field">
