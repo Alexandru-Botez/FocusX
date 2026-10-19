@@ -30,7 +30,7 @@
     <meta name="theme-color" content="#000000">
     <title>Progetti</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=imp-2">
+    <link rel="stylesheet" href="css/styles.css?v=imp-3">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/impostazioni.js?v=imp-1"></script>
     <script type="module" src="js/progetti.js?v=imp-1"></script>
@@ -276,7 +276,7 @@
          La finestra che si apre dalla voce Impostazioni del menu. <dialog> è
          l'elemento HTML per le finestre: con showModal() si apre al centro,
          oscura lo sfondo, tiene il focus dentro e si chiude con Esc.
-         A sinistra le sezioni (per ora solo Fiammina), a destra il contenuto.
+         A sinistra le sezioni (per ora solo Durate), a destra il contenuto.
          È uguale in tutte le pagine. JavaScript: js/impostazioni.js.
          ================================================================= -->
     <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
@@ -288,17 +288,18 @@
               <!-- aria-current indica la sezione mostrata a destra. -->
               <button class="settings-nav-option" type="button" aria-current="true">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <!-- La fiammina, la stessa forma dell'icona degli obiettivi. -->
-                  <path d="M12 2.5c.6 3.2 2.6 4.9 4.2 6.9 1.4 1.7 2.3 3.5 2.3 5.6a6.5 6.5 0 0 1-13 0c0-2.4 1.2-4.4 2.9-5.9.1 1.5.8 2.7 2 3.2-.6-3.4.3-6.8 1.6-9.8Z"></path>
+                  <!-- Un orologio: il quadrante e le due lancette, disegnati solo con il contorno. -->
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 7v5l3 2"></path>
                 </svg>
-                <span>Fiammina</span>
+                <span>Durate</span>
               </button>
             </li>
           </ul>
         </nav>
 
         <section class="settings-content" aria-labelledby="settings-section-title">
-          <h3 id="settings-section-title" class="settings-section-title">Fiammina</h3>
+          <h3 id="settings-section-title" class="settings-section-title">Durate</h3>
 
           <!-- Ogni riga: a sinistra il nome e una spiegazione, a destra il regolatore − valore +. -->
           <div class="settings-row">

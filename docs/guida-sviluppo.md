@@ -590,7 +590,7 @@ stesso (`evento.target === finestra`), perché il dialog non ha padding e il lay
 tutto lo spazio. Aprendo la finestra il menu laterale si chiude con `pulsanteMenu.click()`.
 
 Il layout `.settings-layout` è una griglia a due colonne: a sinistra `.settings-nav` con le
-sezioni (per ora solo Fiammina, con `aria-current="true"`), a destra `.settings-content`. Ogni
+sezioni (per ora solo Durate, con l'icona di un orologio e `aria-current="true"`), a destra `.settings-content`. Ogni
 impostazione è una riga `.settings-row`, con il testo a sinistra e il regolatore
 `.settings-stepper` (−, valore, +) a destra. Sotto i 600px le sezioni vanno sopra, in riga,
 e il regolatore sotto il testo. La regola generale `section` centra il testo e limita la

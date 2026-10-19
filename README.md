@@ -102,7 +102,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Uso da tastiera, indicatore di focus visibile e nomi accessibili per i pulsanti.
 - Logo SVG e font ADLaM Display inclusi nel progetto: nessuna risorsa esterna.
 - La voce Impostazioni del menu apre, su ogni pagina, una finestra al centro con lo sfondo
-  oscurato: a sinistra le sezioni, a destra il contenuto. Nella sezione Fiammina si cambiano
+  oscurato: a sinistra le sezioni, a destra il contenuto. Nella sezione Durate si cambiano
   la durata della fiammina (da 10 a 60 minuti, a passi di 5) e della pausa (da 1 a 30 minuti).
   Le modifiche si salvano subito e si vedono subito: il timer, se non è partito, e il tempo
   previsto e le fiammine degli obiettivi. Una sessione già avviata finisce con la sua durata.
