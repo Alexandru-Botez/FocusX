@@ -514,6 +514,9 @@ che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `da
 in corso il bordo è azzurro; completato il nome viene barrato da uno sfondo che passa
 da 0% a 100% di larghezza. Non c'è un'etichetta scritta dello stato: `.goal-complete` è il primo
 elemento del `li`, un cerchio a sinistra del nome (`border-radius: 50%`), e `.goal-start` sta a destra.
+Il cerchio è vuoto come una casella da spuntare: la spunta ha `opacity: 0` e `scale: 0.6`, e solo con
+`aria-pressed="true"` diventa visibile e cresce fino a `scale: 1`. La stessa regola, con
+`:is(.goal-list, .home-goal)`, vale per il cerchio della Home.
 
 La modifica funziona come quella dei progetti. La matita `.goal-edit`, discreta (grigia, senza bordo),
 chiama `apriModificaObiettivo(id)`: chiude e riapre il modulo, salva l'id in `idInModifica`, compila

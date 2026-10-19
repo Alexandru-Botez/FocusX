@@ -2056,6 +2056,23 @@ button:disabled {
   color: var(--background);
 }
 
+/*
+  Finché l'obiettivo non è completato il cerchio è vuoto, come una casella da spuntare:
+  la spunta c'è ma è trasparente e più piccola. Da completato compare, crescendo un poco.
+  scale è separato da transform: non si scontra con il salto di guizzo, che usa transform.
+*/
+:is(.goal-list, .home-goal) .goal-complete svg {
+  opacity: 0;
+  scale: 0.6;
+  transition: opacity var(--transition-fast) ease,
+    scale var(--transition-fast) var(--ease-out);
+}
+
+:is(.goal-list, .home-goal) .goal-complete[aria-pressed="true"] svg {
+  opacity: 1;
+  scale: 1;
+}
+
 /* Dopo un clic, l'icona del pulsante appena attivato fa un piccolo salto. */
 :is(.goal, .home-goal).is-updated [aria-pressed="true"] svg {
   animation: guizzo 300ms var(--ease-out);
@@ -2625,6 +2642,7 @@ button:disabled {
   .project-form .date-picker-button,
   .project-form .project-picker-button,
   .project-picker-chevron,
+  :is(.goal-list, .home-goal) .goal-complete svg,
   .project-colors input,
   .flame-picker .flame-option,
   .flame-count-icon,
