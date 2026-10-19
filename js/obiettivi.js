@@ -32,7 +32,7 @@ import {
   chiaveObiettivi,
   chiaveObiettivoScelto,
   leggiElenco
-} from "./archivio.js?v=timer-1";
+} from "./archivio.js?v=imp-1";
 import {
   fiammineVisibili,
   oreMassime,
@@ -41,8 +41,9 @@ import {
   disegnaFiammine,
   mostraTempo,
   lavoroInsufficiente
-} from "./fiammine.js?v=minuto-1";
-import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=pausa-1";
+} from "./fiammine.js?v=imp-1";
+import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=imp-1";
+import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 
 
 // =====================================================================
@@ -125,9 +126,10 @@ function caricaObiettivi() {
       && typeof obiettivo.data === "string"
       // La data è obbligatoria: un testo vuoto non è valido.
       && obiettivo.data !== ""
+      // Niente limite massimo qui: allungando la fiammina nelle Impostazioni il massimo scende,
+      // e un obiettivo creato prima con più fiammine deve restare valido.
       && Number.isInteger(obiettivo.fiammine)
       && obiettivo.fiammine >= 1
-      && obiettivo.fiammine <= fiammineMassime
       // includes controlla che lo stato sia uno di quelli dell'array statiValidi.
       && statiValidi.includes(obiettivo.stato)
       // I minuti lavorati possono avere decimali (12,5 = 12 min 30 s), ma non superano le 16 ore.
@@ -534,6 +536,22 @@ function gestisciSceltaFiammine(evento) {
 }
 
 
+// Scrive nel numero della finestrella fin dove si può arrivare: da 9 al massimo.
+function scriviLimiteFiammine() {
+  campoNumeroFiammine.setAttribute("aria-label", "Numero di fiammine, da " + (fiammineVisibili + 1) + " a " + fiammineMassime);
+}
+
+// La durata della fiammina è cambiata nelle Impostazioni: js/fiammine.js ha già
+// aggiornato minutiPerFiammina e fiammineMassime, qui si ridisegna ciò che li usa.
+function applicaNuoveDurate() {
+  mostraObiettivi();
+  scriviLimiteFiammine();
+  // La nona fiammina non può superare il nuovo massimo; impostaPiuFiammine aggiorna anche
+  // il testo sotto le fiammine ("3 fiammine · 1 h 30 min").
+  impostaPiuFiammine(Math.min(Number(radioPiuFiammine.value), fiammineMassime));
+}
+
+
 // =====================================================================
 // SEZIONE FINESTRELLA DELLE FIAMMINE
 // Apertura e chiusura del piccolo pannello accanto alla nona fiammina:
@@ -829,7 +847,11 @@ radioPiuFiammine.addEventListener("click", alternaFinestrellaFiammine);
 pulsanteMenoFiammine.addEventListener("click", () => cambiaPiuFiammine(-1));
 pulsantePiuFiammine.addEventListener("click", () => cambiaPiuFiammine(1));
 // Il massimo dipende da minutiPerFiammina (in js/fiammine.js): lo scriviamo qui invece che nell'HTML.
-campoNumeroFiammine.setAttribute("aria-label", "Numero di fiammine, da " + (fiammineVisibili + 1) + " a " + fiammineMassime);
+scriviLimiteFiammine();
+
+// Cambiando la durata della fiammina nelle Impostazioni cambiano il tempo previsto,
+// le fiammine fatte e il massimo: la lista e il modulo si aggiornano.
+window.addEventListener(eventoImpostazioni, applicaNuoveDurate);
 // input scatta a ogni cifra scritta; change quando si esce dal campo dopo averlo cambiato.
 campoNumeroFiammine.addEventListener("input", scriviNumeroFiammine);
 campoNumeroFiammine.addEventListener("change", confermaNumeroFiammine);

@@ -23,7 +23,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   nella Home mostra il tempo giusto, e l'obiettivo in corso riceve i minuti passati altrove.
   Anche la pausa resta dopo una ricarica. Nella pagina Obiettivi il tempo e le fiammine
   dell'obiettivo in corso crescono in diretta, secondo per secondo.
-- Dopo ogni fiammina viene una pausa di 5 minuti. Arrivata a zero la fiammina, il timer
+- Dopo ogni fiammina viene una pausa (5 minuti, se non la cambi nelle Impostazioni). Arrivata a zero la fiammina, il timer
   passa a `05:00`, fermo: la pausa parte con Avvia. Finita la pausa, torna a una fiammina
   da `25:00`, ferma, pronta per Avvia. L'obiettivo in corso ha una fiammina in più e smette
   di essere in corso; durante la pausa nessun obiettivo riceve tempo.
@@ -101,10 +101,19 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Animazioni discrete in solo CSS, disattivate per chi preferisce ridurre il movimento.
 - Uso da tastiera, indicatore di focus visibile e nomi accessibili per i pulsanti.
 - Logo SVG e font ADLaM Display inclusi nel progetto: nessuna risorsa esterna.
+- La voce Impostazioni del menu apre, su ogni pagina, una finestra al centro con lo sfondo
+  oscurato: a sinistra le sezioni, a destra il contenuto. Nella sezione Fiammina si cambiano
+  la durata della fiammina (da 10 a 60 minuti, a passi di 5) e della pausa (da 1 a 30 minuti).
+  Le modifiche si salvano subito e si vedono subito: il timer, se non è partito, e il tempo
+  previsto e le fiammine degli obiettivi. Una sessione già avviata finisce con la sua durata.
+  Gli obiettivi tengono il loro numero di fiammine: con fiammine più lunghe prevedono più tempo.
+  La finestra si chiude con la X, con Esc o con un clic fuori.
 
 ### Limiti attuali
 
-- Nel menu Statistica e Impostazioni non hanno ancora una destinazione.
+- Nel menu Statistica non ha ancora una destinazione.
+- Allungando la fiammina, un obiettivo con molte fiammine può prevedere più di 16 ore:
+  resta valido, ma il modulo non permette di crearne di nuovi oltre il limite.
 - I progetti hanno solo nome e colore, e l'eliminazione non chiede conferma.
 - Eliminando un progetto, i suoi obiettivi restano e mostrano «Progetto eliminato».
 - Il tempo lavorato si conta solo con la Home aperta, a ogni secondo del timer.
@@ -149,6 +158,8 @@ FocusX/
 │   ├── fiammine.js         Comune: valore, testi e disegno delle fiammine
 │   ├── timer.js            Timer: avvio, pausa, stop e fine della sessione
 │   ├── timer-salvato.js    Comune: lettura e scrittura del timer salvato, conti sull'orologio
+│   ├── impostazioni-salvate.js  Comune: durate scelte dall'utente, limiti, lettura e scrittura
+│   ├── impostazioni.js     Finestra delle impostazioni, su tutte le pagine
 │   ├── home-obiettivo.js   Home: obiettivo scelto sopra il timer
 │   ├── menu.js             Menu laterale, condiviso da tutte le pagine
 │   ├── progetti.js         Creazione, modifica, eliminazione e salvataggio dei progetti

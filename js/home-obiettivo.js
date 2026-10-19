@@ -34,13 +34,14 @@ import {
   chiaveObiettivi,
   chiaveObiettivoScelto,
   leggiElenco
-} from "./archivio.js?v=timer-1";
+} from "./archivio.js?v=imp-1";
 import {
   oreMassime,
   disegnaFiammine,
   mostraTempo,
   lavoroInsufficiente
-} from "./fiammine.js?v=minuto-1";
+} from "./fiammine.js?v=imp-1";
+import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 
 
 // =====================================================================
@@ -446,6 +447,15 @@ pulsanteCompleta.addEventListener("click", alternaCompletato);
 pulsanteAvvia.addEventListener("click", avviaConObiettivo);
 pulsantePausa.addEventListener("click", fermaObiettivoInCorso);
 pulsanteStop.addEventListener("click", fermaObiettivoInCorso);
+
+// Cambiando la durata della fiammina nelle Impostazioni cambia il tempo previsto
+// e cambiano le fiammine fatte: il blocco e, se è aperta, la finestrella si ridisegnano.
+window.addEventListener(eventoImpostazioni, () => {
+  mostraBloccoObiettivo();
+  if (!finestrellaObiettivi.hidden) {
+    riempiFinestrellaObiettivi();
+  }
+});
 
 // Tempo lavorato: l'evento "secondi-lavorati" arriva da js/timer.js mentre il timer conta
 // e, all'apertura della pagina, con i secondi passati altrove.

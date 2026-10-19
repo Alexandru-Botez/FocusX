@@ -19,34 +19,32 @@
 // =====================================================================
 
 // Gli stessi ?v usati dagli altri file: così ogni modulo si carica una volta sola.
-import { minutiPerFiammina } from "./fiammine.js?v=minuto-1";
-import { chiaveTimer } from "./archivio.js?v=timer-1";
+import { minutiPerFiammina } from "./fiammine.js?v=imp-1";
+import { chiaveTimer } from "./archivio.js?v=imp-1";
+import { leggiImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 
 
 // =====================================================================
 // SEZIONE DURATE
 // Il timer alterna due modalità: "fiammina", il lavoro, e "pausa", il riposo
-// che segue ogni fiammina finita. Ognuna ha la sua durata, in secondi.
+// che segue ogni fiammina finita. Le loro durate si scelgono nelle Impostazioni.
 // =====================================================================
 
-// Per ora la pausa dura 5 minuti: in futuro si potrà cambiare dalle Impostazioni.
-export const minutiPausa = 5;
-
-// Una fiammina dura quanto vale una fiammina: 25 × 60 = 1500 secondi.
-export const durataFiammina = minutiPerFiammina * 60;
-// 5 × 60 = 300 secondi.
-export const durataPausa = minutiPausa * 60;
-
-// Restituisce la durata, in secondi, della modalità indicata.
+// Restituisce la durata, in secondi, di una nuova sessione nella modalità indicata.
+// Legge le durate di adesso: con fiammine da 25 minuti, 25 × 60 = 1500 secondi;
+// con la pausa da 5 minuti, 5 × 60 = 300 secondi.
 export function durataDi(modalita) {
-  return modalita === "pausa" ? durataPausa : durataFiammina;
+  const minuti = modalita === "pausa" ? leggiImpostazioni().minutiPausa : minutiPerFiammina;
+  return minuti * 60;
 }
 
 
 // =====================================================================
 // SEZIONE LETTURA E SCRITTURA
-// Il timer salvato è un oggetto con cinque dati:
+// Il timer salvato è un oggetto con sei dati:
 //   modalita    "fiammina" o "pausa"
+//   durata      i secondi di questa sessione: restano gli stessi anche se nel frattempo
+//               la durata cambia nelle Impostazioni, che vale dalla sessione dopo
 //   fine        l'ora in cui la sessione finisce (millisecondi), o null se è fermo
 //   rimanenti   i secondi che mancano, fermi durante la pausa del pulsante Pausa
 //   avviata     true da Avvia fino a Stop o alla fine della sessione
@@ -62,23 +60,26 @@ export function leggiTimer() {
     // (null o undefined): un timer salvato prima che esistesse la pausa non ha modalita,
     // ed era una fiammina.
     const modalita = dati?.modalita ?? "fiammina";
+    // Anche la durata manca nei timer salvati prima delle Impostazioni: era quella di sempre.
+    const durata = dati?.durata ?? durataDi(modalita);
     // Number.isInteger controlla che sia un numero intero: niente testo, null o decimali.
-    // I secondi devono stare tra 0 e la durata della modalità: se un giorno una durata
-    // cambia, una sessione salvata più lunga non è più valida.
+    // I secondi rimanenti e quelli annunciati stanno tra 0 e la durata della sessione.
     const valido = dati !== null
       && (modalita === "fiammina" || modalita === "pausa")
+      && Number.isInteger(durata) && durata > 0
       && (dati.fine === null || typeof dati.fine === "number")
-      && Number.isInteger(dati.rimanenti) && dati.rimanenti >= 0 && dati.rimanenti <= durataDi(modalita)
+      && Number.isInteger(dati.rimanenti) && dati.rimanenti >= 0 && dati.rimanenti <= durata
       && typeof dati.avviata === "boolean"
-      && Number.isInteger(dati.annunciati) && dati.annunciati >= 0 && dati.annunciati <= durataFiammina;
+      && Number.isInteger(dati.annunciati) && dati.annunciati >= 0 && dati.annunciati <= durata;
     if (valido) {
-      // ...dati copia i dati salvati; modalita, scritta dopo, c'è sempre.
-      return { ...dati, modalita: modalita };
+      // ...dati copia i dati salvati; modalita e durata, scritte dopo, ci sono sempre.
+      return { ...dati, modalita: modalita, durata: durata };
     }
   } catch {
     // JSON.parse non è riuscito a leggere il testo: si continua con il timer fermo qui sotto.
   }
-  return { modalita: "fiammina", fine: null, rimanenti: durataFiammina, avviata: false, annunciati: 0 };
+  const durata = durataDi("fiammina");
+  return { modalita: "fiammina", durata: durata, fine: null, rimanenti: durata, avviata: false, annunciati: 0 };
 }
 
 // Scrive il timer nel browser. Se non ci riesce, il timer funziona lo stesso,
@@ -114,6 +115,6 @@ export function secondiNonAnnunciati(dati) {
   }
   // Con il timer fermo i rimanenti salvati sono quelli giusti; mentre conta si guardano sull'orologio.
   const rimanenti = dati.fine === null ? dati.rimanenti : calcolaSecondiRimanenti(dati.fine);
-  const trascorsi = durataFiammina - rimanenti;
+  const trascorsi = dati.durata - rimanenti;
   return Math.max(0, trascorsi - dati.annunciati);
 }

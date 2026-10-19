@@ -29,10 +29,11 @@
     <meta name="theme-color" content="#000000">
     <title>Home</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=pausa-1">
+    <link rel="stylesheet" href="css/styles.css?v=imp-2">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
-    <script type="module" src="js/timer.js?v=pausa-1"></script>
-    <script type="module" src="js/home-obiettivo.js?v=pausa-1"></script>
+    <script type="module" src="js/impostazioni.js?v=imp-1"></script>
+    <script type="module" src="js/timer.js?v=imp-1"></script>
+    <script type="module" src="js/home-obiettivo.js?v=imp-1"></script>
   </head>
 
   <body>
@@ -74,8 +75,8 @@
       <!--
         Il pannello del menu. Il CSS lo sovrappone a logo e titolo, lasciando sopra il pulsante.
         inert lo rende non interattivo finché è chiuso: js/menu.js lo toglie quando si apre.
-        Statistica e Impostazioni per ora sono pulsanti senza destinazione:
-        le loro pagine non esistono ancora.
+        Statistica per ora è un pulsante senza destinazione: la sua pagina non esiste ancora.
+        Impostazioni apre la finestra delle impostazioni, in fondo alla pagina.
       -->
       <nav id="sidebar-menu" class="sidebar-menu" aria-label="Navigazione principale" inert>
         <ul>
@@ -118,7 +119,7 @@
             </button>
           </li>
           <li>
-            <button class="menu-option" type="button">
+            <button id="settings-button" class="menu-option" type="button" aria-haspopup="dialog">
               <svg class="menu-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <!-- Un ingranaggio con otto denti: le impostazioni. -->
                 <path d="M19.2 10.27L21.91 10.67V13.33L19.2 13.73A7.4 7.4 0 0 1 18.31 15.87L19.95 18.07L18.07 19.95L15.87 18.31A7.4 7.4 0 0 1 13.73 19.2L13.33 21.91H10.67L10.27 19.2A7.4 7.4 0 0 1 8.13 18.31L5.93 19.95L4.05 18.07L5.69 15.87A7.4 7.4 0 0 1 4.8 13.73L2.09 13.33V10.67L4.8 10.27A7.4 7.4 0 0 1 5.69 8.13L4.05 5.93L5.93 4.05L8.13 5.69A7.4 7.4 0 0 1 10.27 4.8L10.67 2.09H13.33L13.73 4.8A7.4 7.4 0 0 1 15.87 5.69L18.07 4.05L19.95 5.93L18.31 8.13A7.4 7.4 0 0 1 19.2 10.27Z"></path>
@@ -279,5 +280,70 @@
         </div>
       </section>
     </main>
+    <!-- =================================================================
+         SEZIONE IMPOSTAZIONI
+         La finestra che si apre dalla voce Impostazioni del menu. <dialog> è
+         l'elemento HTML per le finestre: con showModal() si apre al centro,
+         oscura lo sfondo, tiene il focus dentro e si chiude con Esc.
+         A sinistra le sezioni (per ora solo Fiammina), a destra il contenuto.
+         È uguale in tutte le pagine. JavaScript: js/impostazioni.js.
+         ================================================================= -->
+    <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+      <div class="settings-layout">
+        <nav class="settings-nav" aria-label="Sezioni delle impostazioni">
+          <h2 id="settings-title" class="settings-nav-title">Impostazioni</h2>
+          <ul>
+            <li>
+              <!-- aria-current indica la sezione mostrata a destra. -->
+              <button class="settings-nav-option" type="button" aria-current="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- La fiammina, la stessa forma dell'icona degli obiettivi. -->
+                  <path d="M12 2.5c.6 3.2 2.6 4.9 4.2 6.9 1.4 1.7 2.3 3.5 2.3 5.6a6.5 6.5 0 0 1-13 0c0-2.4 1.2-4.4 2.9-5.9.1 1.5.8 2.7 2 3.2-.6-3.4.3-6.8 1.6-9.8Z"></path>
+                </svg>
+                <span>Fiammina</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <section class="settings-content" aria-labelledby="settings-section-title">
+          <h3 id="settings-section-title" class="settings-section-title">Fiammina</h3>
+
+          <!-- Ogni riga: a sinistra il nome e una spiegazione, a destra il regolatore − valore +. -->
+          <div class="settings-row">
+            <div class="settings-row-text">
+              <p id="settings-flame-label" class="settings-row-label">Durata della fiammina</p>
+              <p class="settings-row-hint">Una sessione di lavoro. Cambia anche il tempo previsto degli obiettivi.</p>
+            </div>
+            <div class="settings-stepper" role="group" aria-labelledby="settings-flame-label">
+              <button id="settings-flame-less" class="settings-step" type="button" aria-label="Fiammina più corta">−</button>
+              <!-- aria-live annuncia il valore nuovo a ogni clic su − o +. -->
+              <output id="settings-flame-value" class="settings-value" aria-live="polite">25 min</output>
+              <button id="settings-flame-more" class="settings-step" type="button" aria-label="Fiammina più lunga">+</button>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-text">
+              <p id="settings-break-label" class="settings-row-label">Durata della pausa</p>
+              <p class="settings-row-hint">Il riposo dopo ogni fiammina finita.</p>
+            </div>
+            <div class="settings-stepper" role="group" aria-labelledby="settings-break-label">
+              <button id="settings-break-less" class="settings-step" type="button" aria-label="Pausa più corta">−</button>
+              <output id="settings-break-value" class="settings-value" aria-live="polite">5 min</output>
+              <button id="settings-break-more" class="settings-step" type="button" aria-label="Pausa più lunga">+</button>
+            </div>
+          </div>
+
+          <p class="settings-note">Le modifiche si salvano subito. Una sessione già avviata finisce con la sua durata: le nuove valgono dalla prossima.</p>
+        </section>
+
+        <button id="settings-close" class="settings-close" type="button" aria-label="Chiudi le impostazioni" title="Chiudi">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+      </div>
+    </dialog>
   </body>
 </html>

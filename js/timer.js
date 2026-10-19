@@ -1,7 +1,7 @@
 // =====================================================================
 // TIMER.JS: il timer della pagina Home (index.html)
 // Alterna due modalità: la fiammina, 25 minuti di lavoro, e la pausa, 5 minuti
-// di riposo. Arrivata a zero una fiammina, il timer passa alla pausa; finita la
+// di riposo (le durate si cambiano nelle Impostazioni). Arrivata a zero una fiammina, il timer passa alla pausa; finita la
 // pausa, torna alla fiammina. Ogni volta si ferma e aspetta Avvia.
 // Stop chiude la fiammina, o salta la pausa, e riporta a una fiammina da 25:00.
 // Il timer continua anche cambiando pagina o ricaricando: salva nel browser
@@ -33,7 +33,8 @@ import {
   leggiTimer,
   scriviTimer,
   calcolaSecondiRimanenti
-} from "./timer-salvato.js?v=pausa-1";
+} from "./timer-salvato.js?v=imp-1";
+import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 
 
 // =====================================================================
@@ -53,12 +54,16 @@ const pulsanteStop = document.getElementById("stop-button");
 
 // =====================================================================
 // SEZIONE DATI DEL TIMER
-// I valori che cambiano mentre il timer conta: sono questi cinque
+// I valori che cambiano mentre il timer conta: sono questi sei
 // che vengono salvati nel browser. Le durate arrivano da js/timer-salvato.js.
 // =====================================================================
 
 // "fiammina" mentre si lavora, "pausa" mentre ci si riposa.
 let modalita = "fiammina";
+
+// Quanti secondi dura questa sessione. Si decide quando la sessione viene preparata
+// e non cambia più, anche se nel frattempo si cambia la durata nelle Impostazioni.
+let durataSessione = durataDi(modalita);
 
 // L'ora in cui la sessione finirà, in millisecondi (come Date.now()), mentre il timer conta.
 // null quando il timer è fermo: con il pulsante Pausa, dopo Stop o prima di cominciare.
@@ -66,7 +71,7 @@ let fineSessione = null;
 
 // I secondi che mancano alla fine. Mentre il timer conta si ricalcolano da fineSessione;
 // quando è fermo restano fermi, ed è da qui che Avvia riparte.
-let secondiRimanenti = durataDi(modalita);
+let secondiRimanenti = durataSessione;
 
 // true da Avvia fino a Stop o alla fine della sessione, anche da fermo: abilita Stop.
 let sessioneAvviata = false;
@@ -85,10 +90,11 @@ let intervalloTimer = null;
 // non li perdono, e la Home li rilegge all'apertura.
 // =====================================================================
 
-// Mette i cinque dati in un oggetto e lo scrive nel browser con scriviTimer.
+// Mette i sei dati in un oggetto e lo scrive nel browser con scriviTimer.
 function salvaTimer() {
   scriviTimer({
     modalita: modalita,
+    durata: durataSessione,
     fine: fineSessione,
     rimanenti: secondiRimanenti,
     avviata: sessioneAvviata,
@@ -101,6 +107,7 @@ function salvaTimer() {
 function caricaTimer() {
   const dati = leggiTimer();
   modalita = dati.modalita;
+  durataSessione = dati.durata;
   fineSessione = dati.fine;
   secondiRimanenti = dati.rimanenti;
   sessioneAvviata = dati.avviata;
@@ -134,7 +141,7 @@ function annunciaSecondiLavorati() {
   if (modalita !== "fiammina") {
     return;
   }
-  const secondiTrascorsi = durataDi(modalita) - secondiRimanenti;
+  const secondiTrascorsi = durataSessione - secondiRimanenti;
   const secondiNuovi = secondiTrascorsi - secondiAnnunciati;
   if (secondiNuovi <= 0) {
     return;
@@ -175,8 +182,10 @@ function avviaIntervallo() {
 // Prepara una sessione nuova nella modalità indicata: ferma, piena, da avviare con Avvia.
 function impostaModalita(nuovaModalita) {
   modalita = nuovaModalita;
-  // Tutti i secondi della modalità da contare, nessuno ancora annunciato.
-  secondiRimanenti = durataDi(modalita);
+  // La durata di adesso, scelta nelle Impostazioni: tutti i suoi secondi da contare,
+  // nessuno ancora annunciato.
+  durataSessione = durataDi(modalita);
+  secondiRimanenti = durataSessione;
   secondiAnnunciati = 0;
   sessioneAvviata = false;
   salvaTimer();
@@ -294,6 +303,15 @@ mostraModalita();
 pulsanteAvvia.addEventListener("click", avviaTimer);
 pulsantePausa.addEventListener("click", pausaTimer);
 pulsanteStop.addEventListener("click", fermaSessione);
+
+// Cambiando una durata nelle Impostazioni: se la sessione non è ancora partita,
+// la prepariamo di nuovo con la durata nuova (25:00 diventa 30:00, per esempio).
+// Una sessione già avviata invece finisce con la sua durata.
+window.addEventListener(eventoImpostazioni, () => {
+  if (!sessioneAvviata) {
+    impostaModalita(modalita);
+  }
+});
 
 // Se stava contando, riprende. Lo facciamo a DOMContentLoaded, che scatta dopo
 // che tutti i moduli della pagina sono partiti: così js/home-obiettivo.js ascolta già

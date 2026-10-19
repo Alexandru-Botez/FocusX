@@ -22,7 +22,9 @@ Non c'è ancora una suite di test automatici nel repository.
 | [js/archivio.js](../js/archivio.js) | Modulo comune: chiavi di `localStorage` e `leggiElenco`. |
 | [js/fiammine.js](../js/fiammine.js) | Modulo comune: valore e limiti delle fiammine, `formattaMinuti`, `formattaTempo`, `disegnaFiammine`, `mostraTempo`. |
 | [js/timer.js](../js/timer.js) | Comportamento del timer nella pagina principale. |
-| [js/timer-salvato.js](../js/timer-salvato.js) | Modulo comune: `minutiPausa`, `durataFiammina`, `durataPausa`, `durataDi`, `leggiTimer`, `scriviTimer`, `calcolaSecondiRimanenti`, `secondiNonAnnunciati`. |
+| [js/timer-salvato.js](../js/timer-salvato.js) | Modulo comune: `durataDi`, `leggiTimer`, `scriviTimer`, `calcolaSecondiRimanenti`, `secondiNonAnnunciati`. |
+| [js/impostazioni-salvate.js](../js/impostazioni-salvate.js) | Modulo comune: `limitiFiammina`, `limitiPausa`, `eventoImpostazioni`, `leggiImpostazioni`, `scriviImpostazioni`. |
+| [js/impostazioni.js](../js/impostazioni.js) | Finestra delle impostazioni, su tutte le pagine. |
 | [js/home-obiettivo.js](../js/home-obiettivo.js) | Blocco dell'obiettivo scelto sopra il timer, nella pagina principale. |
 | [js/menu.js](../js/menu.js) | Apertura e chiusura del menu, condivise da tutte le pagine. |
 | [progetti.html](../progetti.html) | Pagina Progetti, modulo, lista e modello di una voce. |
@@ -151,10 +153,12 @@ Il `meta` `theme-color` nei due file HTML colora di nero la barra del browser su
 ## Primo passo JavaScript
 
 Il tempo viene conservato come un numero di secondi, non come il testo mostrato nella pagina.
-Il timer alterna due modalità, salvate in `modalita`: `"fiammina"`, che dura
-`durataFiammina` (`minutiPerFiammina * 60`, 1500 secondi), e `"pausa"`, che dura `durataPausa`
-(`minutiPausa * 60`, 300 secondi). `durataDi(modalita)` restituisce quella giusta; `minutiPausa`
-vale 5 ed è il punto da cambiare per una pausa diversa, in futuro dalle Impostazioni.
+Il timer alterna due modalità, salvate in `modalita`: `"fiammina"` e `"pausa"`.
+`durataDi(modalita)` restituisce la durata di una nuova sessione, in secondi, leggendo le
+durate scelte nelle Impostazioni: `minutiPerFiammina * 60` (1500 secondi con 25 minuti) oppure
+`leggiImpostazioni().minutiPausa * 60` (300 secondi con 5 minuti). Ogni sessione ricorda la sua
+durata in `durataSessione`, salvata come `durata`: cambiando le Impostazioni a sessione avviata,
+quella sessione finisce con la sua durata e la nuova vale dalla successiva.
 
 Quando una fiammina arriva a zero, `finisciSessione()` chiama `impostaModalita("pausa")`:
 il timer va a 05:00, fermo, e la pausa parte solo con Avvia. Poi annuncia `"sessione-finita"`.
@@ -181,7 +185,9 @@ della Home `caricaTimer()` li rilegge. Lettura, controllo e scrittura stanno nel
 `calcolaSecondiRimanenti(fine)`, perché li usa anche la pagina Obiettivi: `leggiTimer()`
 controlla ogni campo e, se qualcosa manca o non è valido, restituisce una fiammina ferma a 25:00.
 Un timer salvato prima della pausa non ha `modalita`: `dati?.modalita ?? "fiammina"` lo legge
-come una fiammina.
+come una fiammina. Allo stesso modo, uno salvato prima delle Impostazioni non ha `durata`:
+`dati?.durata ?? durataDi(modalita)` gli dà quella attuale. `rimanenti` e `annunciati` si
+controllano rispetto a `durata`, la durata della sessione salvata.
 
 | Funzione | Responsabilità |
 | --- | --- |
@@ -574,6 +580,43 @@ così la Home non li conta una seconda volta. Senza questo passaggio, completand
 in corso dalla pagina Obiettivi i suoi ultimi secondi andrebbero persi.
 Anche la finestrella degli obiettivi mostra «lavorato / previsto».
 
+## Impostazioni
+
+La voce Impostazioni del menu (`#settings-button`) apre la finestra `dialog#settings-dialog`,
+uguale in tutte e tre le pagine e gestita da `js/impostazioni.js`. `<dialog>` è l'elemento HTML
+per le finestre: `showModal()` la apre al centro, oscura lo sfondo con `::backdrop`, tiene il
+focus dentro e la chiude con Esc. La X chiama `close()`; un clic sullo sfondo arriva al dialog
+stesso (`evento.target === finestra`), perché il dialog non ha padding e il layout ne copre
+tutto lo spazio. Aprendo la finestra il menu laterale si chiude con `pulsanteMenu.click()`.
+
+Il layout `.settings-layout` è una griglia a due colonne: a sinistra `.settings-nav` con le
+sezioni (per ora solo Fiammina, con `aria-current="true"`), a destra `.settings-content`. Ogni
+impostazione è una riga `.settings-row`, con il testo a sinistra e il regolatore
+`.settings-stepper` (−, valore, +) a destra. Sotto i 600px le sezioni vanno sopra, in riga,
+e il regolatore sotto il testo. La regola generale `section` centra il testo e limita la
+larghezza: `.settings-content` la annulla.
+
+Le durate stanno in `js/impostazioni-salvate.js`, con la chiave `focusx.impostazioni.v1`
+(`chiaveImpostazioni`): `{ minutiFiammina, minutiPausa }`. `leggiImpostazioni()` controlla ogni
+valore con `dentroILimiti` e, se manca o è fuori da `limitiFiammina` (10-60, passo 5) o
+`limitiPausa` (1-30, passo 1), usa quello di partenza (25 e 5). `cambiaDurata(campo, limiti,
+direzione)` cambia un valore di un passo, lo salva con `scriviImpostazioni` e fa scattare
+`window.dispatchEvent(new Event("impostazioni-cambiate"))`.
+
+Chi dipende dalle durate ascolta quell'evento:
+- `js/fiammine.js` aggiorna `minutiPerFiammina` e `fiammineMassime`, che ora sono `export let`:
+  un `let` esportato è un collegamento, quindi chi lo importa legge subito il valore nuovo.
+  Questo modulo parte prima delle pagine, quindi il suo listener scatta per primo;
+- `js/timer.js`, se la sessione non è avviata, la prepara di nuovo con `impostaModalita`;
+- `js/home-obiettivo.js` ridisegna il blocco e la finestrella degli obiettivi;
+- `js/obiettivi.js` (`applicaNuoveDurate`) ridisegna la lista, aggiorna il limite della
+  finestrella delle fiammine e riporta la nona fiammina entro il nuovo massimo.
+
+Gli obiettivi tengono il loro numero di fiammine: cambiando la durata cambia il tempo previsto,
+e le fiammine fatte si ricalcolano dai minuti lavorati. `caricaObiettivi` non controlla più il
+massimo di fiammine: allungando la fiammina il massimo scende, e gli obiettivi creati prima
+devono restare validi.
+
 ## Accessibilità
 
 Le scelte presenti nel codice sono:
@@ -774,6 +817,17 @@ Per il timer attuale controlla anche che:
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.
 - Il formato mantenga due cifre per minuti e secondi.
 - Dopo 25 minuti il timer passi alla pausa e si fermi, con Avvia e «Salta la pausa» disponibili.
+
+Per le impostazioni controlla che:
+
+- Impostazioni nel menu, su ogni pagina, chiuda il menu e apra la finestra al centro
+  con lo sfondo oscurato; la X, Esc e un clic sullo sfondo la chiudano, un clic dentro no.
+- − e + cambino la durata di un passo, si disattivino ai limiti e restino dopo una ricarica.
+- Nella Home, a timer non partito, il tempo cambi subito (25:00 diventa 30:00), e il tempo
+  previsto e le fiammine dell'obiettivo si ricalcolino.
+- A sessione avviata, cambiare la durata non cambi la sessione; dopo Stop valga la nuova.
+- Con la fiammina da 60 minuti, un obiettivo vecchio da 38 fiammine resti nella lista.
+- Su telefono le sezioni vadano sopra e la finestra non esca dallo schermo.
 - Con un obiettivo in corso, alla fine della sessione la fiammina sia fatta e arancione,
   l'obiettivo non sia più in corso e Avvia lo rimetta in corso sulla fiammina successiva.
 

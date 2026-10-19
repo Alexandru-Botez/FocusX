@@ -2001,6 +2001,215 @@ button:disabled {
   color: var(--text);
 }
 
+/* ---------- Finestra delle impostazioni ---------- */
+
+/*
+  Il dialog si apre al centro della pagina con showModal(). Lo spazio interno
+  è tutto del layout qui sotto: così un clic che arriva proprio sul dialog
+  è un clic sullo sfondo oscurato, e js/impostazioni.js chiude la finestra.
+  min() sceglie il valore più piccolo: 760px, o la larghezza della pagina meno 32px su telefono.
+*/
+.settings-dialog {
+  width: min(760px, 100% - 32px);
+  max-height: min(560px, 100% - 32px);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background-color: var(--surface);
+  color: var(--text);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.7);
+}
+
+/* Aprendosi, la finestra compare ingrandendosi un poco, come la finestrella degli obiettivi. */
+.settings-dialog[open] {
+  animation: apri-finestrella 180ms var(--ease-out);
+}
+
+/* ::backdrop è lo strato tra la pagina e la finestra: lo oscuriamo come il velo del menu. */
+.settings-dialog::backdrop {
+  background-color: rgb(0 0 0 / 0.6);
+}
+
+/* Due colonne: le sezioni a sinistra, larghe 200px, e il contenuto nello spazio che resta. */
+.settings-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 360px;
+}
+
+.settings-nav {
+  padding: 20px 12px;
+  border-right: 1px solid var(--border);
+}
+
+.settings-nav-title {
+  margin: 0 10px 12px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.settings-nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Una voce è una riga larga, con icona e nome: più specifica di button, che farebbe un cerchio. */
+.settings-nav .settings-nav-option {
+  width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background-color: transparent;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+/* La sezione mostrata ha lo sfondo acceso, come la pagina corrente nel menu. */
+.settings-nav .settings-nav-option[aria-current="true"] {
+  background-color: var(--hover);
+  font-weight: 600;
+}
+
+.settings-nav-option svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  fill: var(--flame);
+}
+
+/*
+  Il padding a destra lascia spazio al pulsante di chiusura in alto.
+  La regola generale section, pensata per il timer, centra il testo, limita la larghezza
+  a 560px e fa salire la sezione all'apertura: qui annulliamo tutte e tre le cose.
+*/
+.settings-content {
+  max-width: none;
+  padding: 24px 56px 24px 28px;
+  overflow-y: auto;
+  text-align: left;
+  animation: none;
+}
+
+.settings-section-title {
+  margin: 0 0 12px;
+  font-size: 1.0625rem;
+}
+
+/* Ogni impostazione è una riga: testo a sinistra, regolatore a destra, una linea sotto. */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row-label {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.settings-row-hint {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+/* Il regolatore: una pillola con −, il valore e +. */
+.settings-stepper {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--background);
+}
+
+/* Due cerchietti da 30px invece dei cerchi da 56px del timer. */
+.settings-stepper .settings-step {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  font-size: 1.0625rem;
+  line-height: 1;
+}
+
+/* Larghezza fissa e cifre tutte uguali: passando da 5 a 10 min il regolatore non cambia misura. */
+.settings-value {
+  min-width: 64px;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.settings-note {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* La chiusura: un cerchietto in alto a destra, sopra il contenuto. */
+.settings-layout .settings-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background-color: transparent;
+}
+
+.settings-close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Su telefono le sezioni vanno sopra, in riga, e il regolatore sotto il testo. */
+@media (max-width: 600px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-nav {
+    padding: 16px 56px 12px 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .settings-nav ul {
+    display: flex;
+    gap: 4px;
+  }
+
+  .settings-nav .settings-nav-option {
+    width: auto;
+  }
+
+  .settings-content {
+    padding: 16px;
+  }
+
+  .settings-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 /*
   Una media query applica le regole al suo interno soltanto quando la condizione è vera.
   Qui max-width: 480px indica un viewport largo al massimo 480 pixel CSS.
@@ -2126,6 +2335,7 @@ button:disabled {
   .flame-panel,
   .goal-flame-icons svg.is-current,
   .home-goal-panel,
+  .settings-dialog[open],
   :is(.goal, .home-goal).is-updated [aria-pressed="true"] svg {
     animation: none !important;
   }

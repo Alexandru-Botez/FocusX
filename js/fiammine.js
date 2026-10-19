@@ -14,11 +14,15 @@
 
 // =====================================================================
 // SEZIONE IMPOSTAZIONI DELLE FIAMMINE
-// Valori fissi: export li rende disponibili ai file che li importano.
+// I valori delle fiammine: export li rende disponibili ai file che li importano.
+// La durata di una fiammina si sceglie nelle Impostazioni, quindi può cambiare
+// mentre la pagina è aperta: per questo minutiPerFiammina e fiammineMassime sono let.
 // =====================================================================
 
-// Per ora ogni fiammina vale 25 minuti: cambiando questo numero cambia tutto il calcolo.
-export const minutiPerFiammina = 25;
+import { eventoImpostazioni, leggiImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
+
+// Quanti minuti vale una fiammina: 25 finché non si cambia nelle Impostazioni.
+export let minutiPerFiammina = leggiImpostazioni().minutiFiammina;
 // Le prime otto fiammine si cliccano direttamente; dalla nona si sceglie nella finestrella.
 // Nelle liste, oltre otto si vede una sola fiammina seguita dal numero.
 export const fiammineVisibili = 8;
@@ -26,7 +30,16 @@ export const fiammineVisibili = 8;
 // sia per il tempo lavorato. Math.floor tiene solo le fiammine intere
 // che ci stanno: con 25 minuti sono 38 (15 h 50 min), perché 39 supererebbero le 16 ore.
 export const oreMassime = 16;
-export const fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
+export let fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
+
+// Quando la durata cambia nelle Impostazioni, aggiorniamo i due valori.
+// Un let esportato è un collegamento, non una copia: i file che lo importano
+// leggono subito il valore nuovo. Questo modulo parte prima delle pagine che lo importano,
+// quindi il suo listener scatta per primo e le pagine trovano i valori già aggiornati.
+window.addEventListener(eventoImpostazioni, () => {
+  minutiPerFiammina = leggiImpostazioni().minutiFiammina;
+  fiammineMassime = Math.floor(oreMassime * 60 / minutiPerFiammina);
+});
 // Per completare un obiettivo bisogna averci lavorato almeno un minuto (60 secondi).
 export const minutiPerCompletare = 1;
 
@@ -85,7 +98,7 @@ export function disegnaFiammine(icone, numero, obiettivo) {
   // 25 minuti lavorati, anche da completato: si può finire un obiettivo prima del previsto,
   // e le fiammine mostrano il tempo davvero lavorato. Quella dopo le fatte si riempie
   // in parte con il tempo che non arriva a una fiammina intera.
-  // Math.floor tiene solo le fiammine intere: con 60 minuti lavorati ne sono fatte 2.
+  // Math.floor tiene solo le fiammine intere: con 60 minuti lavorati e fiammine da 25 ne sono fatte 2.
   // Math.min non ne fa contare più di quelle previste, se si lavora oltre.
   const fiammineFatte = Math.min(obiettivo.fiammine, Math.floor(obiettivo.minutiLavorati / minutiPerFiammina));
   // Oltre otto, la sola fiammina visibile le rappresenta tutte: è fatta solo quando
