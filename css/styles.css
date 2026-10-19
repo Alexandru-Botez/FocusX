@@ -2128,9 +2128,15 @@ button:disabled {
   line-height: 1.4;
 }
 
-/* Il regolatore: una pillola con −, il valore e +. */
+/*
+  Il regolatore: una pillola con −, il valore e +.
+  user-select: none impedisce di selezionare i segni e il valore come testo:
+  tenendo premuto su + e trascinando non compare l'evidenziatore blu.
+*/
 .settings-stepper {
   display: flex;
+  -webkit-user-select: none;
+  user-select: none;
   align-items: center;
   flex-shrink: 0;
   gap: 4px;
