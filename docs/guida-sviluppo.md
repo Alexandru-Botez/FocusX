@@ -563,7 +563,10 @@ Nei dettagli le fiammine stanno a 8px dal tempo, e fra tempo, data e progetto c'
 il primo). Sotto i 480px i dettagli vanno a capo, quindi il puntino sparisce (`content: none`)
 e resta uno spazio di 12px.
 Il cerchio è vuoto come una casella da spuntare: la spunta ha `opacity: 0` e `scale: 0.6`, e solo con
-`aria-pressed="true"` diventa visibile e cresce fino a `scale: 1`. La stessa regola, con
+`aria-pressed="true"` diventa visibile e cresce fino a `scale: 1`. L'anello è spesso 2px e del
+grigio chiaro `--muted`, così si vede subito sul fondo scuro; al passaggio del mouse diventa verde
+con un velo verde al 15% (`color-mix`). Disattivato, sotto il minuto lavorato, non usa l'`opacity: 0.5`
+degli altri pulsanti, che lo renderebbe quasi invisibile, ma `border-style: dashed`. La stessa regola, con
 `:is(.goal-list, .home-goal)`, vale per il cerchio della Home.
 
 La matita `.goal-edit`, discreta (grigia, senza bordo), chiama `apriModificaObiettivo(id)`: chiude

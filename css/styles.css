@@ -2200,6 +2200,32 @@ button:disabled {
   color: var(--background);
 }
 
+/*
+  Il cerchio deve vedersi subito, come la casella di una lista di cose da fare:
+  un anello grigio chiaro (--muted) spesso 2px, invece del bordo scuro e sottile dei pulsanti.
+*/
+:is(.goal-list, .home-goal) .goal-complete {
+  border: 2px solid var(--muted);
+}
+
+/*
+  Con meno di un minuto lavorato il cerchio non si può ancora usare. Invece di diventare
+  semitrasparente come gli altri pulsanti disattivati, quasi invisibile sul grigio scuro,
+  resta dello stesso grigio chiaro, ma tratteggiato: "non ancora". Il title spiega perché.
+*/
+:is(.goal-list, .home-goal) .goal-complete:disabled {
+  border-style: dashed;
+  opacity: 1;
+}
+
+/* Passandoci sopra, un cerchio che si può completare anticipa il verde del completato. */
+@media (hover: hover) {
+  :is(.goal-list, .home-goal) .goal-complete:hover:not(:disabled):not([aria-pressed="true"]) {
+    border-color: var(--goal-done);
+    background-color: color-mix(in srgb, var(--goal-done) 15%, transparent);
+  }
+}
+
 :is(.goal-list, .home-goal) .goal-complete[aria-pressed="true"] {
   background-color: var(--goal-done);
   border-color: var(--goal-done);

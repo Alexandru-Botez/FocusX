@@ -94,7 +94,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   e l'ultima vuota. Oltre cinque, l'unica fiammina si riempie con tutto il tempo lavorato.
 - Tre stati: non completato, in corso e completato. Il cerchio a sinistra del nome
   completa l'obiettivo; premuto di nuovo, lo riporta a non completato. Il cerchio è vuoto
-  e la spunta compare, diventando verde, solo quando l'obiettivo è completato. Il "play" a destra
+  e la spunta compare, diventando verde, solo quando l'obiettivo è completato. L'anello è grigio
+  chiaro e ben visibile; passandoci sopra diventa verde, e sotto il minuto lavorato è tratteggiato. Il "play" a destra
   porta alla Home, sceglie lì l'obiettivo e fa partire il timer: è in corso finché il timer conta. Lo stato si riconosce dai pulsanti, dal bordo e dalle fiammine.
 - Un solo obiettivo alla volta è in corso: mettendone in corso un altro, il precedente si ferma
   e torna non completato.
