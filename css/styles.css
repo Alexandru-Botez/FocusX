@@ -40,11 +40,15 @@
   /* Comunica il tema scuro al browser per i controlli e le altre parti native della pagina. */
   color-scheme: dark;
 
-  /* Nero: sfondo principale dell'app. */
-  --background: #000000;
+  /*
+    Quasi nero: sfondo principale dell'app. Non è il nero puro (#000000): un grigio
+    molto scuro stanca meno gli occhi accanto al testo chiaro e lascia vedere meglio
+    le schede, un gradino più chiare. È la scelta di app come Linear, Vercel e Notion.
+  */
+  --background: #101010;
 
-  /* Bianco leggermente attenuato: testo e pulsante di avvio. */
-  --text: #f5f5f5;
+  /* Bianco attenuato: testo e pulsante di avvio. Meno abbagliante del bianco quasi puro. */
+  --text: #ededed;
 
   /* Grigio: testo secondario, come l'elenco vuoto o i dettagli degli obiettivi. */
   --muted: #a3a3a3;
@@ -52,8 +56,8 @@
   /* Grigio scuro: bordi dei pulsanti. */
   --border: #383838;
 
-  /* Sfondo usato al passaggio del mouse sui pulsanti. */
-  --hover: #1a1a1a;
+  /* Sfondo usato al passaggio del mouse sui pulsanti: un gradino sopra le schede. */
+  --hover: #262626;
 
   /* Rosso chiaro per le azioni che chiudono o cancellano: Stop, cestino ed Elimina. */
   --danger: #ff6b6b;
@@ -66,8 +70,11 @@
   /* Lilla: la pausa tra una fiammina e l'altra, calma e diversa da tutti gli altri colori. */
   --break: #b197fc;
 
-  /* Sfondo del pannello, leggermente più chiaro rispetto alla pagina. */
-  --surface: #0f0f0f;
+  /*
+    Sfondo delle schede, delle barre e delle finestrelle: più chiaro della pagina,
+    così si staccano da lei anche senza guardare il bordo.
+  */
+  --surface: #1a1a1a;
 
   /* 44px di pulsante + 28px di padding sopra e sotto: riserviamo spazio prima delle voci. */
   --header-height: 100px;
@@ -377,7 +384,7 @@ h1 {
 
 /* :active dura durante la pressione; al rilascio la voce torna gradualmente alla dimensione normale. */
 .sidebar-menu .menu-option:active:not(:disabled) {
-  background-color: #2a2a2a;
+  background-color: #303030;
   transform: scale(0.96);
 }
 
