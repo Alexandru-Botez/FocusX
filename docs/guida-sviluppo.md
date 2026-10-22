@@ -114,7 +114,7 @@ Per cambiare la palette, parti dalle variabili in `:root`:
 | `--border-strong` | Bordo dei campi di testo al passaggio del mouse. |
 | `--transition-fast` | Durata comune (180 millisecondi) dei cambi di colore, bordo, opacità e pressione. |
 | `--ease-out` | Curva di accelerazione degli elementi che entrano: veloce all'inizio, lenta alla fine. |
-| `--break` | Lilla della pausa tra le fiammine: etichetta, cifre e Avvia. |
+| `--break` | Lilla della pausa tra le fiammine: scritta «Pausa», anello, cifre e Avvia. |
 
 `--header-height` riserva lo spazio sopra le voci del pannello: 100 pixel
 su desktop e 92 su mobile, più 12 pixel di separazione. Se cambi altezza del logo, del pulsante Menu o padding
@@ -137,7 +137,7 @@ con [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
 | Pressione | `button:active` riduce il pulsante al 94% (97% per i pulsanti dei progetti); il Menu è escluso. |
 | Hover solo con puntatore | Gli hover sono dentro `@media (hover: hover)`: su touch l'evidenziazione non resta dopo il tocco. |
 | Cifre grigie in pausa | `#timer-section[data-conteggio="sospeso"] #timer` usa `--muted`; `data-conteggio` lo scrive `aggiornaPulsanti()`. |
-| Fiammina e pausa | `#timer-section[data-modalita="pausa"]` colora di `--break` etichetta, cifre e Avvia, mostra la tazzina e l'icona «salta» su Stop e attenua `.home-goal`. |
+| Fiammina e pausa | `#timer-section[data-modalita="pausa"]` colora di `--break` la scritta «Pausa», l'anello, le cifre e Avvia, mostra l'icona «salta» su Stop e attenua `.home-goal`. |
 | Velo dietro il menu | `body::after` copre la pagina sotto l'header con opacità 0.6 quando il pannello ha `is-open`. |
 | Ingresso delle voci | Le `li` del menu entrano da sinistra con ritardi da 80 a 240 millisecondi. |
 | Pagina corrente | La voce con `aria-current="page"` ha lo sfondo `--hover`; 8px separano le voci. |
@@ -179,6 +179,35 @@ in pausa la salta. In pausa Stop è disponibile anche prima di Avvia e si chiama
 Durante la pausa `annunciaSecondiLavorati()` esce subito: nessun secondo va all'obiettivo.
 `mostraModalita()` scrive `data-modalita` sulla sezione `#timer-section` e il testo dell'etichetta
 `#timer-mode` («Fiammina» o «Pausa», annunciato dai lettori di schermo con `aria-live="polite"`).
+Si vede scritto solo «Pausa»: nella fiammina l'etichetta riceve la classe `.solo-lettori`.
+
+Intorno alle cifre c'è l'anello `.timer-ring`: un `svg` con due cerchi, il binario grigio e
+`#timer-ring-progress`, che ha `pathLength="100"`, così la sua lunghezza vale 100 qualunque sia la
+misura vera. `aggiornaTimer()` calcola `consumato = 1 - secondiRimanenti / durataSessione` (da 0 a 1)
+e lo scrive nella variabile `--consumato` del cerchio; il CSS usa `stroke-dasharray: 100` e
+`stroke-dashoffset: calc(var(--consumato) * -100)`, quindi con 0,4 i primi 40 centesimi dall'alto,
+in senso orario, restano vuoti. L'svg è ruotato di -90° perché un cerchio parte dalle 3, e la
+transizione da 250ms segue i controlli del timer. Il colore segue `data-conteggio` e `data-modalita`:
+grigio (`--border-strong`) da fermo; con Avvia, `data-conteggio="attivo"`, si accende di arancione
+(lilla in pausa) con una transizione di 500ms; grigio chiaro (`--muted`) se è sospeso. L'obiettivo in corso
+usa lo stesso arancione: `--goal-progress` vale `var(--flame)`, così «sto lavorando» ha un solo colore.
+
+Mentre è in corso, la pillola `.home-goal` ha un bordo di 2px trasparente e due sfondi: sopra un
+`linear-gradient` del colore `--sfondo-pillola`, solo nell'interno (`padding-box`), sotto un
+`conic-gradient` che copre anche il bordo (`border-box`) e quindi si vede solo lì. Il gradiente è
+arancione tenue quasi ovunque e pieno a 315°: una scia, come una cometa. `@keyframes giro-luce`
+porta `--giro` da 0° a 360° in 3 secondi, e `from var(--giro)` fa ruotare il gradiente. Per animare
+una variabile serve `@property --giro` con `syntax: "<angle>"`: senza, il browser la cambierebbe
+di colpo. Il passaggio del mouse cambia `--sfondo-pillola` invece di `background-color`, così vale
+anche con i due sfondi. Con `prefers-reduced-motion` la luce non gira e il bordo resta arancione pieno.
+L'anello misura `2.9em` del font del timer (`clamp(4.5rem, 23vw, 7.5rem)`), quindi cresce e
+rimpicciolisce con le cifre; `aspect-ratio: 1` lo fa quadrato.
+
+Durante la pausa avviata (`data-conteggio="attivo"` e `data-modalita="pausa"`) dietro alle cifre
+respira un alone lilla: è `.timer-ring::before`, un cerchio con `radial-gradient` invisibile di base,
+che `@keyframes respira` fa crescere e schiarire in 4 secondi e tornare indietro in altri 4.
+`isolation: isolate` sull'anello e `z-index: -1` sull'alone lo tengono dietro alle cifre ma dentro
+l'anello. Con `prefers-reduced-motion` l'animazione è tolta e l'alone non compare.
 
 Il timer non conta togliendo un secondo alla volta, ma guardando l'orologio. Avvia salva in
 `fineSessione` l'ora in cui la sessione finirà, `Date.now() + secondiRimanenti * 1000`, in
@@ -507,10 +536,10 @@ la proprietà `hidden`). Ogni fiammina ha tre aspetti, decisi da `applicaStato` 
   `--goal-progress`, ha un riempimento leggero con `color-mix` e si anima con `@keyframes tremola`,
   che oscilla dalla base grazie a `transform-origin: 50% 90%`;
 - `is-done`, se è fatta: piena, con un alone `filter: drop-shadow` dello stesso colore, senza animazione.
-  È arancione da completato e azzurra (`--goal-progress`) mentre l'obiettivo è in corso.
+  È arancione sia da completato sia in corso (`--goal-progress` vale `var(--flame)`).
 
 Oltre cinque fiammine il numero `.goal-flames-count` (🔥12) è arancione come la fiammina;
-mentre l'obiettivo è in corso diventa azzurro insieme a lei, nella lista e nella pillola della Home.
+mentre l'obiettivo è in corso prende il colore di «in corso» insieme a lei, nella lista e nella pillola della Home.
 
 Le prime `fiammineFatte` sono fatte e quella in posizione `fiammineFatte` è da completare.
 `fiammineFatte` vale `Math.floor(minutiLavorati / minutiPerFiammina)`, cioè una fiammina ogni
@@ -545,14 +574,14 @@ esempio «10 min / 1 h 15 min», nei due `span` `.goal-worked` e `.goal-planned`
 Il lavorato usa `Math.floor`, quindi conta solo i minuti interi, e può superare il previsto:
 si continua a lavorare finché non si completa. Nel CSS `.goal-worked` è chiaro, in grassetto e con
 `font-variant-numeric: tabular-nums`, che dà a tutte le cifre la stessa larghezza; in corso è
-azzurro come le fiammine. La barra e il previsto restano grigi. `applicaStato` lo riscrive
+arancione (`--goal-progress`). La barra e il previsto restano grigi. `applicaStato` lo riscrive
 a ogni cambio di stato.
 `applicaStato` disattiva il cerchio (`disabled`) quando `lavoroInsufficiente(obiettivo)`, da
 `js/fiammine.js`, dice che i minuti lavorati sono meno di `minutiPerCompletare` (1 minuto)
 e l'obiettivo non è completato; un obiettivo completato si può sempre riaprire. `cambiaStato` ripete il controllo.
 `cambiaStato` aggiorna solo la voce interessata con `applicaStato(voce, obiettivo)`,
 che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `data-stato`:
-in corso il bordo è azzurro; completato il nome viene barrato da uno sfondo che passa
+in corso il bordo è arancione (`--goal-progress`); completato il nome viene barrato da uno sfondo che passa
 da 0% a 100% di larghezza. Non c'è un'etichetta scritta dello stato: `.goal-complete` è il primo
 elemento del `li`, un cerchio a sinistra del nome (`border-radius: 50%`), e `.goal-start` sta a destra.
 Le voci sono compatte come la barra: `padding: 8px`, nome e dettagli a 2px l'uno dall'altro,
@@ -617,6 +646,8 @@ va sull'obiettivo già scelto o sul primo, come per la finestrella delle fiammin
 `goal-complete`) e lo stesso `<symbol id="flame-icon">`: nel CSS gli stati condivisi sono scritti
 con `:is(.goal, .home-goal)`, così fiammine, nome barrato e cerchio hanno lo stesso aspetto.
 `data-stato="nessuno"` dà al blocco vuoto un bordo tratteggiato.
+Il cerchio ha `margin-left: 5px`: così dista 11px dal bordo a sinistra come sopra e sotto,
+e sta al centro della curva sinistra della pillola invece di sembrare spinto verso il bordo.
 
 Un clic sul pulsante apre `#home-goal-panel` appena sotto il blocco (`position: absolute`),
 riempito da `riempiFinestrellaObiettivi()` con gli obiettivi non completati, copiando
@@ -828,11 +859,11 @@ Per gli obiettivi controlla che:
 - Scrivendo nel numero della finestrella il valore cambi subito; 50 diventi 38, 3 diventi 9,
   un campo vuoto torni al numero precedente, e Invio non salvi l'obiettivo.
 - Un obiettivo da 12 fiammine mostri nell'elenco una sola fiammina seguita da «12»;
-  fino a 5 fiammine si vedano tutte. Le fiammine siano vuote; in corso la prima diventi azzurra
+  fino a 5 fiammine si vedano tutte. Le fiammine siano vuote; in corso la prima si riempia appena
   e tremoli; da completato siano piene e accese solo quelle lavorate, senza animazione.
 - Con 55 minuti lavorati su 4 fiammine si vedano due fiammine piene, la terza piena per
   un quinto dal basso e l'ultima vuota; nella Home il riempimento salga mentre il timer conta.
-- Con più di 5 fiammine, in corso diventino azzurri sia la fiammina sia il numero,
+- Con più di 5 fiammine, in corso fiammina e numero abbiano lo stesso colore,
   nella lista e nella pillola della Home.
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
 - Senza data il modulo non venga inviato e il browser segnali il campo; una data passata sia rossa
@@ -861,13 +892,13 @@ Per l'obiettivo nella Home controlla che:
 - Senza obiettivo scelto il blocco sia tratteggiato e dica «Scegli un obiettivo».
 - Il clic apra la finestrella sotto il blocco, sopra il timer, con i soli obiettivi da fare
   e la cartella del colore del progetto; Esc, un clic fuori o una scelta la chiudano.
-- Avvia metta in corso l'obiettivo scelto (bordo azzurro, fiammina tremolante) e fermi l'altro;
+- Avvia metta in corso l'obiettivo scelto (bordo arancione insieme all'anello, fiammina tremolante) e fermi l'altro;
   a timer avviato, scegliere un altro obiettivo lo metta in corso.
 - A timer avviato i minuti lavorati crescano di un secondo alla volta e il tempo accanto alle
   fiammine scenda di un minuto ogni minuto intero; Pausa e Stop fermino il conto.
 - Dopo 25 minuti lavorati la prima fiammina diventi fatta e la seconda tremoli; nella pagina
   Obiettivi la voce mostri la stessa fiammina fatta e lo stesso tempo.
-- Il tempo si legga «lavorato / previsto», con il lavorato in evidenza (azzurro in corso),
+- Il tempo si legga «lavorato / previsto», con il lavorato in evidenza (arancione in corso),
   e cresca di un minuto ogni minuto intero; superato il previsto continui a crescere.
 - Completando o riaprendo un obiettivo il tempo lavorato non cambi.
 - Il tempo lavorato non superi 16 ore (960 minuti).
@@ -900,11 +931,15 @@ Per il timer attuale controlla anche che:
   i secondi in diretta e, tornando nella Home, non cresca di nuovo.
 - Passando il mouse su Stop abilitato, lo sfondo diventi rosso chiaro e il testo nero, senza cambiare l'opacità.
 - In pausa le cifre diventino grigie e tornino bianche con Avvia o Stop.
-- Alla fine di una fiammina il timer passi a `05:00`, fermo, con l'etichetta «Pausa» lilla,
-  cifre e Avvia lilla, la tazzina, Stop con l'icona «salta» e la pillola attenuata.
+- Alla fine di una fiammina il timer passi a `05:00`, fermo, con la scritta «Pausa» lilla,
+  l'anello pieno, cifre e Avvia lilla, Stop con l'icona «salta» e la pillola attenuata.
+- Avviato, l'anello si consumi in senso orario dall'alto; con Pausa diventi grigio; con Stop
+  o a fine sessione torni pieno.
+- Nella pausa avviata un alone lilla si gonfi e si sgonfi dietro alle cifre ogni 8 secondi;
+  con la pausa ferma o sospesa, e nella fiammina, l'alone non ci sia.
 - Avviando la pausa nessun obiettivo vada in corso e nessun secondo venga aggiunto.
 - «Salta la pausa» riporti a una fiammina da `25:00`; alla fine della pausa il timer
-  torni a `25:00`, fermo, con l'etichetta «Fiammina» arancione.
+  torni a `25:00`, fermo, con l'anello arancione pieno e nessuna scritta.
 - Ricaricando durante la pausa, la pausa continui; il play della pagina Obiettivi la salti
   e faccia partire una fiammina sull'obiettivo.
 - Su un dispositivo touch nessun pulsante resti evidenziato dopo il tocco.

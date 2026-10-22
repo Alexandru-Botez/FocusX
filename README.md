@@ -27,9 +27,14 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   passa a `05:00`, fermo: la pausa parte con Avvia. Finita la pausa, torna a una fiammina
   da `25:00`, ferma, pronta per Avvia. L'obiettivo in corso ha una fiammina in più e smette
   di essere in corso; durante la pausa nessun obiettivo riceve tempo.
-- La modalità si riconosce a colpo d'occhio: sopra le cifre un'etichetta dice «Fiammina»,
-  arancione con la fiammina, o «Pausa», lilla con una tazzina. In pausa anche le cifre
-  e Avvia sono lilla e la pillola dell'obiettivo si attenua.
+- Intorno al tempo un anello si consuma in senso orario mentre la sessione va avanti:
+  si vede a colpo d'occhio quanto manca. Da fermo è grigio; con Avvia «si accende»,
+  arancione nella fiammina insieme all'obiettivo in corso, lilla nella pausa. Intanto, lungo il
+  bordo della pillola dell'obiettivo in corso, corre una scia di luce arancione;
+  torna grigio chiaro se il timer è fermato con Pausa. Durante la pausa avviata, dietro alle
+  cifre un alone lilla si gonfia e si sgonfia lentamente (4 secondi e 4 secondi): un ritmo
+  da seguire con il respiro per riposare davvero. In pausa si legge anche «Pausa» sopra le cifre,
+  le cifre e Avvia sono lilla e la pillola dell'obiettivo si attenua.
 - In pausa Stop diventa «Salta la pausa», con l'icona ⏭: riporta subito a una fiammina.
   Anche il play della pagina Obiettivi salta la pausa e fa partire una fiammina.
 - Ogni pulsante è disponibile solo quando ha senso usarlo:
@@ -81,13 +86,13 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   per sceglierne di più, fino a 16 ore (38 fiammine). Il numero nella finestrella
   si può anche scrivere direttamente. Nell'elenco, oltre le cinque,
   la voce mostra una sola fiammina seguita dal numero, per esempio 🔥12;
-  in corso anche il numero diventa azzurro, come la fiammina.
+  in corso il numero segue il colore della fiammina.
 - Ogni obiettivo mostra, sotto il nome, le fiammine con il tempo lavorato e quello previsto
   (per esempio «10 min / 1 h 15 min»), la data e il suo progetto con il colore,
   separati da un puntino grigio (su telefono da uno spazio).
-  Ogni fiammina ha tre aspetti: vuota (solo contorno) se è da fare, azzurra e tremolante
-  se è quella da completare mentre l'obiettivo è in corso, piena e accesa quando è fatta:
-  azzurra mentre l'obiettivo è in corso, arancione quando è completato.
+  Ogni fiammina ha tre aspetti: vuota (solo contorno) se è da fare, quasi vuota e tremolante
+  se è quella da completare mentre l'obiettivo è in corso, piena e accesa quando è fatta.
+  Tutte sono arancioni: «in corso» usa lo stesso arancione dell'anello del timer.
   Una fiammina diventa fatta ogni 25 minuti lavorati, anche da completato: un obiettivo
   finito prima del previsto mostra solo le fiammine davvero lavorate. Quella dopo si riempie
   dal basso in parte: con 55 minuti su 4 fiammine, due sono piene, la terza al 20%
@@ -101,7 +106,7 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
   e torna non completato.
 - Ogni obiettivo ricorda il tempo lavorato: ogni secondo del timer della Home si aggiunge
   all'obiettivo in corso, fino a 16 ore. Si può lavorare oltre il previsto, finché non lo completi:
-  il tempo lavorato è in evidenza, azzurro mentre l'obiettivo è in corso.
+  il tempo lavorato è in evidenza, arancione mentre l'obiettivo è in corso.
   Con meno di un minuto lavorato il cerchio è disattivato.
 - La matita accanto al play apre lo stesso modulo con i dati dell'obiettivo, per modificare
   nome, progetto, data e fiammine; lo stato non cambia. Durante la modifica la voce è nascosta.

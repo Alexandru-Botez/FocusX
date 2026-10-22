@@ -94,7 +94,7 @@ export function disegnaFiammine(icone, numero, obiettivo) {
   const tante = obiettivo.fiammine > fiammineVisibili;
   const fiammineDaMostrare = tante ? 1 : obiettivo.fiammine;
   // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
-  // azzurra e tremolante) o is-done (fatta, piena e accesa). Una fiammina è fatta per ogni
+  // quasi vuota e tremolante) o is-done (fatta, piena e accesa). Una fiammina è fatta per ogni
   // 25 minuti lavorati, anche da completato: si può finire un obiettivo prima del previsto,
   // e le fiammine mostrano il tempo davvero lavorato. Quella dopo le fatte si riempie
   // in parte con il tempo che non arriva a una fiammina intera.

@@ -62,9 +62,13 @@
   /* Rosso chiaro per le azioni che chiudono o cancellano: Stop, cestino ed Elimina. */
   --danger: #ff6b6b;
 
-  /* Colori degli obiettivi: fiammine arancioni, "in corso" azzurro, "completato" verde. */
+  /*
+    Colori degli obiettivi: fiammine arancioni e "completato" verde.
+    "In corso" usa lo stesso arancione delle fiammine: quando si lavora, anello del timer
+    e obiettivo in corso si accendono dello stesso colore. Un solo colore per "sto lavorando".
+  */
   --flame: #ffa94d;
-  --goal-progress: #4dabf7;
+  --goal-progress: var(--flame);
   --goal-done: #69db7c;
 
   /* Lilla: la pausa tra una fiammina e l'altra, calma e diversa da tutti gli altri colori. */
@@ -458,16 +462,129 @@ section {
   }
 }
 
+/*
+  L'anello intorno al tempo. Il contenitore ha la dimensione del testo del timer:
+  clamp(minimo, valore preferito, massimo) fa variare il font fra 4.5rem e 7.5rem,
+  e 23vw è il 23% della larghezza del viewport. width: 2.9em vuol dire 2,9 volte
+  quel font: l'anello cresce e rimpicciolisce insieme alle cifre.
+  aspect-ratio: 1 lo rende alto quanto è largo, cioè un quadrato in cui sta il cerchio.
+  Grid con place-items: center mette le cifre al centro dell'anello.
+*/
+.timer-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.9em;
+  max-width: 100%;
+  aspect-ratio: 1;
+  margin: 0 auto 32px;
+  font-size: clamp(4.5rem, 23vw, 7.5rem);
+  /*
+    isolation: isolate crea un "livello" tutto dell'anello: l'alone qui sotto, con z-index: -1,
+    va dietro alle cifre ma resta dentro l'anello, invece di finire dietro alla pagina.
+  */
+  isolation: isolate;
+}
+
+/*
+  L'alone della pausa: un cerchio lilla sfumato dietro alle cifre. ::before crea un elemento
+  in più senza scriverlo nell'HTML; content: "" serve perché esista. Di base è invisibile.
+  radial-gradient lo fa più intenso al centro e trasparente verso il bordo.
+*/
+.timer-ring::before {
+  content: "";
+  position: absolute;
+  inset: 10%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--break) 35%, transparent), transparent 70%);
+  opacity: 0;
+}
+
+/*
+  Durante la pausa avviata l'alone respira: si gonfia in 4 secondi e si sgonfia in altri 4,
+  il ritmo di un respiro lento e calmo. Seguirlo con il respiro aiuta a riposare.
+*/
+#timer-section[data-conteggio="attivo"][data-modalita="pausa"] .timer-ring::before {
+  animation: respira 8s ease-in-out infinite;
+}
+
+@keyframes respira {
+  0%,
+  100% {
+    opacity: 0.35;
+    scale: 0.7;
+  }
+
+  50% {
+    opacity: 1;
+    scale: 1.05;
+  }
+}
+
+/* L'svg copre tutto il quadrato; inset: 0 lo stende da un bordo all'altro. */
+.timer-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Il cerchio di un svg parte da destra (le 3): ruotandolo di -90° parte dall'alto (le 12). */
+  rotate: -90deg;
+}
+
+.timer-ring-track,
+.timer-ring-progress {
+  fill: none;
+  /* Le unità sono quelle del viewBox (100): 1.2 è un anello sottile, circa 4px. */
+  stroke-width: 1.2;
+}
+
+/* Il binario: l'anello vuoto, appena più chiaro dello sfondo. */
+.timer-ring-track {
+  stroke: var(--hover);
+}
+
+/*
+  La parte colorata. stroke-dasharray: 100 disegna un tratto lungo quanto tutto il cerchio
+  (pathLength="100" nell'HTML). stroke-dashoffset lo fa scorrere: con --consumato a 0.4
+  vale -40, e i primi 40 centesimi dall'alto, in senso orario, restano vuoti.
+  La transizione da 250ms segue i controlli del timer: l'anello scorre senza scatti;
+  quella da 500ms sul colore fa "accendere" l'anello piano, premendo Avvia.
+  Da fermo l'anello è grigio: si accende solo quando il timer conta (vedi sotto).
+*/
+.timer-ring-progress {
+  stroke: var(--border-strong);
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(var(--consumato, 0) * -100);
+  transition: stroke-dashoffset 250ms linear, stroke 500ms ease;
+}
+
+/*
+  Con Avvia la fiamma si accende: data-conteggio="attivo" (scritto da js/timer.js)
+  colora l'anello di arancione, lo stesso colore dell'obiettivo in corso.
+*/
+#timer-section[data-conteggio="attivo"] .timer-ring-progress {
+  stroke: var(--flame);
+}
+
+/* Durante la pausa, avviata, l'anello si accende di lilla, come le cifre. */
+#timer-section[data-conteggio="attivo"][data-modalita="pausa"] .timer-ring-progress {
+  stroke: var(--break);
+}
+
+/* Fermato con Pausa, a sessione iniziata, l'anello diventa grigio chiaro come le cifre. */
+#timer-section[data-conteggio="sospeso"] .timer-ring-progress {
+  stroke: var(--muted);
+}
+
 /* Il cancelletto seleziona l'elemento HTML con id="timer". */
 #timer {
-  /* Tre valori: nessun margine sopra o ai lati, 36px sotto per separare i pulsanti. */
-  margin: 0 0 36px;
+  /* Dentro l'anello niente margini: lo centra la griglia. */
+  margin: 0;
 
-  /*
-    clamp(minimo, valore preferito, massimo) fa variare il font entro due limiti.
-    Qui va da 5rem a 9rem; 23vw equivale al 23% della larghezza del viewport.
-  */
-  font-size: clamp(5rem, 23vw, 9rem);
+  /* 1em è la dimensione del font dell'anello: le cifre e l'anello crescono insieme. */
+  font-size: 1em;
 
   /* 500 richiede un peso medio: più marcato del normale 400. */
   font-weight: 500;
@@ -486,49 +603,23 @@ section {
 }
 
 /*
-  L'etichetta della modalità, sopra le cifre: una piccola pillola con icona e nome.
-  currentColor è arancione nella fiammina e lilla nella pausa: bordo e sfondo
-  sono lo stesso colore, mescolato con il trasparente da color-mix.
+  La scritta «Pausa», piccola, dentro l'anello sopra le cifre. position: absolute la toglie
+  dalla griglia: top: 22% la mette nella parte alta del cerchio, senza spostare le cifre.
+  La dimensione è in rem: non dipende dal font grande dell'anello.
+  Nella fiammina JavaScript le dà la classe solo-lettori e non si vede.
 */
 .timer-mode {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 0 4px;
-  padding: 4px 12px;
-  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
-  border-radius: 999px;
-  background-color: color-mix(in srgb, currentColor 10%, transparent);
+  position: absolute;
+  top: 22%;
+  margin: 0;
   color: var(--flame);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  transition: color 300ms ease, border-color 300ms ease, background-color 300ms ease;
+  letter-spacing: 0.02em;
+  transition: color 300ms ease;
 }
 
-.timer-mode-icon {
-  width: 14px;
-  height: 14px;
-}
-
-.timer-mode-flame {
-  fill: currentColor;
-}
-
-.timer-mode-cup {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.75;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* Si vede solo l'icona della modalità attuale: la fiammina o la tazzina. */
-#timer-section[data-modalita="fiammina"] .timer-mode-cup,
-#timer-section[data-modalita="pausa"] .timer-mode-flame {
-  display: none;
-}
-
-/* In pausa l'etichetta e le cifre diventano lilla: si vede subito che non è una fiammina. */
+/* In pausa la scritta e le cifre diventano lilla: si vede subito che non è una fiammina. */
 #timer-section[data-modalita="pausa"] .timer-mode,
 #timer-section[data-modalita="pausa"] #timer {
   color: var(--break);
@@ -2038,9 +2129,9 @@ button:disabled {
 }
 
 /*
-  In corso il lavorato diventa azzurro, come le fiammine: è il tempo che sta crescendo.
+  In corso il lavorato si accende di arancione, come l'anello: è il tempo che sta crescendo.
   .goal-minutes limita la regola al tempo del blocco e della lista: la finestrella sta dentro
-  .home-goal, e senza questo diventerebbero azzurri anche gli obiettivi non in corso.
+  .home-goal, e senza questo diventerebbero colorati anche gli obiettivi non in corso.
 */
 :is(.goal, .home-goal)[data-stato="in-corso"] .goal-minutes .goal-worked {
   color: var(--goal-progress);
@@ -2074,7 +2165,7 @@ button:disabled {
   clip-path: inset() lo taglia dall'alto e ne lascia vedere solo la parte bassa:
   --riempimento, scritto da JavaScript, è la parte lavorata (20% = 5 minuti su 25).
   Con 20% il taglio in alto è 100% - 20% = 80%. Il colore è quello della fiammina:
-  arancione, o azzurro mentre l'obiettivo è in corso.
+  arancione, anche mentre l'obiettivo è in corso.
 */
 .goal-flame-icons .flame-fill {
   fill: currentColor;
@@ -2084,8 +2175,9 @@ button:disabled {
 }
 
 /*
-  La fiammina da completare, quando l'obiettivo è in corso: prende l'azzurro di "in corso"
-  e un riempimento leggero. color-mix mescola l'azzurro con il trasparente: 30% di colore.
+  La fiammina da completare, quando l'obiettivo è in corso: prende il colore di "in corso"
+  e un riempimento leggero. color-mix mescola il colore con il trasparente: 30% di colore.
+  Tremola e resta quasi vuota: così si distingue dalle fiammine già fatte, piene.
   transform-origin in basso la fa oscillare dalla base, come una fiamma vera.
 */
 .goal-flame-icons svg.is-current {
@@ -2118,7 +2210,7 @@ button:disabled {
 /*
   Una fiammina fatta è piena e accesa: colore pieno e un leggero alone dello stesso colore.
   drop-shadow segue la forma della fiammina, non il suo riquadro come box-shadow.
-  currentColor è il colore della fiammina: arancione, o azzurro con la regola qui sotto.
+  currentColor è il colore della fiammina: arancione.
   Niente animazione: il lavoro è finito.
 */
 .goal-flame-icons svg.is-done {
@@ -2127,17 +2219,8 @@ button:disabled {
 }
 
 /*
-  Mentre l'obiettivo è in corso, anche le fiammine già fatte sono azzurre, piene:
-  si distinguono da quella da completare, azzurra ma quasi vuota e tremolante.
-  Da completato tornano arancioni.
-*/
-:is(.goal, .home-goal)[data-stato="in-corso"] .goal-flame-icons svg.is-done {
-  color: var(--goal-progress);
-}
-
-/*
   Oltre cinque fiammine se ne vede una sola, seguita dal numero: 🔥12. In corso la fiammina
-  diventa azzurra, e il numero la segue, così icona e numero restano dello stesso colore.
+  prende il colore di "in corso", e il numero la segue: icona e numero restano dello stesso colore.
 */
 :is(.goal, .home-goal)[data-stato="in-corso"] .goal-flames-count {
   color: var(--goal-progress);
@@ -2272,7 +2355,12 @@ button:disabled {
   padding: 5px;
   border: 1px solid var(--border);
   border-radius: 999px;
-  background-color: var(--surface);
+  /*
+    Il colore di sfondo sta in una variabile: la luce che gira, più sotto, ne ha bisogno
+    per ridisegnare l'interno della pillola, e il passaggio del mouse cambia solo lei.
+  */
+  --sfondo-pillola: var(--surface);
+  background-color: var(--sfondo-pillola);
   text-align: left;
   transition: border-color 300ms ease, background-color var(--transition-fast) ease, opacity 300ms ease;
 }
@@ -2284,7 +2372,7 @@ button:disabled {
 */
 @media (hover: hover) {
   .home-goal:has(.home-goal-picker:hover:not(:disabled)) {
-    background-color: var(--hover);
+    --sfondo-pillola: var(--hover);
   }
 }
 
@@ -2294,9 +2382,45 @@ button:disabled {
   border-color: var(--border-strong);
 }
 
-/* In corso il bordo diventa azzurro, come la scheda nella lista. */
+/*
+  In corso una scia di luce arancione corre lungo il bordo, finché il timer conta.
+  Il trucco sono due sfondi, uno sopra l'altro, e un bordo trasparente da 2px:
+  - sopra, un colore pieno (--sfondo-pillola) che copre solo l'interno (padding-box);
+  - sotto, un conic-gradient che copre anche il bordo (border-box). Il bordo è trasparente,
+    quindi si vede solo lì: un anello sottile di gradiente intorno alla pillola.
+  conic-gradient gira intorno al centro: è arancione tenue quasi ovunque, poi si accende
+  fino all'arancione pieno a 315° (la testa della scia) e torna tenue: una cometa.
+  from var(--giro) ruota tutto il gradiente: l'animazione porta --giro da 0° a 360°.
+  Il padding scende di 1px perché il bordo sale di 1px: la pillola non cambia misura.
+*/
 .home-goal[data-stato="in-corso"] {
-  border-color: var(--goal-progress);
+  padding: 4px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--sfondo-pillola), var(--sfondo-pillola)) padding-box,
+    conic-gradient(
+      from var(--giro),
+      color-mix(in srgb, var(--goal-progress) 25%, transparent) 0deg 220deg,
+      var(--goal-progress) 315deg,
+      color-mix(in srgb, var(--goal-progress) 25%, transparent) 360deg
+    ) border-box;
+  animation: giro-luce 3s linear infinite;
+}
+
+/*
+  @property dice al browser che --giro è un angolo: solo così può animarlo poco a poco.
+  Senza, una variabile cambia di colpo, e la luce salterebbe invece di girare.
+*/
+@property --giro {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes giro-luce {
+  to {
+    --giro: 360deg;
+  }
 }
 
 /*
@@ -2305,9 +2429,16 @@ button:disabled {
   sul cerchio vale l'hover di tutti i pulsanti (bordo chiaro e sfondo grigio).
   Da completato si riempie di verde con la regola comune della lista.
 */
+/*
+  margin-left: 5px rende il cerchio concentrico con la curva sinistra della pillola:
+  la pillola è alta circa 56px e il cerchio 34px, quindi sopra e sotto restano 11px.
+  A sinistra ci sono 1px di bordo + 5px di padding (2 + 4 in corso): con 5px in più
+  anche lì sono 11px, e il cerchio non sembra più spinto verso il bordo.
+*/
 .home-goal .goal-complete {
   width: 34px;
   height: 34px;
+  margin-left: 5px;
   border-radius: 50%;
   flex-shrink: 0;
   background-color: var(--background);
@@ -2873,10 +3004,19 @@ button:disabled {
   perché, a parità di specificità, deve prevalere su quelle scritte prima.
 */
 @media (prefers-reduced-motion: reduce) {
+  /* La luce non gira: il bordo della pillola in corso resta arancione pieno. */
+  .home-goal[data-stato="in-corso"] {
+    animation: none;
+    background:
+      linear-gradient(var(--sfondo-pillola), var(--sfondo-pillola)) padding-box,
+      linear-gradient(var(--goal-progress), var(--goal-progress)) border-box;
+  }
+
   body::after,
   button,
   #timer,
   .timer-mode,
+  .timer-ring-progress,
   .brand-link,
   .brand-logo-link,
   .project-form.goal-bar,
@@ -2904,6 +3044,7 @@ button:disabled {
   .goal-flame-icons svg.is-current,
   .home-goal-panel,
   .settings-dialog[open],
+  #timer-section[data-conteggio="attivo"][data-modalita="pausa"] .timer-ring::before,
   :is(.goal, .home-goal).is-updated [aria-pressed="true"] svg {
     animation: none !important;
   }

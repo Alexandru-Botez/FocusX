@@ -45,7 +45,10 @@ import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 // const dichiara un nome che non riassegneremo.
 // getElementById trova l'elemento HTML che ha l'id indicato tra virgolette.
 const sezioneTimer = document.getElementById("timer-section");
+const etichettaModalita = document.getElementById("timer-mode");
 const testoModalita = document.getElementById("timer-mode-text");
+// Il cerchio colorato dell'anello intorno al tempo.
+const anelloTimer = document.getElementById("timer-ring-progress");
 const timer = document.getElementById("timer");
 const pulsanteAvvia = document.getElementById("start-button");
 const pulsantePausa = document.getElementById("pause-button");
@@ -124,7 +127,7 @@ function caricaTimer() {
 // a zero la sessione finisce (vedi la sezione FIAMMINA E PAUSA).
 // =====================================================================
 
-// Scrive i secondi rimanenti nel formato "25:00".
+// Scrive i secondi rimanenti nel formato "25:00" e consuma l'anello intorno.
 function aggiornaTimer() {
   // La divisione calcola i minuti; Math.floor elimina la parte decimale.
   const minuti = Math.floor(secondiRimanenti / 60);
@@ -132,6 +135,12 @@ function aggiornaTimer() {
   const secondi = secondiRimanenti % 60;
   // padStart aggiunge uno zero se manca una cifra: il numero 9 diventa il testo "09".
   timer.textContent = String(minuti).padStart(2, "0") + ":" + String(secondi).padStart(2, "0");
+
+  // Quanta parte della sessione è già passata, da 0 (appena iniziata) a 1 (finita).
+  // Con 25 minuti e 15:00 rimanenti: 1 - 900 / 1500 = 0.4, cioè il 40%.
+  const consumato = 1 - secondiRimanenti / durataSessione;
+  // Il CSS legge --consumato e toglie dall'anello quella parte, in senso orario dall'alto.
+  anelloTimer.style.setProperty("--consumato", consumato);
 }
 
 // Passa all'obiettivo i secondi trascorsi che non ha ancora ricevuto.
@@ -213,6 +222,9 @@ function mostraModalita() {
   // lilla per la pausa. js/home-obiettivo.js lo legge per sapere se si sta lavorando.
   sezioneTimer.dataset.modalita = modalita;
   testoModalita.textContent = modalita === "pausa" ? "Pausa" : "Fiammina";
+  // Si vede scritto solo «Pausa»: nella fiammina basta l'anello arancione,
+  // e il testo resta solo per i lettori di schermo.
+  etichettaModalita.classList.toggle("solo-lettori", modalita === "fiammina");
   // In pausa Stop serve a saltarla: il nome lo dice ai lettori di schermo e nel suggerimento.
   const nomeStop = modalita === "pausa" ? "Salta la pausa" : "Stop";
   pulsanteStop.setAttribute("aria-label", nomeStop);
