@@ -44,8 +44,8 @@ import {
 } from "./fiammine.js?v=imp-1";
 import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=imp-1";
 import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
-import { apriCalendario, chiudiCalendario, scriviData } from "./calendario.js?v=prog-1";
-import { apriProgetti, chiudiProgetti, riempiProgetti, scriviProgetto } from "./scelta-progetto.js?v=prog-1";
+import { apriCalendario, chiudiCalendario, scriviData } from "./calendario.js?v=barra-1";
+import { apriProgetti, chiudiProgetti, riempiProgetti, scriviProgetto } from "./scelta-progetto.js?v=barra-1";
 
 
 // =====================================================================
@@ -60,9 +60,18 @@ const moduloObiettivo = document.getElementById("goal-form");
 const titoloModuloObiettivo = document.getElementById("goal-form-title");
 const pulsanteSalvaObiettivo = document.getElementById("save-goal-button");
 const pulsanteEliminaObiettivo = document.getElementById("delete-goal-button");
-// L'avviso che compare sopra Salva quando l'obiettivo sarebbe un doppione.
+// L'avviso che compare sotto la barra quando l'obiettivo sarebbe un doppione.
 const avvisoDoppione = document.getElementById("goal-duplicate-warning");
 const pulsanteAnnullaObiettivo = document.getElementById("cancel-goal-button");
+
+// Il posto della barra sopra la lista: parentElement è la sezione che la contiene,
+// nextElementSibling l'elemento subito dopo. Servono per riportarla lì dopo una modifica.
+const casaDelModulo = moduloObiettivo.parentElement;
+const dopoIlModulo = moduloObiettivo.nextElementSibling;
+// Durante una modifica la barra sta nella lista: un ul può contenere solo li,
+// quindi la mettiamo dentro questo li, creato una volta sola e riusato.
+const postoModifica = document.createElement("li");
+postoModifica.className = "goal-edit-slot";
 
 // Campi del modulo.
 const campoNomeObiettivo = document.getElementById("goal-name");
@@ -255,8 +264,31 @@ function mostraObiettivi(idNuovo) {
 
     elencoObiettivi.append(voce);
   }
-  // Anche dopo una ricostruzione, l'obiettivo in modifica resta nascosto.
+  // Anche dopo una ricostruzione, l'obiettivo in modifica resta nascosto
+  // e la barra torna al suo posto. replaceChildren aveva tolto anche il suo li:
+  // non è perso, perché postoModifica lo tiene ancora in memoria.
   nascondiVoceInModifica();
+  mettiModuloNellaVoce();
+}
+
+// Durante una modifica sposta la barra nella lista, subito prima della voce nascosta:
+// sembra che la voce stessa si sia trasformata nella barra.
+function mettiModuloNellaVoce() {
+  // [...children] trasforma i figli della lista in un array, per usare find.
+  const voce = [...elencoObiettivi.children].find(voce => voce.dataset.id === idInModifica);
+  if (voce === undefined) {
+    return;
+  }
+  // append e before spostano gli elementi: la barra lascia il suo posto sopra la lista.
+  postoModifica.append(moduloObiettivo);
+  voce.before(postoModifica);
+}
+
+// Riporta la barra al suo posto sopra la lista e toglie dalla lista il suo li.
+function rimettiModuloAlSuoPosto() {
+  // insertBefore mette la barra prima di dopoIlModulo, cioè dov'era all'inizio.
+  casaDelModulo.insertBefore(moduloObiettivo, dopoIlModulo);
+  postoModifica.remove();
 }
 
 // Nasconde dalla lista l'obiettivo aperto nel modulo; con idInModifica null le mostra tutte.
@@ -447,12 +479,14 @@ function salvaTempoInDiretta() {
 // o scrivendo il numero nella finestrella.
 // =====================================================================
 
-// Aggiorna il testo sotto le fiammine ("3 fiammine · 1 h 15 min") e il segno sulla nona.
+// Aggiorna il tempo accanto alle fiammine ("1 h 15 min") e il segno sulla nona.
 function aggiornaTestoFiammine() {
   // Il valore dei radio è testo: Number lo trasforma nel numero di fiammine.
   const fiammine = Number(moduloObiettivo.elements.fiammine.value);
   const parola = fiammine === 1 ? " fiammina" : " fiammine";
-  testoFiammine.textContent = fiammine + parola + " · " + formattaTempo(fiammine);
+  // Nella barra si legge solo il tempo; passando sopra con il mouse, anche le fiammine.
+  testoFiammine.textContent = formattaTempo(fiammine);
+  testoFiammine.title = fiammine + parola + " · " + formattaTempo(fiammine);
   // Sulla nona fiammina: "+" finché non è scelta, poi quante fiammine ci sono oltre le otto.
   segnoPiuFiammine.textContent = radioPiuFiammine.checked ? "+" + (fiammine - fiammineVisibili) : "+";
 }
@@ -551,7 +585,7 @@ function applicaNuoveDurate() {
   mostraObiettivi();
   scriviLimiteFiammine();
   // La nona fiammina non può superare il nuovo massimo; impostaPiuFiammine aggiorna anche
-  // il testo sotto le fiammine ("3 fiammine · 1 h 30 min").
+  // il tempo accanto alle fiammine ("1 h 30 min").
   impostaPiuFiammine(Math.min(Number(radioPiuFiammine.value), fiammineMassime));
 }
 
@@ -633,15 +667,31 @@ function controllaDoppione() {
 // e salvando, il modulo richiama il controllo dei doppioni.
 // =====================================================================
 
-// Mostra il modulo vuoto e riempie il menu con i progetti.
+// Il segnaposto del nome ricorda dove finirà l'obiettivo e come salvarlo:
+// "Aggiungi un obiettivo a "Matematica", premi Invio per salvare".
+function aggiornaSegnaposto() {
+  const progetto = progetti.find(progetto => progetto.id === sceltaProgetto.value);
+  if (moduloObiettivo.dataset.modo === "modifica") {
+    campoNomeObiettivo.placeholder = "Nome dell'obiettivo";
+  } else if (progetto === undefined) {
+    campoNomeObiettivo.placeholder = "Aggiungi un obiettivo, premi Invio per salvare";
+  } else {
+    campoNomeObiettivo.placeholder = "Aggiungi un obiettivo a \"" + progetto.nome + "\", premi Invio per salvare";
+  }
+}
+
+// Mostra la barra vuota sopra la lista, con il primo progetto e la data di oggi.
 function apriModuloObiettivo() {
   // L'elenco dei progetti riceve una voce per ogni progetto, e il primo è già scelto:
-  // la cartella del campo prende subito il suo colore.
+  // la cartella della barra prende subito il suo colore.
   riempiProgetti(progetti);
+  // La data parte da oggi: basta scrivere il nome e premere Invio.
+  scriviData(dataDiOggi());
 
   moduloObiettivo.hidden = false;
   pulsanteNuovoObiettivo.hidden = true;
   messaggioObiettivi.textContent = "";
+  aggiornaSegnaposto();
   controllaDoppione();
   campoNomeObiettivo.focus();
 }
@@ -679,19 +729,25 @@ function apriModificaObiettivo(id) {
   }
 
   titoloModuloObiettivo.textContent = "Modifica obiettivo";
-  pulsanteSalvaObiettivo.textContent = "Salva modifiche";
+  // data-modo="modifica": il CSS mostra la matita a sinistra al posto del +.
+  moduloObiettivo.dataset.modo = "modifica";
+  pulsanteSalvaObiettivo.setAttribute("aria-label", "Salva le modifiche");
   // Elimina ha senso solo per un obiettivo che esiste già.
   pulsanteEliminaObiettivo.hidden = false;
-  // L'obiettivo compare già nel modulo: nell'elenco sarebbe un doppione.
+  // La voce dell'obiettivo si nasconde e la barra prende il suo posto nella lista.
   nascondiVoceInModifica();
+  mettiModuloNellaVoce();
+  aggiornaSegnaposto();
   // Scrivere value da JavaScript non genera eventi: il controllo lo chiamiamo noi.
   controllaDoppione();
+  // Il focus va dopo lo spostamento: spostare un elemento gli toglie il focus.
   campoNomeObiettivo.focus();
 }
 
-// Chiude il modulo, lo svuota e lo riporta alla creazione di un obiettivo nuovo.
+// Chiude il modulo, lo svuota, lo riporta sopra la lista e alla creazione di un obiettivo nuovo.
 function chiudiModuloObiettivo() {
   moduloObiettivo.hidden = true;
+  rimettiModuloAlSuoPosto();
   pulsanteNuovoObiettivo.hidden = false;
   // reset riporta nome e data vuoti e la scelta su una fiammina, come scritto nell'HTML.
   moduloObiettivo.reset();
@@ -708,9 +764,39 @@ function chiudiModuloObiettivo() {
   idInModifica = null;
   nascondiVoceInModifica();
   titoloModuloObiettivo.textContent = "Nuovo obiettivo";
-  pulsanteSalvaObiettivo.textContent = "Salva obiettivo";
+  moduloObiettivo.dataset.modo = "nuovo";
+  pulsanteSalvaObiettivo.setAttribute("aria-label", "Salva l'obiettivo");
   pulsanteEliminaObiettivo.hidden = true;
   controllaDoppione();
+}
+
+// Annulla, con la X o con Esc: chiude il modulo e riporta il focus da dove si era partiti,
+// cioè su Crea obiettivo o sulla matita dell'obiettivo che si stava modificando.
+function annullaModulo() {
+  // idInModifica va letto prima: chiudiModuloObiettivo lo riporta a null.
+  const idModificato = idInModifica;
+  chiudiModuloObiettivo();
+  if (idModificato === null) {
+    pulsanteNuovoObiettivo.focus();
+  } else {
+    elencoObiettivi.querySelector(`[data-id="${idModificato}"] .goal-edit`)?.focus();
+  }
+}
+
+// Esc nella barra la chiude, come la X. Se però è aperta una finestrella (calendario,
+// progetti o fiammine), Esc deve chiudere soltanto quella, e ci pensano i suoi ascoltatori.
+// Questo ascoltatore è sul form, quindi parte prima di quelli sul documento:
+// le finestrelle sono ancora aperte e possiamo controllarle.
+function chiudiModuloConEsc(evento) {
+  if (evento.key !== "Escape") {
+    return;
+  }
+  // :not([hidden]) trova solo le finestrelle aperte; null vuol dire nessuna.
+  const finestrellaAperta = moduloObiettivo.querySelector(
+    ".date-panel:not([hidden]), .project-picker-list:not([hidden]), .flame-panel:not([hidden])");
+  if (finestrellaAperta === null) {
+    annullaModulo();
+  }
 }
 
 // Al salvataggio: controlla il nome, raccoglie i dati e sceglie fra creare e modificare.
@@ -770,7 +856,15 @@ function creaObiettivo(dati) {
 
   obiettivi = elencoAggiornato;
   mostraObiettivi(nuovoObiettivo.id);
-  chiudiModuloObiettivo();
+
+  // La barra resta aperta per aggiungere subito un altro obiettivo: si svuota il nome
+  // e le fiammine tornano a una. Progetto e data restano quelli scelti.
+  campoNomeObiettivo.value = "";
+  moduloObiettivo.elements.fiammine.value = "1";
+  chiudiFinestrellaFiammine();
+  impostaPiuFiammine(fiammineVisibili + 1);
+  controllaDoppione();
+  campoNomeObiettivo.focus();
 }
 
 // Sostituisce i dati di un obiettivo esistente, tenendo id, stato e minuti lavorati.
@@ -834,7 +928,8 @@ if (progetti.length === 0) {
 
 // Modulo.
 pulsanteNuovoObiettivo.addEventListener("click", apriModuloObiettivo);
-pulsanteAnnullaObiettivo.addEventListener("click", chiudiModuloObiettivo);
+pulsanteAnnullaObiettivo.addEventListener("click", annullaModulo);
+moduloObiettivo.addEventListener("keydown", chiudiModuloConEsc);
 pulsanteEliminaObiettivo.addEventListener("click", eliminaObiettivo);
 moduloObiettivo.addEventListener("submit", inviaModuloObiettivo);
 campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
@@ -843,6 +938,8 @@ campoNomeObiettivo.addEventListener("input", cancellaErroreNome);
 // input risale fino al form dal campo del nome e dalla scelta del progetto
 // (js/scelta-progetto.js lo fa partire a ogni scelta).
 moduloObiettivo.addEventListener("input", controllaDoppione);
+// Cambiando progetto cambia anche il segnaposto del nome.
+moduloObiettivo.addEventListener("input", aggiornaSegnaposto);
 
 // Fiammine.
 // change risale dai radio delle fiammine fino al form.

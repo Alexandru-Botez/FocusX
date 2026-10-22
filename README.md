@@ -59,11 +59,17 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 ### Obiettivi
 
 - Una pagina dedicata, raggiungibile dal menu; per creare un obiettivo serve almeno un progetto.
-- Crea obiettivo apre un modulo con nome, progetto, data prevista (obbligatoria) e tempo previsto.
-- Il progetto si sceglie in un elenco nello stile del sito: ogni voce ha la cartella del colore
-  del progetto, e quella scelta ha la spunta. Anche la cartella del campo prende quel colore.
+- Crea obiettivo apre una barra compatta, di una sola riga: nome, tempo previsto in fiammine,
+  data e progetto. Si scrive il nome e si preme Invio; la data parte da oggi e il progetto
+  è il primo. Dopo il salvataggio la barra resta aperta per aggiungerne subito un altro;
+  la X o Esc la chiudono.
+- La matita di un obiettivo trasforma la sua voce nella stessa barra, già compilata e con
+  il cestino: Invio salva, Esc annulla.
+- Il progetto si sceglie con la cartella colorata, che apre un elenco nello stile del sito:
+  ogni voce ha la cartella del colore del progetto, e quella scelta ha la spunta.
+  Il nome del progetto scelto si legge nel segnaposto della barra.
 - La data si sceglie in un calendario nello stile del sito: si cambia mese con le frecce,
-  oggi ha un anello arancione e il giorno scelto è pieno. Se la data è oggi, nel campo e nella
+  oggi ha un anello arancione e il giorno scelto è pieno. Se la data è oggi, nella barra e nella
   lista degli obiettivi si legge «Oggi» invece della data.
 - Elenco dei progetti e calendario funzionano anche da tastiera (frecce per muoversi,
   Invio per scegliere, Esc per chiudere).

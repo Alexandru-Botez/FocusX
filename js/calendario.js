@@ -195,8 +195,12 @@ export function scriviData(valore) {
     // Se la data scelta è oggi si legge "Oggi", come nella lista degli obiettivi.
     testoData.textContent = "Oggi";
   } else {
-    testoData.textContent = daTesto(valore)
-      .toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+    // Nella barra c'è poco spazio: "3 nov". L'anno si aggiunge solo se non è quello di adesso.
+    const data = daTesto(valore);
+    const opzioni = data.getFullYear() === new Date().getFullYear()
+      ? { day: "numeric", month: "short" }
+      : { day: "numeric", month: "short", year: "numeric" };
+    testoData.textContent = data.toLocaleDateString("it-IT", opzioni);
   }
   // is-empty rende grigio il testo "Scegli una data", come il segnaposto di un campo.
   testoData.classList.toggle("is-empty", vuota);

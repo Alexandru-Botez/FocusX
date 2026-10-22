@@ -32,10 +32,10 @@
     <meta name="theme-color" content="#000000">
     <title>Obiettivi</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=spunta-1">
+    <link rel="stylesheet" href="css/styles.css?v=barra-1">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/impostazioni.js?v=imp-1"></script>
-    <script type="module" src="js/obiettivi.js?v=prog-1"></script>
+    <script type="module" src="js/obiettivi.js?v=barra-1"></script>
   </head>
 
   <body>
@@ -170,185 +170,210 @@
         </p>
 
         <!-- ===============================================================
-             SEZIONE MODULO DELL'OBIETTIVO
-             Nome, progetto, data e tempo previsto. Lo stesso modulo serve per
-             creare e per modificare un obiettivo: JavaScript cambia il titolo,
-             il testo del pulsante e mostra Elimina solo durante una modifica.
+             SEZIONE BARRA DELL'OBIETTIVO
+             Una sola riga, compatta: nome, tempo previsto in fiammine, data e progetto.
+             Si scrive il nome e si preme Invio. Per un obiettivo nuovo la barra si apre
+             con Crea obiettivo, qui sopra la lista; per una modifica JavaScript la sposta
+             dentro la lista, al posto della voce dell'obiettivo, e mostra il cestino.
              Se nome e progetto sono uguali a quelli di un altro obiettivo,
-             Salva si disattiva e compare l'avviso sopra i pulsanti.
-             hidden lo nasconde finché non si preme Crea obiettivo o una matita.
+             Salva si disattiva e compare l'avviso sotto la barra.
+             data-modo vale "nuovo" o "modifica": il CSS sceglie l'icona a sinistra.
              JavaScript: sezioni MODULO e CONTROLLO DEI DOPPIONI di js/obiettivi.js.
              =============================================================== -->
-        <form id="goal-form" class="project-form" hidden aria-labelledby="goal-form-title">
-          <h3 id="goal-form-title" class="project-form-title">Nuovo obiettivo</h3>
+        <form id="goal-form" class="project-form goal-bar" data-modo="nuovo" hidden aria-labelledby="goal-form-title">
+          <!-- Il titolo non si vede: lo leggono i lettori di schermo. JavaScript lo cambia in "Modifica obiettivo". -->
+          <h3 id="goal-form-title" class="solo-lettori">Nuovo obiettivo</h3>
 
-          <label for="goal-name">Nome dell'obiettivo</label>
-          <input id="goal-name" name="nome" type="text" required maxlength="80" autocomplete="off">
+          <div class="goal-bar-row">
+            <!-- L'icona a sinistra: + per un obiettivo nuovo, la matita durante una modifica. -->
+            <svg class="goal-bar-icon goal-bar-icon-new" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            <svg class="goal-bar-icon goal-bar-icon-edit" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4 20h4L19 9a2.83 2.83 0 0 0-4-4L4 16v4ZM13.5 6.5l4 4"></path>
+            </svg>
 
-          <!-- Su schermi larghi progetto e data stanno affiancati; su telefono uno sotto l'altro. -->
-          <div class="goal-form-row">
-            <div class="goal-field">
-              <label for="goal-project-button">Progetto</label>
-              <!--
-                Il menu a tendina del browser (select) non si può adattare allo stile del sito
-                e le sue voci possono contenere solo testo: al suo posto c'è un pulsante
-                che apre un elenco nostro, con la cartella colorata di ogni progetto.
-                L'id del progetto scelto va nel campo nascosto #goal-project.
-                JavaScript: js/scelta-progetto.js.
-              -->
-              <div id="goal-project-picker" class="project-picker">
-                <button id="goal-project-button" class="project-picker-button" type="button"
-                  aria-haspopup="listbox" aria-expanded="false" aria-controls="goal-project-list">
-                  <!-- La cartella prende il colore del progetto scelto. -->
-                  <svg id="goal-project-icon" class="project-picker-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
-                  </svg>
-                  <span id="goal-project-text" class="project-picker-text is-empty">Scegli un progetto</span>
-                  <!-- La freccia in basso: si gira verso l'alto quando l'elenco è aperto. -->
-                  <svg class="project-picker-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M6 9l6 6 6-6"></path>
-                  </svg>
-                </button>
-                <input id="goal-project" name="progetto" type="hidden">
+            <!-- Il nome. Il segnaposto, scritto da JavaScript, ricorda il progetto e come salvare. -->
+            <label for="goal-name" class="solo-lettori">Nome dell'obiettivo</label>
+            <input id="goal-name" class="goal-bar-name" name="nome" type="text" required maxlength="80" autocomplete="off">
 
-                <!-- L'elenco dei progetti: JavaScript crea una voce per ogni progetto, dal modello qui sotto. -->
-                <div id="goal-project-list" class="project-picker-list" role="listbox" aria-label="Progetti" hidden></div>
-
-                <!-- Il modello di una voce: cartella colorata, nome e spunta per quella scelta. -->
-                <template id="goal-project-option-template">
-                  <button class="project-option" type="button" role="option" aria-selected="false" tabindex="-1">
-                    <svg class="project-option-folder" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
-                    </svg>
-                    <span class="project-option-name"></span>
-                    <svg class="project-option-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <path d="M5 12.5l4.5 4.5L19 7.5"></path>
-                    </svg>
-                  </button>
-                </template>
+            <!-- ===========================================================
+                 SEZIONE SCELTA DELLE FIAMMINE
+                 Il tempo previsto. Le fiammine sono radio con lo stesso name: se ne sceglie
+                 una sola, ma il CSS accende anche tutte quelle prima. La nona, con il +,
+                 apre una finestrella per sceglierne di più. Accanto, il tempo: "1 h 15 min".
+                 JavaScript: sezioni SCELTA DELLE FIAMMINE e FINESTRELLA DELLE
+                 FIAMMINE di js/obiettivi.js.
+                 =========================================================== -->
+            <fieldset class="flame-picker">
+              <legend class="solo-lettori">Tempo previsto</legend>
+              <div class="flame-options">
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="1" aria-label="1 fiammina, 25 minuti" checked>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="2" aria-label="2 fiammine, 50 minuti">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="3" aria-label="3 fiammine, 75 minuti">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="4" aria-label="4 fiammine, 100 minuti">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="5" aria-label="5 fiammine, 125 minuti">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="6" aria-label="6 fiammine, 150 minuti">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="7" aria-label="7 fiammine, 175 minuti">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <label class="flame-option">
+                  <input type="radio" name="fiammine" value="8" aria-label="8 fiammine, 200 minuti">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                </label>
+                <!--
+                  La nona fiammina è un radio come le altre, ma il suo value cambia: è il numero
+                  scelto nella finestrella, da 9 in su. Cliccandola si apre la finestrella accanto.
+                  JavaScript aggiorna l'aria-label con il numero scelto e il badge con "+4", "+5"...
+                -->
+                <label class="flame-option flame-more">
+                  <input id="goal-flames-more" type="radio" name="fiammine" value="9" aria-label="Più di 8 fiammine" aria-controls="goal-flames-panel">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                  <span id="goal-flames-more-badge" class="flame-more-badge" aria-hidden="true">+</span>
+                </label>
+                <!--
+                  La finestrella: − e + cambiano il numero di fiammine, che si può anche scrivere
+                  direttamente nel campo al centro, accanto alla sua icona.
+                -->
+                <div id="goal-flames-panel" class="flame-panel" role="group" aria-label="Numero di fiammine" hidden>
+                  <button id="goal-flames-less" class="flame-step" type="button" aria-label="Una fiammina in meno" disabled>−</button>
+                  <span class="flame-count">
+                    <!--
+                      Un campo di testo, non type="number": così il browser non blocca mai l'invio
+                      del modulo per un valore "non valido", e i controlli li fa JavaScript.
+                      value="9" è il valore a cui lo riporta reset().
+                      JavaScript completa l'aria-label con il massimo: "da 9 a 38".
+                    -->
+                    <input id="goal-flames-number" class="flame-count-input" type="text" inputmode="numeric" maxlength="2" value="9" autocomplete="off" aria-label="Numero di fiammine">
+                    <svg id="goal-flames-panel-icon" class="flame-count-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
+                  </span>
+                  <button id="goal-flames-plus" class="flame-step" type="button" aria-label="Una fiammina in più">+</button>
+                </div>
               </div>
-            </div>
-            <div class="goal-field">
-              <label for="goal-date-button">Data prevista</label>
-              <!--
-                Il campo data del browser non si può adattare allo stile del sito:
-                al suo posto c'è un pulsante che apre un calendario nostro.
-                La data scelta va nel campo nascosto #goal-date, con la forma 2026-10-12.
-                JavaScript: js/calendario.js.
-              -->
-              <div id="goal-date-picker" class="date-picker">
-                <button id="goal-date-button" class="date-picker-button" type="button"
-                  aria-haspopup="dialog" aria-expanded="false" aria-controls="goal-date-panel">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <!-- Un calendario: il foglio, la riga in alto e i due anelli. -->
-                    <rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect>
-                    <path d="M3.5 10h17M8 3v4M16 3v4"></path>
-                  </svg>
-                  <span id="goal-date-text" class="date-picker-text is-empty">Scegli una data</span>
-                </button>
-                <input id="goal-date" name="data" type="hidden">
+              <!-- Il tempo delle fiammine scelte, per esempio "1 h 15 min": JavaScript lo aggiorna. -->
+              <output id="goal-flames-output" class="flame-output">25 min</output>
+            </fieldset>
 
-                <!-- La finestrella del calendario: mese, giorni della settimana, giorni e Oggi. -->
-                <div id="goal-date-panel" class="date-panel" role="dialog" aria-label="Scegli la data prevista" hidden>
-                  <div class="date-panel-header">
-                    <button id="goal-date-prev" class="date-panel-nav" type="button" aria-label="Mese precedente">
-                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"></path></svg>
-                    </button>
-                    <!-- aria-live annuncia il mese nuovo quando si cambia con le frecce. -->
-                    <p id="goal-date-month" class="date-panel-month" aria-live="polite"></p>
-                    <button id="goal-date-next" class="date-panel-nav" type="button" aria-label="Mese successivo">
-                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"></path></svg>
-                    </button>
-                  </div>
-                  <div class="date-panel-weekdays" aria-hidden="true">
-                    <span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
-                  </div>
-                  <!-- JavaScript crea un pulsante per ogni giorno del mese mostrato. -->
-                  <div id="goal-date-days" class="date-panel-days"></div>
-                  <div class="date-panel-footer">
-                    <button id="goal-date-today" class="date-panel-today" type="button">Oggi</button>
-                  </div>
+            <!--
+              La data: un pulsante che apre un calendario nostro, nello stile del sito.
+              La data scelta va nel campo nascosto #goal-date, con la forma 2026-10-12.
+              JavaScript: js/calendario.js.
+            -->
+            <div id="goal-date-picker" class="date-picker">
+              <button id="goal-date-button" class="date-picker-button" type="button" title="Data prevista"
+                aria-haspopup="dialog" aria-expanded="false" aria-controls="goal-date-panel">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- Un calendario: il foglio, la riga in alto e i due anelli. -->
+                  <rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect>
+                  <path d="M3.5 10h17M8 3v4M16 3v4"></path>
+                </svg>
+                <span class="solo-lettori">Data prevista:</span>
+                <span id="goal-date-text" class="date-picker-text is-empty">Scegli una data</span>
+              </button>
+              <input id="goal-date" name="data" type="hidden">
+
+              <!-- La finestrella del calendario: mese, giorni della settimana, giorni e Oggi. -->
+              <div id="goal-date-panel" class="date-panel" role="dialog" aria-label="Scegli la data prevista" hidden>
+                <div class="date-panel-header">
+                  <button id="goal-date-prev" class="date-panel-nav" type="button" aria-label="Mese precedente">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"></path></svg>
+                  </button>
+                  <!-- aria-live annuncia il mese nuovo quando si cambia con le frecce. -->
+                  <p id="goal-date-month" class="date-panel-month" aria-live="polite"></p>
+                  <button id="goal-date-next" class="date-panel-nav" type="button" aria-label="Mese successivo">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"></path></svg>
+                  </button>
+                </div>
+                <div class="date-panel-weekdays" aria-hidden="true">
+                  <span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
+                </div>
+                <!-- JavaScript crea un pulsante per ogni giorno del mese mostrato. -->
+                <div id="goal-date-days" class="date-panel-days"></div>
+                <div class="date-panel-footer">
+                  <button id="goal-date-today" class="date-panel-today" type="button">Oggi</button>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- =============================================================
-               SEZIONE SCELTA DELLE FIAMMINE
-               Il tempo previsto: per ora ogni fiammina vale 25 minuti.
-               Le fiammine sono radio con lo stesso name: se ne sceglie una sola,
-               ma il CSS accende anche tutte quelle prima. Dopo le prime otto,
-               la nona fiammina con il + apre una finestrella per sceglierne di più.
-               JavaScript: sezioni SCELTA DELLE FIAMMINE e FINESTRELLA DELLE
-               FIAMMINE di js/obiettivi.js.
-               ============================================================= -->
-          <fieldset class="flame-picker">
-            <legend>Tempo previsto</legend>
-            <div class="flame-options">
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="1" aria-label="1 fiammina, 25 minuti" checked>
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="2" aria-label="2 fiammine, 50 minuti">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="3" aria-label="3 fiammine, 75 minuti">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="4" aria-label="4 fiammine, 100 minuti">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="5" aria-label="5 fiammine, 125 minuti">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="6" aria-label="6 fiammine, 150 minuti">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="7" aria-label="7 fiammine, 175 minuti">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <label class="flame-option">
-                <input type="radio" name="fiammine" value="8" aria-label="8 fiammine, 200 minuti">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-              </label>
-              <!--
-                La nona fiammina è un radio come le altre, ma il suo value cambia: è il numero
-                scelto nella finestrella, da 9 in su. Cliccandola si apre la finestrella accanto.
-                JavaScript aggiorna l'aria-label con il numero scelto e il badge con "+4", "+5"...
-              -->
-              <label class="flame-option flame-more">
-                <input id="goal-flames-more" type="radio" name="fiammine" value="9" aria-label="Più di 8 fiammine" aria-controls="goal-flames-panel">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-                <span id="goal-flames-more-badge" class="flame-more-badge" aria-hidden="true">+</span>
-              </label>
-              <!--
-                La finestrella: − e + cambiano il numero di fiammine, che si può anche scrivere
-                direttamente nel campo al centro, accanto alla sua icona.
-              -->
-              <div id="goal-flames-panel" class="flame-panel" role="group" aria-label="Numero di fiammine" hidden>
-                <button id="goal-flames-less" class="flame-step" type="button" aria-label="Una fiammina in meno" disabled>−</button>
-                <span class="flame-count">
-                  <!--
-                    Un campo di testo, non type="number": così il browser non blocca mai l'invio
-                    del modulo per un valore "non valido", e i controlli li fa JavaScript.
-                    value="9" è il valore a cui lo riporta reset().
-                    JavaScript completa l'aria-label con il massimo: "da 9 a 38".
-                  -->
-                  <input id="goal-flames-number" class="flame-count-input" type="text" inputmode="numeric" maxlength="2" value="9" autocomplete="off" aria-label="Numero di fiammine">
-                  <svg id="goal-flames-panel-icon" class="flame-count-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-                </span>
-                <button id="goal-flames-plus" class="flame-step" type="button" aria-label="Una fiammina in più">+</button>
-              </div>
+            <!--
+              Il progetto: solo la cartella, del colore del progetto scelto; il nome lo dice
+              il segnaposto della barra. Il pulsante apre l'elenco dei progetti.
+              L'id del progetto scelto va nel campo nascosto #goal-project.
+              JavaScript: js/scelta-progetto.js.
+            -->
+            <div id="goal-project-picker" class="project-picker">
+              <button id="goal-project-button" class="project-picker-button" type="button"
+                aria-haspopup="listbox" aria-expanded="false" aria-controls="goal-project-list">
+                <svg id="goal-project-icon" class="project-picker-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+                </svg>
+                <!-- Il nome non si vede, ma i lettori di schermo leggono "Progetto: Matematica". -->
+                <span class="solo-lettori">Progetto:</span>
+                <span id="goal-project-text" class="project-picker-text solo-lettori is-empty">Scegli un progetto</span>
+              </button>
+              <input id="goal-project" name="progetto" type="hidden">
+
+              <!-- L'elenco dei progetti: JavaScript crea una voce per ogni progetto, dal modello qui sotto. -->
+              <div id="goal-project-list" class="project-picker-list" role="listbox" aria-label="Progetti" hidden></div>
+
+              <!-- Il modello di una voce: cartella colorata, nome e spunta per quella scelta. -->
+              <template id="goal-project-option-template">
+                <button class="project-option" type="button" role="option" aria-selected="false" tabindex="-1">
+                  <svg class="project-option-folder" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7Z"></path>
+                  </svg>
+                  <span class="project-option-name"></span>
+                  <svg class="project-option-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+                  </svg>
+                </button>
+              </template>
             </div>
-            <!-- Il testo "3 fiammine · 1 h 15 min": JavaScript lo aggiorna a ogni scelta. -->
-            <output id="goal-flames-output" class="flame-output">1 fiammina · 25 min</output>
-          </fieldset>
+
+            <!--
+              Le azioni, separate da una riga sottile. Il cestino compare solo durante una
+              modifica (hidden lo nasconde in creazione). Salva è il pulsante di invio:
+              Invio nel nome fa la stessa cosa. La X chiude la barra, come Esc.
+            -->
+            <div class="goal-bar-actions">
+              <button id="delete-goal-button" class="goal-bar-action goal-bar-delete" type="button" aria-label="Elimina l'obiettivo" title="Elimina" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- Coperchio, maniglia, contenitore e due righe verticali formano il cestino. -->
+                  <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6M10 11v6M14 11v6"></path>
+                </svg>
+              </button>
+              <button id="save-goal-button" class="goal-bar-action goal-bar-save" type="submit" aria-label="Salva l'obiettivo" title="Salva (Invio)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- La freccia del tasto Invio: scende e torna a sinistra. -->
+                  <path d="M19 5v6a4 4 0 0 1-4 4H5M9 11l-4 4 4 4"></path>
+                </svg>
+              </button>
+              <button id="cancel-goal-button" class="goal-bar-action" type="button" aria-label="Annulla" title="Annulla (Esc)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M6 6l12 12M18 6L6 18"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
 
           <!--
             Compare quando nome e progetto sono uguali a quelli di un altro obiettivo:
@@ -359,23 +384,6 @@
           <p id="goal-duplicate-warning" class="project-form-warning" role="status" hidden>
             Esiste già un obiettivo con questo nome in questo progetto.
           </p>
-
-          <!-- I pulsanti del modulo. L'id di Salva serve a JavaScript per cambiarne il testo in "Salva modifiche". -->
-          <div class="project-form-actions">
-            <button id="save-goal-button" class="project-action project-action-primary" type="submit">Salva obiettivo</button>
-            <button id="cancel-goal-button" class="project-action" type="button">Annulla</button>
-            <!--
-              Elimina compare solo durante una modifica: si raggiunge dalla matita, in due passaggi,
-              così un clic sbagliato nella lista non cancella niente. hidden lo nasconde in creazione.
-            -->
-            <button id="delete-goal-button" class="project-action goal-delete-action" type="button" hidden>
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <!-- Coperchio, maniglia, contenitore e due righe verticali formano il cestino. -->
-                <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6M10 11v6M14 11v6"></path>
-              </svg>
-              Elimina
-            </button>
-          </div>
         </form>
 
         <!-- ===============================================================

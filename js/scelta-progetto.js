@@ -64,6 +64,8 @@ export function scriviProgetto(id) {
   testoProgetto.classList.toggle("is-empty", progetto === undefined);
   // La cartella del pulsante prende il colore del progetto; "" la riporta al colore del testo.
   iconaProgetto.style.color = progetto === undefined ? "" : progetto.colore;
+  // Il pulsante mostra solo la cartella: passando sopra con il mouse si legge il nome.
+  pulsanteProgetto.title = progetto === undefined ? "Scegli un progetto" : "Progetto: " + progetto.nome;
 
   // aria-selected segna la voce scelta: il CSS la mostra con la spunta.
   for (const voce of elenco.children) {

@@ -389,6 +389,10 @@ Il cambio di pagina non interrompe il timer: tornando a `index.html` riprende da
 `obiettivi.html` carica `js/menu.js` e `js/obiettivi.js` e riutilizza le classi di layout,
 modulo e pulsanti della pagina Progetti (`.projects-section`, `.project-form`, `.project-action`,
 `.project-item-action`), così le due pagine restano coerenti.
+Il modulo dei progetti è compatto: `gap: 10px` fra gli elementi, `padding: 20px`, campi alti
+circa 42px (`padding: 9px 12px`) e pulsanti da 40px. Le etichette stanno a 6px dal loro campo:
+`.project-form > label` ha `margin-bottom: -4px`. Il modulo degli obiettivi è invece una barra
+di una riga (vedi sotto).
 
 Un obiettivo ha la forma `{ id, nome, progettoId, data, fiammine, stato, minutiLavorati }` ed è salvato
 con la chiave `focusx.obiettivi.v1`. Del progetto salva solo l'id: nome e colore si leggono
@@ -396,13 +400,27 @@ da `focusx.progetti.v1` a ogni visualizzazione, quindi restano aggiornati se il 
 Se il progetto non esiste più, la voce mostra «Progetto eliminato».
 Senza progetti, il pulsante Crea obiettivo è nascosto e un avviso porta alla pagina Progetti.
 
-Il modulo contiene il nome, la scelta del progetto e la data prevista (vedi sotto)
-e otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
+Il modulo dell'obiettivo è una barra, `form.project-form.goal-bar`, con una riga `.goal-bar-row`:
+un'icona (il + o la matita, scelta dal CSS con `data-modo="nuovo"` o `"modifica"`), il nome
+senza bordo che prende lo spazio libero, le fiammine con il tempo accanto («1 h 15 min»), la data,
+la cartella del progetto e, dopo una riga sottile, le azioni: cestino (solo in modifica), Salva
+(il pulsante di invio, quindi anche Invio nel nome) e la X. Etichette e titolo ci sono ancora,
+ma con la classe `.solo-lettori`: invisibili, letti dai lettori di schermo. Il bordo della barra
+si schiarisce con `:focus-within`, quando il focus è su un suo elemento. `aggiornaSegnaposto()`
+scrive nel nome «Aggiungi un obiettivo a "Matematica", premi Invio per salvare» a ogni cambio
+di progetto. `apriModuloObiettivo` sceglie il primo progetto e la data di oggi; dopo
+`creaObiettivo` la barra resta aperta, con il nome vuoto e una fiammina, per aggiungerne un altro.
+Esc la chiude con `chiudiModuloConEsc`, un ascoltatore sul form: parte prima di quelli sul
+documento, quindi vede ancora aperte le finestrelle di calendario, progetti e fiammine, e in quel
+caso lascia che Esc chiuda solo quelle. Sotto i 480px la barra va su tre righe: nome; fiammine
+e tempo; data, progetto e azioni.
+
+Le fiammine sono otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
 `<use href="#flame-icon">`, che richiama un unico `symbol` definito all'inizio del `body`.
 Il radio è invisibile ma resta usabile con Tab e frecce; il CSS spegne le fiammine dopo quella
 scelta con `.flame-option:has(input:checked) ~ .flame-option`. `minutiPerFiammina`, in `js/fiammine.js`, vale 25:
-`formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` del modulo
-e nelle voci.
+`formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` accanto
+alle fiammine (con «3 fiammine · 1 h 15 min» nel suo `title`) e nelle voci.
 
 Per la data prevista, il campo data del browser (`input type="date"`) ha un calendario che
 il CSS non può cambiare.
@@ -425,7 +443,8 @@ meno animazioni (`prefers-reduced-motion`).
 Anche il progetto non usa il menu a tendina del browser (`select`): il suo elenco non si può
 adattare allo stile del sito e le sue voci possono contenere solo testo. Al suo posto c'è
 `#goal-project-picker`, gestito da `js/scelta-progetto.js` con lo stesso schema del calendario:
-un pulsante `#goal-project-button` (cartella colorata, nome, freccia), un campo nascosto
+un pulsante `#goal-project-button` (solo la cartella colorata: il nome è `.solo-lettori` e nel
+`title`), un campo nascosto
 `#goal-project` con l'id del progetto scelto e un elenco `#goal-project-list` (`role="listbox"`).
 `apriModuloObiettivo` chiama `riempiProgetti(progetti)`, che crea una voce per progetto dal
 `<template id="goal-project-option-template">` e sceglie il primo; `apriModificaObiettivo` chiama
@@ -518,19 +537,25 @@ Il cerchio è vuoto come una casella da spuntare: la spunta ha `opacity: 0` e `s
 `aria-pressed="true"` diventa visibile e cresce fino a `scale: 1`. La stessa regola, con
 `:is(.goal-list, .home-goal)`, vale per il cerchio della Home.
 
-La modifica funziona come quella dei progetti. La matita `.goal-edit`, discreta (grigia, senza bordo),
-chiama `apriModificaObiettivo(id)`: chiude e riapre il modulo, salva l'id in `idInModifica`, compila
-nome, progetto, data e fiammine e cambia titolo e pulsante in «Modifica obiettivo» e «Salva modifiche».
+La matita `.goal-edit`, discreta (grigia, senza bordo), chiama `apriModificaObiettivo(id)`: chiude
+e riapre il modulo, salva l'id in `idInModifica`, compila nome, progetto, data e fiammine, cambia
+il titolo in «Modifica obiettivo» e `data-modo` in `"modifica"`. Poi `mettiModuloNellaVoce()` sposta
+la barra dentro la lista, subito prima della voce nascosta: un `ul` può contenere solo `li`, quindi
+la barra sta in `postoModifica`, un `li.goal-edit-slot` creato una volta sola. `mostraObiettivi`
+svuota la lista con `replaceChildren`, ma `postoModifica` resta in memoria e viene rimesso al suo
+posto; `rimettiModuloAlSuoPosto()`, chiamata da `chiudiModuloObiettivo`, riporta la barra sopra la
+lista con `insertBefore` (il posto è ricordato in `casaDelModulo` e `dopoIlModulo`).
 Fino a 8 fiammine basta `elements.fiammine.value = String(n)`; oltre, si seleziona la nona e si chiama
 `impostaPiuFiammine(n)`. `nascondiVoceInModifica()` nasconde la voce in modifica, anche dopo
 `mostraObiettivi`. Il submit chiama `inviaModuloObiettivo`, che raccoglie i dati e sceglie fra
 `creaObiettivo(dati)` e `modificaObiettivo(id, dati)`; quest'ultima usa `map` e
 `{ ...obiettivo, ...dati }`, così id e stato restano gli stessi. `chiudiModuloObiettivo` riporta
-`idInModifica` a `null` e il modulo alla creazione. Dopo il salvataggio il focus torna sulla matita.
+`idInModifica` a `null` e il modulo alla creazione. Dopo il salvataggio, e dopo Annulla
+(`annullaModulo`, con la X o con Esc), il focus torna sulla matita.
 
-Per eliminare un obiettivo si apre la sua modifica: il pulsante `#delete-goal-button` è `hidden` in
-creazione e visibile solo in modifica, in fondo a destra (`margin-left: auto`) e rosso al passaggio
-del mouse. Serve un passaggio in più rispetto a un cestino nella lista, così un clic sbagliato non
+Per eliminare un obiettivo si apre la sua modifica: il cestino `#delete-goal-button` è `hidden` in
+creazione e visibile solo in modifica, fra le azioni della barra, e rosso al passaggio del mouse.
+Serve un passaggio in più rispetto a un cestino nella lista, così un clic sbagliato non
 cancella niente e la scheda resta con due soli pulsanti. `eliminaObiettivo()` toglie l'obiettivo
 in `idInModifica` con `filter`, salva, chiude il modulo, ridisegna la lista e sposta il focus su
 Crea obiettivo.
@@ -785,8 +810,11 @@ Per gli obiettivi controlla che:
   `index.html` senza `?avvia`; su un obiettivo completato lo riapra.
 - Uscendo dalla Home con il timer avviato, l'obiettivo non resti in corso nella pagina Obiettivi.
 - Rinominando o ricolorando un progetto, i suoi obiettivi si aggiornino.
-- La matita apra il modulo compilato, anche con più di 8 fiammine, e nasconda la voce; Annulla la
-  faccia ricomparire. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
+- Crea obiettivo apra la barra con il segnaposto del progetto e «Oggi»; scrivendo il nome e premendo
+  Invio l'obiettivo compaia in cima e la barra resti aperta, vuota; Esc o la X la chiudano.
+- La matita trasformi la voce nella barra compilata, nello stesso punto della lista, anche con più
+  di 8 fiammine; con un calendario o un elenco aperto Esc chiuda solo quello, poi Esc annulli
+  e la voce ricompaia. Su telefono la barra vada su tre righe senza uscire dallo schermo. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
 - Mettendo in corso un obiettivo, quello che era in corso torni non completato.
 - Con meno di 60 secondi lavorati il cerchio sia disattivato e al sessantesimo si attivi; un obiettivo già completato si possa riaprire,
   e poi il cerchio si disattivi.
@@ -853,9 +881,10 @@ Per il timer attuale controlla anche che:
 
 Per il calendario della data controlla che:
 
-- Il campo mostri «Scegli una data» in grigio e, cliccato, apra il calendario sul mese di oggi.
+- La barra parta da «Oggi» e, cliccando la data, apra il calendario sul mese di oggi.
 - Le frecce ‹ › cambino mese e il giorno 1 cada sotto il giorno della settimana giusto.
-- Un clic su un giorno lo scriva nel campo («3 novembre 2026») e chiuda il calendario.
+- Un clic su un giorno lo scriva nella barra («3 nov», con l'anno solo se non è quello di adesso)
+  e chiuda il calendario.
 - Da tastiera le frecce si muovano fra i giorni, anche oltre la fine del mese; Esc chiuda.
 - Salvando senza data il calendario si apra e l'obiettivo non venga creato.
 - Annulla svuoti la data; la matita di un obiettivo la riempia.
@@ -863,13 +892,14 @@ Per il calendario della data controlla che:
 
 Per la scelta del progetto controlla che:
 
-- Il campo mostri il primo progetto, con la cartella del suo colore; un clic apra l'elenco
-  con la spunta sul progetto scelto e la freccia girata verso l'alto.
-- Un clic su una voce la scelga, cambi il colore della cartella e chiuda l'elenco.
+- La cartella abbia il colore del primo progetto; un clic apra l'elenco con la spunta
+  sul progetto scelto.
+- Un clic su una voce la scelga, cambi il colore della cartella e il segnaposto della barra
+  e chiuda l'elenco.
 - Con un nome già usato in un progetto, cambiare progetto faccia sparire l'avviso dei doppioni.
 - Da tastiera la freccia giù sul campo apra l'elenco, le frecce si muovano, Invio scelga ed Esc chiuda.
-- Modificando un obiettivo con il progetto eliminato, il campo mostri «Scegli un progetto»
-  e Salva apra l'elenco.
+- Modificando un obiettivo con il progetto eliminato, la cartella sia grigia («Scegli un progetto»
+  passandoci sopra) e Salva apra l'elenco.
 
 Per le impostazioni controlla che:
 
