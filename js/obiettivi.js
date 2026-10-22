@@ -41,11 +41,11 @@ import {
   disegnaFiammine,
   mostraTempo,
   lavoroInsufficiente
-} from "./fiammine.js?v=imp-1";
-import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=imp-1";
+} from "./fiammine.js?v=cinque-1";
+import { leggiTimer, scriviTimer, secondiNonAnnunciati } from "./timer-salvato.js?v=cinque-1";
 import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
-import { apriCalendario, chiudiCalendario, scriviData } from "./calendario.js?v=barra-1";
-import { apriProgetti, chiudiProgetti, riempiProgetti, scriviProgetto } from "./scelta-progetto.js?v=barra-1";
+import { apriCalendario, chiudiCalendario, scriviData } from "./calendario.js?v=cinque-1";
+import { apriProgetti, chiudiProgetti, riempiProgetti, scriviProgetto } from "./scelta-progetto.js?v=cinque-1";
 
 
 // =====================================================================
@@ -474,12 +474,12 @@ function salvaTempoInDiretta() {
 
 // =====================================================================
 // SEZIONE SCELTA DELLE FIAMMINE
-// Il tempo previsto nel modulo. Le prime otto fiammine sono radio da cliccare;
-// la nona, con il +, vale da 9 al massimo e si regola con − e +
+// Il tempo previsto nel modulo. Le prime cinque fiammine sono radio da cliccare;
+// la sesta, con il +, vale da 6 al massimo e si regola con − e +
 // o scrivendo il numero nella finestrella.
 // =====================================================================
 
-// Aggiorna il tempo accanto alle fiammine ("1 h 15 min") e il segno sulla nona.
+// Aggiorna il tempo accanto alle fiammine ("1 h 15 min") e il segno sulla sesta.
 function aggiornaTestoFiammine() {
   // Il valore dei radio è testo: Number lo trasforma nel numero di fiammine.
   const fiammine = Number(moduloObiettivo.elements.fiammine.value);
@@ -487,21 +487,21 @@ function aggiornaTestoFiammine() {
   // Nella barra si legge solo il tempo; passando sopra con il mouse, anche le fiammine.
   testoFiammine.textContent = formattaTempo(fiammine);
   testoFiammine.title = fiammine + parola + " · " + formattaTempo(fiammine);
-  // Sulla nona fiammina: "+" finché non è scelta, poi quante fiammine ci sono oltre le otto.
+  // Sulla sesta fiammina: "+" finché non è scelta, poi quante fiammine ci sono oltre le cinque.
   segnoPiuFiammine.textContent = radioPiuFiammine.checked ? "+" + (fiammine - fiammineVisibili) : "+";
 }
 
-// Dà alla nona fiammina un numero (da 9 al massimo) e aggiorna tutto ciò che lo mostra.
+// Dà alla sesta fiammina un numero (da 6 al massimo) e aggiorna tutto ciò che lo mostra.
 function impostaPiuFiammine(fiammine) {
-  // Il value della nona fiammina diventa il numero scelto: elements.fiammine.value lo leggerà.
+  // Il value della sesta fiammina diventa il numero scelto: elements.fiammine.value lo leggerà.
   radioPiuFiammine.value = String(fiammine);
   radioPiuFiammine.setAttribute("aria-label", fiammine + " fiammine, " + formattaTempo(fiammine));
   campoNumeroFiammine.value = fiammine;
-  // L'icona accanto al numero cresce con le fiammine: 1 con 9, fino a 1,5 al massimo.
+  // L'icona accanto al numero cresce con le fiammine: 1 con 6, fino a 1,5 al massimo.
   // La crescita è una proporzione dell'intervallo, così resta piccola qualunque sia il limite.
   const avanzamento = (fiammine - fiammineVisibili - 1) / (fiammineMassime - fiammineVisibili - 1);
   iconaFinestrella.style.setProperty("--crescita", 1 + avanzamento * 0.5);
-  // − e + si disabilitano ai due estremi: non si scende sotto 9 né si supera il massimo.
+  // − e + si disabilitano ai due estremi: non si scende sotto 6 né si supera il massimo.
   pulsanteMenoFiammine.disabled = fiammine <= fiammineVisibili + 1;
   pulsantePiuFiammine.disabled = fiammine >= fiammineMassime;
   aggiornaTestoFiammine();
@@ -543,7 +543,7 @@ function scriviNumeroFiammine() {
 // Quando si esce dal numero o si preme Invio: riporta il numero dentro i limiti.
 function confermaNumeroFiammine() {
   // Quando si esce dal campo o si preme Invio, un numero fuori dai limiti viene corretto:
-  // sotto 9 diventa 9, oltre il massimo diventa il massimo. Un campo vuoto torna al valore scelto.
+  // sotto 6 diventa 6, oltre il massimo diventa il massimo. Un campo vuoto torna al valore scelto.
   const scritto = Number(campoNumeroFiammine.value);
   let fiammine = Number(radioPiuFiammine.value);
   if (campoNumeroFiammine.value !== "") {
@@ -562,10 +562,10 @@ function gestisciTastiNumeroFiammine(evento) {
   }
 }
 
-// Dopo ogni scelta di fiammine aggiorna il testo; con una delle prime otto chiude la finestrella.
+// Dopo ogni scelta di fiammine aggiorna il testo; con una delle prime cinque chiude la finestrella.
 function gestisciSceltaFiammine(evento) {
-  // Scegliendo una delle prime otto fiammine, la finestrella non serve più
-  // e la nona fiammina torna a 9: riaprendola si riparte da lì.
+  // Scegliendo una delle prime cinque fiammine, la finestrella non serve più
+  // e la sesta fiammina torna a 6: riaprendola si riparte da lì.
   if (evento.target.name === "fiammine" && evento.target !== radioPiuFiammine) {
     chiudiFinestrellaFiammine();
     impostaPiuFiammine(fiammineVisibili + 1);
@@ -574,7 +574,7 @@ function gestisciSceltaFiammine(evento) {
 }
 
 
-// Scrive nel numero della finestrella fin dove si può arrivare: da 9 al massimo.
+// Scrive nel numero della finestrella fin dove si può arrivare: da 6 al massimo.
 function scriviLimiteFiammine() {
   campoNumeroFiammine.setAttribute("aria-label", "Numero di fiammine, da " + (fiammineVisibili + 1) + " a " + fiammineMassime);
 }
@@ -584,7 +584,7 @@ function scriviLimiteFiammine() {
 function applicaNuoveDurate() {
   mostraObiettivi();
   scriviLimiteFiammine();
-  // La nona fiammina non può superare il nuovo massimo; impostaPiuFiammine aggiorna anche
+  // La sesta fiammina non può superare il nuovo massimo; impostaPiuFiammine aggiorna anche
   // il tempo accanto alle fiammine ("1 h 30 min").
   impostaPiuFiammine(Math.min(Number(radioPiuFiammine.value), fiammineMassime));
 }
@@ -592,13 +592,13 @@ function applicaNuoveDurate() {
 
 // =====================================================================
 // SEZIONE FINESTRELLA DELLE FIAMMINE
-// Apertura e chiusura del piccolo pannello accanto alla nona fiammina:
-// con un clic sulla nona, un clic fuori o il tasto Esc.
+// Apertura e chiusura del piccolo pannello accanto alla sesta fiammina:
+// con un clic sulla sesta, un clic fuori o il tasto Esc.
 // =====================================================================
 
-// Apre o chiude la finestrella con un clic sulla nona fiammina.
+// Apre o chiude la finestrella con un clic sulla sesta fiammina.
 function alternaFinestrellaFiammine(evento) {
-  // Il clic sulla nona fiammina la seleziona e apre la finestrella; un secondo clic la chiude.
+  // Il clic sulla sesta fiammina la seleziona e apre la finestrella; un secondo clic la chiude.
   finestrellaFiammine.hidden = !finestrellaFiammine.hidden;
   // Con il mouse o il dito (detail > 0) il cursore va subito nel numero, già selezionato:
   // basta scrivere. Con le frecce della tastiera detail è 0 e il focus resta sulle fiammine.
@@ -613,9 +613,9 @@ function chiudiFinestrellaFiammine() {
   finestrellaFiammine.hidden = true;
 }
 
-// Chiude la finestrella quando si clicca fuori da lei e dalla nona fiammina.
+// Chiude la finestrella quando si clicca fuori da lei e dalla sesta fiammina.
 function chiudiFinestrellaFuori(evento) {
-  // Come per il menu: chiudiamo solo se il clic è fuori dalla finestrella e dalla nona fiammina.
+  // Come per il menu: chiudiamo solo se il clic è fuori dalla finestrella e dalla sesta fiammina.
   if (!finestrellaFiammine.hidden
       && !finestrellaFiammine.contains(evento.target)
       && !radioPiuFiammine.parentElement.contains(evento.target)) {
@@ -623,11 +623,11 @@ function chiudiFinestrellaFuori(evento) {
   }
 }
 
-// Chiude la finestrella con Esc e riporta il focus sulla nona fiammina.
+// Chiude la finestrella con Esc e riporta il focus sulla sesta fiammina.
 function chiudiFinestrellaConEsc(evento) {
   if (evento.key === "Escape" && !finestrellaFiammine.hidden) {
     chiudiFinestrellaFiammine();
-    // Il focus torna sulla nona fiammina, da cui la finestrella si era aperta.
+    // Il focus torna sulla sesta fiammina, da cui la finestrella si era aperta.
     radioPiuFiammine.focus();
   }
 }
@@ -718,7 +718,7 @@ function apriModificaObiettivo(id) {
   scriviData(obiettivo.data);
 
   if (obiettivo.fiammine > fiammineVisibili) {
-    // Oltre otto il radio con quel valore non esiste: si sceglie la nona fiammina
+    // Oltre cinque il radio con quel valore non esiste: si sceglie la sesta fiammina
     // e impostaPiuFiammine le dà il numero giusto, come farebbero − e +.
     radioPiuFiammine.checked = true;
     impostaPiuFiammine(obiettivo.fiammine);
@@ -755,7 +755,7 @@ function chiudiModuloObiettivo() {
   scriviData("");
   chiudiCalendario();
   chiudiProgetti();
-  // reset non riporta il value della nona fiammina, cambiato da JavaScript: lo facciamo noi.
+  // reset non riporta il value della sesta fiammina, cambiato da JavaScript: lo facciamo noi.
   chiudiFinestrellaFiammine();
   impostaPiuFiammine(fiammineVisibili + 1);
   campoNomeObiettivo.setCustomValidity("");

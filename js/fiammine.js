@@ -23,9 +23,9 @@ import { eventoImpostazioni, leggiImpostazioni } from "./impostazioni-salvate.js
 
 // Quanti minuti vale una fiammina: 25 finché non si cambia nelle Impostazioni.
 export let minutiPerFiammina = leggiImpostazioni().minutiFiammina;
-// Le prime otto fiammine si cliccano direttamente; dalla nona si sceglie nella finestrella.
-// Nelle liste, oltre otto si vede una sola fiammina seguita dal numero.
-export const fiammineVisibili = 8;
+// Le prime cinque fiammine si cliccano direttamente; dalla sesta si sceglie nella finestrella.
+// Nelle liste, oltre cinque si vede una sola fiammina seguita dal numero.
+export const fiammineVisibili = 5;
 // Il limite è di tempo, non di fiammine: al massimo 16 ore, sia per la previsione
 // sia per il tempo lavorato. Math.floor tiene solo le fiammine intere
 // che ci stanno: con 25 minuti sono 38 (15 h 50 min), perché 39 supererebbero le 16 ore.
@@ -83,14 +83,14 @@ export function formattaNumeroFiammine(fiammine) {
 
 // =====================================================================
 // SEZIONE DISEGNO DELLE FIAMMINE E DEL TEMPO
-// Mostra le fiammine di un obiettivo negli otto svg di una voce,
+// Mostra le fiammine di un obiettivo nei cinque svg di una voce,
 // quante se ne vedono e quale aspetto ha ognuna, e il suo tempo:
 // lavorato / previsto.
 // =====================================================================
 
-// Disegna le fiammine di un obiettivo: icone sono gli otto svg, numero lo span del 🔥12.
+// Disegna le fiammine di un obiettivo: icone sono i cinque svg, numero lo span del 🔥12.
 export function disegnaFiammine(icone, numero, obiettivo) {
-  // Fino a otto fiammine si vedono tutte; oltre, una sola fiammina seguita dal numero: 🔥12.
+  // Fino a cinque fiammine si vedono tutte; oltre, una sola fiammina seguita dal numero: 🔥12.
   const tante = obiettivo.fiammine > fiammineVisibili;
   const fiammineDaMostrare = tante ? 1 : obiettivo.fiammine;
   // Ogni fiammina ha uno di tre aspetti: vuota (da fare), is-current (quella da completare,
@@ -101,7 +101,7 @@ export function disegnaFiammine(icone, numero, obiettivo) {
   // Math.floor tiene solo le fiammine intere: con 60 minuti lavorati e fiammine da 25 ne sono fatte 2.
   // Math.min non ne fa contare più di quelle previste, se si lavora oltre.
   const fiammineFatte = Math.min(obiettivo.fiammine, Math.floor(obiettivo.minutiLavorati / minutiPerFiammina));
-  // Oltre otto, la sola fiammina visibile le rappresenta tutte: è fatta solo quando
+  // Oltre cinque, la sola fiammina visibile le rappresenta tutte: è fatta solo quando
   // lo sono tutte, e altrimenti è lei quella da completare.
   const posizioneDaCompletare = tante ? 0 : fiammineFatte;
 
@@ -117,7 +117,7 @@ export function disegnaFiammine(icone, numero, obiettivo) {
 
     // Quanto è piena la fiammina, da 0 a 1, con il tempo lavorato oltre le fiammine fatte.
     // Con 55 minuti su 4 fiammine: le prime 2 sono fatte, la terza ha 55 - 50 = 5 minuti
-    // su 25, cioè 0.2, e la quarta resta vuota. Oltre otto, la sola fiammina visibile
+    // su 25, cioè 0.2, e la quarta resta vuota. Oltre cinque, la sola fiammina visibile
     // si riempie con tutto il lavorato rispetto a tutto il previsto: 1 h su 5 h è 0.2.
     let riempimento = 0;
     if (tante) {

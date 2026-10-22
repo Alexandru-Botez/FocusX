@@ -40,7 +40,7 @@ import {
   disegnaFiammine,
   mostraTempo,
   lavoroInsufficiente
-} from "./fiammine.js?v=imp-1";
+} from "./fiammine.js?v=cinque-1";
 import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 
 

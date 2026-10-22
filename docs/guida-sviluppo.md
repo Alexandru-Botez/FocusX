@@ -413,7 +413,7 @@ Senza progetti, il pulsante Crea obiettivo è nascosto e un avviso porta alla pa
 
 Il modulo dell'obiettivo è una barra, `form.project-form.goal-bar`, con una riga `.goal-bar-row`:
 un'icona (il + o la matita, scelta dal CSS con `data-modo="nuovo"` o `"modifica"`), il nome
-senza bordo che prende lo spazio libero, le fiammine con il tempo accanto («1 h 15 min»), la data,
+senza bordo che prende lo spazio libero, il tempo previsto («1 h 15 min») e le fiammine, la data,
 la cartella del progetto e, dopo una riga sottile, le azioni: cestino (solo in modifica), Salva
 (il pulsante di invio, quindi anche Invio nel nome) e la X. Etichette e titolo ci sono ancora,
 ma con la classe `.solo-lettori`: invisibili, letti dai lettori di schermo. Il bordo della barra
@@ -426,12 +426,14 @@ documento, quindi vede ancora aperte le finestrelle di calendario, progetti e fi
 caso lascia che Esc chiuda solo quelle. Sotto i 480px la barra va su tre righe: nome; fiammine
 e tempo; data, progetto e azioni.
 
-Le fiammine sono otto radio `name="fiammine"`. Ogni radio è dentro un `label.flame-option` con un'icona
+Le fiammine sono cinque radio `name="fiammine"`, più la sesta (vedi sotto). Ogni radio è dentro un `label.flame-option` con un'icona
 `<use href="#flame-icon">`, che richiama un unico `symbol` definito all'inizio del `body`.
 Il radio è invisibile ma resta usabile con Tab e frecce; il CSS spegne le fiammine dopo quella
 scelta con `.flame-option:has(input:checked) ~ .flame-option`. `minutiPerFiammina`, in `js/fiammine.js`, vale 25:
-`formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` accanto
-alle fiammine (con «3 fiammine · 1 h 15 min» nel suo `title`) e nelle voci.
+`formattaTempo(fiammine)` scrive il totale, per esempio «2 h 5 min», nell'`output` prima
+delle fiammine (con «3 fiammine · 1 h 15 min» nel suo `title`) e nelle voci. L'`output` sta a
+sinistra apposta: quando il testo si allunga (da «50 min» a «1 h 15 min») cresce verso il nome,
+e le fiammine non si spostano sotto il mouse.
 
 Per la data prevista, il campo data del browser (`input type="date"`) ha un calendario che
 il CSS non può cambiare.
@@ -466,8 +468,8 @@ JavaScript non genera eventi: a ogni scelta il modulo fa partire `input`, che ri
 richiama `controllaDoppione`. Sul campo chiuso le frecce aprono l'elenco; dentro, frecce, Home e
 Fine si muovono fra le voci.
 
-Oltre le prime otto fiammine (`fiammineVisibili`), la nona `#goal-flames-more` è un radio come
-le altre, ma il suo `value` cambia: è il numero scelto, da 9 a `fiammineMassime`, quindi
+Oltre le prime cinque fiammine (`fiammineVisibili`, in `js/fiammine.js`), la sesta `#goal-flames-more`
+è un radio come le altre, ma il suo `value` cambia: è il numero scelto, da 6 a `fiammineMassime`, quindi
 `elements.fiammine.value` funziona senza casi speciali. Il clic la seleziona e apre o chiude
 `#goal-flames-panel`, una finestrella con `−`, il numero con la sua icona e `+`.
 Il numero è un campo di testo, `#goal-flames-number` (`inputmode="numeric"`, non `type="number"`,
@@ -475,18 +477,18 @@ così il browser non blocca mai l'invio del modulo). Aprendo la finestrella con 
 (`evento.detail > 0`) il campo riceve il focus con il numero selezionato, pronto da riscrivere.
 `scriviNumeroFiammine()` toglie i caratteri non numerici con `replace(/\D/g, "")` e applica
 il numero mentre si scrive, solo se è valido; `confermaNumeroFiammine()`, all'evento `change`
-o con Invio, porta un numero fuori dai limiti a 9 o al massimo e un campo vuoto al valore
+o con Invio, porta un numero fuori dai limiti a 6 o al massimo e un campo vuoto al valore
 precedente. Invio nel campo non invia il modulo: `preventDefault()` lo ferma.
 `cambiaPiuFiammine(differenza)` aggiorna il valore con `impostaPiuFiammine`, che disabilita
-`−` a 9 e `+` al massimo, fa crescere l'icona con `--crescita` e le dà un guizzo con `animate()`,
-saltato se `matchMedia` trova `prefers-reduced-motion`. Il segno sulla nona diventa «+4» per 12.
+`−` a 6 e `+` al massimo, fa crescere l'icona con `--crescita` e le dà un guizzo con `animate()`,
+saltato se `matchMedia` trova `prefers-reduced-motion`. Il segno sulla sesta diventa «+7» per 12.
 Il limite è di tempo: `oreMassime`, in `js/fiammine.js`, vale 16 e `fiammineMassime` si calcola con
 `Math.floor(oreMassime * 60 / minutiPerFiammina)`, cioè 38 fiammine con 25 minuti (15 h 50 min).
 Le 16 ore varranno anche per il tempo trascorso, quando ci sarà lo stato «in corso».
-La finestrella si chiude con Esc, con un clic fuori o scegliendo una delle prime otto,
-che riporta la nona a 9. `reset()` non ripristina un `value` cambiato da JavaScript:
-`chiudiModuloObiettivo` richiama `impostaPiuFiammine(9)`. Su telefono le fiammine sono da 28px
-e la finestrella si apre sopra la nona invece che a destra.
+La finestrella si chiude con Esc, con un clic fuori o scegliendo una delle prime cinque,
+che riporta la sesta a 6. `reset()` non ripristina un `value` cambiato da JavaScript:
+`chiudiModuloObiettivo` richiama `impostaPiuFiammine(fiammineVisibili + 1)`. Su telefono le fiammine sono da 28px
+e la finestrella si apre sotto la sesta.
 
 `mostraObiettivi(idNuovo)` copia il `template#goal-item-template`. Nella voce restano visibili
 solo tante fiammine quante quelle scelte (`toggleAttribute("hidden")`, perché gli `svg` non hanno
@@ -498,7 +500,7 @@ la proprietà `hidden`). Ogni fiammina ha tre aspetti, decisi da `applicaStato` 
 - `is-done`, se è fatta: piena, con un alone `filter: drop-shadow` dello stesso colore, senza animazione.
   È arancione da completato e azzurra (`--goal-progress`) mentre l'obiettivo è in corso.
 
-Oltre otto fiammine il numero `.goal-flames-count` (🔥12) è arancione come la fiammina;
+Oltre cinque fiammine il numero `.goal-flames-count` (🔥12) è arancione come la fiammina;
 mentre l'obiettivo è in corso diventa azzurro insieme a lei, nella lista e nella pillola della Home.
 
 Le prime `fiammineFatte` sono fatte e quella in posizione `fiammineFatte` è da completare.
@@ -508,11 +510,11 @@ chi finisce prima del previsto vede solo le fiammine davvero lavorate.
 Ogni fiammina della lista e della Home ha due `use`: il primo disegna il contorno, il secondo,
 `.flame-fill`, è pieno e senza contorno. `disegnaFiammine` calcola per ogni fiammina un
 `riempimento` da 0 a 1: per quella in posizione `fiammineFatte` è il tempo lavorato oltre le
-fiammine fatte diviso 25 (55 minuti su 4 fiammine: 5 / 25 = 0,2); oltre otto, per l'unica
+fiammine fatte diviso 25 (55 minuti su 4 fiammine: 5 / 25 = 0,2); oltre cinque, per l'unica
 fiammina, è il lavorato diviso il previsto. Lo scrive come variabile CSS con
 `style.setProperty("--riempimento", "20%")`, e il CSS taglia `.flame-fill` dall'alto con
 `clip-path: inset(calc(100% - var(--riempimento)) 0 0 0)`: resta visibile solo la parte bassa.
-Nella Home, mentre si lavora, il riempimento sale a ogni secondo. Oltre otto fiammine se ne vede una sola: è fatta solo quando lo sono
+Nella Home, mentre si lavora, il riempimento sale a ogni secondo. Oltre cinque fiammine se ne vede una sola: è fatta solo quando lo sono
 tutte, altrimenti è lei quella da completare. La data è mostrata con `formattaData`, che aggiunge `T00:00` per leggerla
 come mezzanotte locale, e diventa rossa (`is-late`) se è passata e l'obiettivo non è completato:
 `dataDiOggi()` produce lo stesso formato `AAAA-MM-GG`, così le date si confrontano come testo.
@@ -547,6 +549,10 @@ elemento del `li`, un cerchio a sinistra del nome (`border-radius: 50%`), e `.go
 Le voci sono compatte come la barra: `padding: 8px`, nome e dettagli a 2px l'uno dall'altro,
 dettagli in `0.8125rem` con icone da 14px, cerchio da 28px (il suo centro cade sotto il + della barra)
 e matita e play da 32px con angoli da 8px, come le azioni della barra. La lista ha `gap: 8px`.
+Nei dettagli le fiammine stanno a 8px dal tempo, e fra tempo, data e progetto c'è un puntino grigio:
+`.goal-list .goal-details > * + *::before` con `content: "·"` (`* + *` sono tutti i figli tranne
+il primo). Sotto i 480px i dettagli vanno a capo, quindi il puntino sparisce (`content: none`)
+e resta uno spazio di 12px.
 Il cerchio è vuoto come una casella da spuntare: la spunta ha `opacity: 0` e `scale: 0.6`, e solo con
 `aria-pressed="true"` diventa visibile e cresce fino a `scale: 1`. La stessa regola, con
 `:is(.goal-list, .home-goal)`, vale per il cerchio della Home.
@@ -559,7 +565,7 @@ la barra sta in `postoModifica`, un `li.goal-edit-slot` creato una volta sola. `
 svuota la lista con `replaceChildren`, ma `postoModifica` resta in memoria e viene rimesso al suo
 posto; `rimettiModuloAlSuoPosto()`, chiamata da `chiudiModuloObiettivo`, riporta la barra sopra la
 lista con `insertBefore` (il posto è ricordato in `casaDelModulo` e `dopoIlModulo`).
-Fino a 8 fiammine basta `elements.fiammine.value = String(n)`; oltre, si seleziona la nona e si chiama
+Fino a 5 fiammine basta `elements.fiammine.value = String(n)`; oltre, si seleziona la sesta e si chiama
 `impostaPiuFiammine(n)`. `nascondiVoceInModifica()` nasconde la voce in modifica, anche dopo
 `mostraObiettivi`. Il submit chiama `inviaModuloObiettivo`, che raccoglie i dati e sceglie fra
 `creaObiettivo(dati)` e `modificaObiettivo(id, dati)`; quest'ultima usa `map` e
@@ -682,7 +688,7 @@ Chi dipende dalle durate ascolta quell'evento:
 - `js/timer.js`, se la sessione non è avviata, la prepara di nuovo con `impostaModalita`;
 - `js/home-obiettivo.js` ridisegna il blocco e la finestrella degli obiettivi;
 - `js/obiettivi.js` (`applicaNuoveDurate`) ridisegna la lista, aggiorna il limite della
-  finestrella delle fiammine e riporta la nona fiammina entro il nuovo massimo.
+  finestrella delle fiammine e riporta la sesta fiammina entro il nuovo massimo.
 
 Gli obiettivi tengono il loro numero di fiammine: cambiando la durata cambia il tempo previsto,
 e le fiammine fatte si ricalcolano dai minuti lavorati. `caricaObiettivi` non controlla più il
@@ -804,17 +810,17 @@ Per gli obiettivi controlla che:
 - Il menu a tendina elenchi tutti i progetti e un nome vuoto non venga accettato.
 - La cartella nel campo del progetto abbia il colore del progetto scelto e cambi con la scelta.
 - Le fiammine si accendano fino a quella scelta e il testo mostri il tempo, per esempio «3 fiammine · 1 h 15 min».
-- Le nove fiammine stiano in una riga anche su un viewport di 375 pixel.
-- La nona apra la finestrella; − sia disabilitato a 9 e + a 38; il testo mostri, per esempio,
-  «12 fiammine · 5 h» e la nona «+4». Esc, un clic fuori o una delle prime otto la chiudano.
+- Le sei fiammine stiano in una riga anche su un viewport di 375 pixel.
+- La sesta apra la finestrella; − sia disabilitato a 6 e + a 38; il testo mostri, per esempio,
+  «5 h» (e «12 fiammine · 5 h» passandoci sopra) e la sesta «+7». Esc, un clic fuori o una delle prime cinque la chiudano.
 - Scrivendo nel numero della finestrella il valore cambi subito; 50 diventi 38, 3 diventi 9,
   un campo vuoto torni al numero precedente, e Invio non salvi l'obiettivo.
 - Un obiettivo da 12 fiammine mostri nell'elenco una sola fiammina seguita da «12»;
-  fino a 8 fiammine si vedano tutte. Le fiammine siano vuote; in corso la prima diventi azzurra
+  fino a 5 fiammine si vedano tutte. Le fiammine siano vuote; in corso la prima diventi azzurra
   e tremoli; da completato siano piene e accese solo quelle lavorate, senza animazione.
 - Con 55 minuti lavorati su 4 fiammine si vedano due fiammine piene, la terza piena per
   un quinto dal basso e l'ultima vuota; nella Home il riempimento salga mentre il timer conta.
-- Con più di 8 fiammine, in corso diventino azzurri sia la fiammina sia il numero,
+- Con più di 5 fiammine, in corso diventino azzurri sia la fiammina sia il numero,
   nella lista e nella pillola della Home.
 - Il nuovo obiettivo compaia in cima con nome e colore del progetto, data, fiammine e tempo.
 - Senza data il modulo non venga inviato e il browser segnali il campo; una data passata sia rossa
@@ -827,7 +833,7 @@ Per gli obiettivi controlla che:
 - Crea obiettivo apra la barra con il segnaposto del progetto e «Oggi»; scrivendo il nome e premendo
   Invio l'obiettivo compaia in cima e la barra resti aperta, vuota; Esc o la X la chiudano.
 - La matita trasformi la voce nella barra compilata, nello stesso punto della lista, anche con più
-  di 8 fiammine; con un calendario o un elenco aperto Esc chiuda solo quello, poi Esc annulli
+  di 5 fiammine; con un calendario o un elenco aperto Esc chiuda solo quello, poi Esc annulli
   e la voce ricompaia. Su telefono la barra vada su tre righe senza uscire dallo schermo. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
 - Mettendo in corso un obiettivo, quello che era in corso torni non completato.
 - Con meno di 60 secondi lavorati il cerchio sia disattivato e al sessantesimo si attivi; un obiettivo già completato si possa riaprire,

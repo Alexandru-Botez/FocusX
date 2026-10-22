@@ -33,7 +33,7 @@ import {
   leggiTimer,
   scriviTimer,
   calcolaSecondiRimanenti
-} from "./timer-salvato.js?v=imp-1";
+} from "./timer-salvato.js?v=cinque-1";
 import { eventoImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 
 

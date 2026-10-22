@@ -1280,7 +1280,7 @@ button:disabled {
   flex-shrink: 0;
 }
 
-/* Fiammine più piccole che nel modulo grande: 22px l'una, nove stanno in 200px. */
+/* Fiammine piccole: 22px l'una, le sei della barra stanno in 132px. */
 .goal-bar .flame-picker .flame-option {
   width: 22px;
   height: 28px;
@@ -1291,13 +1291,16 @@ button:disabled {
   height: 18px;
 }
 
-/* Il tempo previsto accanto alle fiammine, piccolo e grigio: "1 h 15 min". */
+/*
+  Il tempo previsto prima delle fiammine, piccolo e grigio: "1 h 15 min".
+  Sta a sinistra: allungandosi spinge verso il nome, e le fiammine non si spostano.
+*/
 .goal-bar .flame-output {
   margin: 0;
   white-space: nowrap;
 }
 
-/* La finestrella delle fiammine in più si apre sotto la nona, allineata a destra. */
+/* La finestrella delle fiammine in più si apre sotto la sesta, allineata a destra. */
 .goal-bar .flame-panel {
   top: calc(100% + 8px);
   right: 0;
@@ -1700,7 +1703,7 @@ button:disabled {
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  /* fit-content: largo quanto le nove fiammine, così la finestrella si apre subito dopo. */
+  /* fit-content: largo quanto le sei fiammine, così la finestrella si apre subito dopo. */
   width: fit-content;
 }
 
@@ -1771,7 +1774,7 @@ button:disabled {
   }
 }
 
-/* Il + sulla nona fiammina è una piccola pillola bianca nell'angolo in basso a destra. */
+/* Il + sulla sesta fiammina è una piccola pillola bianca nell'angolo in basso a destra. */
 .flame-more-badge {
   position: absolute;
   right: 0;
@@ -1791,7 +1794,7 @@ button:disabled {
 }
 
 /*
-  La finestrella si apre a destra della nona fiammina, centrata in verticale.
+  La finestrella si apre a destra della sesta fiammina, centrata in verticale.
   z-index la tiene sopra gli elementi del modulo che stanno sotto.
 */
 .flame-panel {
@@ -1939,10 +1942,24 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 12px;
+  gap: 4px 0;
   margin: 0;
   color: var(--muted);
   font-size: 0.8125rem;
+}
+
+/*
+  Fra tempo, data e progetto un puntino grigio separa le tre informazioni, come in molte app:
+  "🔥🔥 0 min / 50 min · Oggi · Matematica".
+  > * + * seleziona ogni figlio che ha un fratello prima di sé: tutti tranne il primo.
+  ::before aggiunge il puntino davanti; 10px a sinistra e 4px + i 6px del gap a destra
+  lo lasciano nel mezzo.
+*/
+.goal-list .goal-details > * + *::before {
+  content: "·";
+  margin: 0 4px 0 10px;
+  color: var(--border-strong);
+  font-weight: 700;
 }
 
 .goal-project,
@@ -1950,7 +1967,8 @@ button:disabled {
 .goal-flames {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  /* Più aria fra le fiammine e il tempo, che altrimenti sembrano attaccati. */
+  gap: 8px;
 }
 
 /* Il nome del progetto può essere lungo: va a capo senza allargare la scheda. */
@@ -2111,7 +2129,7 @@ button:disabled {
 }
 
 /*
-  Oltre otto fiammine se ne vede una sola, seguita dal numero: 🔥12. In corso la fiammina
+  Oltre cinque fiammine se ne vede una sola, seguita dal numero: 🔥12. In corso la fiammina
   diventa azzurra, e il numero la segue, così icona e numero restano dello stesso colore.
 */
 :is(.goal, .home-goal)[data-stato="in-corso"] .goal-flames-count {
@@ -2320,11 +2338,11 @@ button:disabled {
 }
 
 /*
-  Fiammine e minuti sono figli diretti di .goal-details, che separa le sue parti di 16px:
-  qui stanno vicini, a 6px, come dentro .goal-flames nella lista.
+  Fiammine e minuti sono figli diretti di .goal-details: qui stanno a 8px,
+  come dentro .goal-flames nella lista.
 */
 .home-goal-details {
-  gap: 6px;
+  gap: 8px;
   font-size: 0.8125rem;
 }
 
@@ -2708,6 +2726,18 @@ button:disabled {
   }
 
   /*
+    Su telefono i dettagli vanno a capo: un puntino resterebbe solo all'inizio di una riga.
+    Al suo posto, 12px di spazio fra tempo, data e progetto.
+  */
+  .goal-list .goal-details {
+    column-gap: 12px;
+  }
+
+  .goal-list .goal-details > * + *::before {
+    content: none;
+  }
+
+  /*
     La barra dei progetti non ha data né progetto: su telefono le azioni restano
     accanto al nome e i colori vanno nella riga sotto. order: 1 li sposta dopo le azioni;
     con 4px fra i cerchietti, tredici stanno in una riga.
@@ -2724,7 +2754,7 @@ button:disabled {
     gap: 4px;
   }
 
-  /* Su telefono nove fiammine da 28px stanno in una riga. */
+  /* Su telefono sei fiammine da 28px stanno in una riga. */
   .flame-picker .flame-option {
     width: 28px;
     height: 28px;
@@ -2735,7 +2765,7 @@ button:disabled {
     height: 22px;
   }
 
-  /* A destra non c'è spazio: la finestrella si apre sopra la nona fiammina. */
+  /* A destra non c'è spazio: la finestrella si apre sopra la sesta fiammina. */
   .flame-panel {
     left: auto;
     right: 0;

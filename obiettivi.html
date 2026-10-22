@@ -32,10 +32,10 @@
     <meta name="theme-color" content="#000000">
     <title>Obiettivi</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=progetti-1">
+    <link rel="stylesheet" href="css/styles.css?v=cinque-2">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/impostazioni.js?v=imp-1"></script>
-    <script type="module" src="js/obiettivi.js?v=barra-1"></script>
+    <script type="module" src="js/obiettivi.js?v=cinque-1"></script>
   </head>
 
   <body>
@@ -200,13 +200,19 @@
             <!-- ===========================================================
                  SEZIONE SCELTA DELLE FIAMMINE
                  Il tempo previsto. Le fiammine sono radio con lo stesso name: se ne sceglie
-                 una sola, ma il CSS accende anche tutte quelle prima. La nona, con il +,
-                 apre una finestrella per sceglierne di più. Accanto, il tempo: "1 h 15 min".
+                 una sola, ma il CSS accende anche tutte quelle prima. La sesta, con il +,
+                 apre una finestrella per sceglierne di più. Prima delle fiammine, il tempo: "1 h 15 min".
                  JavaScript: sezioni SCELTA DELLE FIAMMINE e FINESTRELLA DELLE
                  FIAMMINE di js/obiettivi.js.
                  =========================================================== -->
             <fieldset class="flame-picker">
               <legend class="solo-lettori">Tempo previsto</legend>
+              <!--
+                Il tempo delle fiammine scelte, per esempio "1 h 15 min": JavaScript lo aggiorna.
+                Sta a sinistra delle fiammine: quando il testo si allunga (da "50 min" a "1 h 15 min")
+                si allarga verso sinistra, e le fiammine restano ferme.
+              -->
+              <output id="goal-flames-output" class="flame-output">25 min</output>
               <div class="flame-options">
                 <label class="flame-option">
                   <input type="radio" name="fiammine" value="1" aria-label="1 fiammina, 25 minuti" checked>
@@ -228,25 +234,13 @@
                   <input type="radio" name="fiammine" value="5" aria-label="5 fiammine, 125 minuti">
                   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
                 </label>
-                <label class="flame-option">
-                  <input type="radio" name="fiammine" value="6" aria-label="6 fiammine, 150 minuti">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-                </label>
-                <label class="flame-option">
-                  <input type="radio" name="fiammine" value="7" aria-label="7 fiammine, 175 minuti">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-                </label>
-                <label class="flame-option">
-                  <input type="radio" name="fiammine" value="8" aria-label="8 fiammine, 200 minuti">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
-                </label>
                 <!--
-                  La nona fiammina è un radio come le altre, ma il suo value cambia: è il numero
-                  scelto nella finestrella, da 9 in su. Cliccandola si apre la finestrella accanto.
-                  JavaScript aggiorna l'aria-label con il numero scelto e il badge con "+4", "+5"...
+                  La sesta fiammina è un radio come le altre, ma il suo value cambia: è il numero
+                  scelto nella finestrella, da 6 in su. Cliccandola si apre la finestrella sotto.
+                  JavaScript aggiorna l'aria-label con il numero scelto e il badge con "+1", "+2"...
                 -->
                 <label class="flame-option flame-more">
-                  <input id="goal-flames-more" type="radio" name="fiammine" value="9" aria-label="Più di 8 fiammine" aria-controls="goal-flames-panel">
+                  <input id="goal-flames-more" type="radio" name="fiammine" value="6" aria-label="Più di 5 fiammine" aria-controls="goal-flames-panel">
                   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
                   <span id="goal-flames-more-badge" class="flame-more-badge" aria-hidden="true">+</span>
                 </label>
@@ -260,17 +254,15 @@
                     <!--
                       Un campo di testo, non type="number": così il browser non blocca mai l'invio
                       del modulo per un valore "non valido", e i controlli li fa JavaScript.
-                      value="9" è il valore a cui lo riporta reset().
-                      JavaScript completa l'aria-label con il massimo: "da 9 a 38".
+                      value="6" è il valore a cui lo riporta reset().
+                      JavaScript completa l'aria-label con il massimo: "da 6 a 38".
                     -->
-                    <input id="goal-flames-number" class="flame-count-input" type="text" inputmode="numeric" maxlength="2" value="9" autocomplete="off" aria-label="Numero di fiammine">
+                    <input id="goal-flames-number" class="flame-count-input" type="text" inputmode="numeric" maxlength="2" value="6" autocomplete="off" aria-label="Numero di fiammine">
                     <svg id="goal-flames-panel-icon" class="flame-count-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#flame-icon"></use></svg>
                   </span>
                   <button id="goal-flames-plus" class="flame-step" type="button" aria-label="Una fiammina in più">+</button>
                 </div>
               </div>
-              <!-- Il tempo delle fiammine scelte, per esempio "1 h 15 min": JavaScript lo aggiorna. -->
-              <output id="goal-flames-output" class="flame-output">25 min</output>
             </fieldset>
 
             <!--
@@ -422,16 +414,13 @@
                 <!-- Prima le fiammine e il tempo, poi la data e il progetto. -->
                 <span class="goal-flames">
                   <!--
-                    Otto fiammine: JavaScript nasconde quelle oltre il tempo previsto.
-                    Oltre le otto ne resta una sola e goal-flames-count mostra il numero: 🔥12.
+                    Cinque fiammine: JavaScript nasconde quelle oltre il tempo previsto.
+                    Oltre le cinque ne resta una sola e goal-flames-count mostra il numero: 🔥12.
                     Ogni fiammina ha tre aspetti: vuota (da fare), is-current (da completare,
                     azzurra e tremolante) e is-done (fatta, piena e accesa). Il secondo use,
                     flame-fill, la riempie dal basso in parte: 5 minuti su 25 sono il 20%.
                   -->
                   <span class="goal-flame-icons" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
-                    <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
                     <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
                     <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>
                     <svg viewBox="0 0 24 24" focusable="false"><use href="#flame-icon"></use><use class="flame-fill" href="#flame-icon"></use></svg>

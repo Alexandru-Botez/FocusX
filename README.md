@@ -77,20 +77,21 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 - Elenco dei progetti e calendario funzionano anche da tastiera (frecce per muoversi,
   Invio per scegliere, Esc per chiudere).
 - Il tempo si sceglie in fiammine intere: per ora ogni fiammina vale 25 minuti.
-  Le prime otto si cliccano; la nona, con il +, apre una finestrella con − e +
+  Le prime cinque si cliccano; la sesta, con il +, apre una finestrella con − e +
   per sceglierne di più, fino a 16 ore (38 fiammine). Il numero nella finestrella
-  si può anche scrivere direttamente. Nell'elenco, oltre le otto,
+  si può anche scrivere direttamente. Nell'elenco, oltre le cinque,
   la voce mostra una sola fiammina seguita dal numero, per esempio 🔥12;
   in corso anche il numero diventa azzurro, come la fiammina.
 - Ogni obiettivo mostra, sotto il nome, le fiammine con il tempo lavorato e quello previsto
-  (per esempio «10 min / 1 h 15 min»), la data e il suo progetto con il colore.
+  (per esempio «10 min / 1 h 15 min»), la data e il suo progetto con il colore,
+  separati da un puntino grigio (su telefono da uno spazio).
   Ogni fiammina ha tre aspetti: vuota (solo contorno) se è da fare, azzurra e tremolante
   se è quella da completare mentre l'obiettivo è in corso, piena e accesa quando è fatta:
   azzurra mentre l'obiettivo è in corso, arancione quando è completato.
   Una fiammina diventa fatta ogni 25 minuti lavorati, anche da completato: un obiettivo
   finito prima del previsto mostra solo le fiammine davvero lavorate. Quella dopo si riempie
   dal basso in parte: con 55 minuti su 4 fiammine, due sono piene, la terza al 20%
-  e l'ultima vuota. Oltre otto, l'unica fiammina si riempie con tutto il tempo lavorato.
+  e l'ultima vuota. Oltre cinque, l'unica fiammina si riempie con tutto il tempo lavorato.
 - Tre stati: non completato, in corso e completato. Il cerchio a sinistra del nome
   completa l'obiettivo; premuto di nuovo, lo riporta a non completato. Il cerchio è vuoto
   e la spunta compare, diventando verde, solo quando l'obiettivo è completato. Il "play" a destra

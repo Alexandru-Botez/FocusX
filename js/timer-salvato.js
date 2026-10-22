@@ -19,7 +19,7 @@
 // =====================================================================
 
 // Gli stessi ?v usati dagli altri file: così ogni modulo si carica una volta sola.
-import { minutiPerFiammina } from "./fiammine.js?v=imp-1";
+import { minutiPerFiammina } from "./fiammine.js?v=cinque-1";
 import { chiaveTimer } from "./archivio.js?v=imp-1";
 import { leggiImpostazioni } from "./impostazioni-salvate.js?v=imp-1";
 
