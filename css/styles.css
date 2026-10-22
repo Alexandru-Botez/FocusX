@@ -1159,11 +1159,25 @@ button:disabled {
 }
 
 /* Più specifico di button: un quadrato arrotondato da 44px, uguale anche su mobile. */
-.project-list .project-item-action,
-.goal-list .project-item-action {
+.project-list .project-item-action {
   width: 44px;
   height: 44px;
   border-radius: 12px;
+}
+
+/*
+  Negli obiettivi i pulsanti sono più piccoli, come le azioni della barra:
+  quadratini da 32px con gli angoli da 8px.
+*/
+.goal-list .project-item-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+/* Matita e play vicini, come le azioni della barra. */
+.goal-list .project-item-actions {
+  gap: 4px;
 }
 
 .project-list .project-item-action svg,
@@ -1874,18 +1888,21 @@ button:disabled {
 
 .goal-list {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+/*
+  Una voce compatta, come la barra dell'obiettivo: 8px di margine interno.
+  Con il cerchio da 28px, il suo centro cade sotto il + della barra.
+*/
 .goal {
   display: flex;
   align-items: center;
-  gap: 14px;
-  /* Ora ci sono pulsanti a entrambi i lati: stesso spazio a sinistra e a destra. */
-  padding: 16px 12px;
+  gap: 10px;
+  padding: 8px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background-color: var(--surface);
@@ -1901,7 +1918,8 @@ button:disabled {
   flex: 1;
   min-width: 0;
   display: grid;
-  gap: 8px;
+  /* Nome e dettagli vicini: 2px fra le due righe. */
+  gap: 2px;
 }
 
 .goal-title {
@@ -1929,10 +1947,10 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 16px;
+  gap: 4px 12px;
   margin: 0;
   color: var(--muted);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .goal-project,
@@ -1940,7 +1958,7 @@ button:disabled {
 .goal-flames {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 /* Il nome del progetto può essere lungo: va a capo senza allargare la scheda. */
@@ -1951,15 +1969,15 @@ button:disabled {
 
 /* La cartella prende il colore del progetto, impostato da JavaScript su color. */
 .goal-project-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
   fill: currentColor;
 }
 
 .goal-date svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.75;
@@ -2025,8 +2043,8 @@ button:disabled {
   disegna il bordo; il path del symbol non ha colori propri, quindi li eredita da qui.
 */
 .goal-flame-icons svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   fill: transparent;
   stroke: currentColor;
   stroke-width: 1.75;
@@ -2121,18 +2139,19 @@ button:disabled {
 /*
   Il pulsante per completare è un cerchio, come la casella di una lista di cose da fare.
   Ha la stessa specificità di .goal-list .project-item-action ma è scritto dopo: vince lui.
-  border-radius: 50% su un quadrato disegna un cerchio.
+  border-radius: 50% su un quadrato disegna un cerchio. 28px: piccolo, ma facile da cliccare.
 */
 .goal-list .goal-complete {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .goal-list .goal-complete svg {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.25;
 }
 
 /*

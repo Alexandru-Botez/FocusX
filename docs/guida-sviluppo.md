@@ -533,6 +533,9 @@ che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `da
 in corso il bordo è azzurro; completato il nome viene barrato da uno sfondo che passa
 da 0% a 100% di larghezza. Non c'è un'etichetta scritta dello stato: `.goal-complete` è il primo
 elemento del `li`, un cerchio a sinistra del nome (`border-radius: 50%`), e `.goal-start` sta a destra.
+Le voci sono compatte come la barra: `padding: 8px`, nome e dettagli a 2px l'uno dall'altro,
+dettagli in `0.8125rem` con icone da 14px, cerchio da 28px (il suo centro cade sotto il + della barra)
+e matita e play da 32px con angoli da 8px, come le azioni della barra. La lista ha `gap: 8px`.
 Il cerchio è vuoto come una casella da spuntare: la spunta ha `opacity: 0` e `scale: 0.6`, e solo con
 `aria-pressed="true"` diventa visibile e cresce fino a `scale: 1`. La stessa regola, con
 `:is(.goal-list, .home-goal)`, vale per il cerchio della Home.
