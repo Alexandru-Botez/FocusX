@@ -113,8 +113,8 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 
 ### Interfaccia
 
-- Tema scuro in bianco e nero, adattato agli schermi piccoli. Lo sfondo è un grigio quasi nero
-  (#101010) e le schede un gradino più chiare (#1a1a1a): stanca meno del nero puro e le schede
+- Tema scuro in bianco e nero, adattato agli schermi piccoli. Lo sfondo è un grigio scuro in stile
+  Notion (#141414) e le schede un gradino più chiare (#1f1f1f): stanca meno del nero puro e le schede
   si staccano meglio dalla pagina.
 - Menu laterale con icona hamburger animata; su telefono occupa tutto lo schermo.
   Si chiude con un secondo clic, con Esc o con un clic fuori dal pannello.

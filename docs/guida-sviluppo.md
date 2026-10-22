@@ -151,12 +151,12 @@ li supporta mostra la pagina senza queste rifiniture. Se aggiungi una voce al me
 aggiungi anche il suo `transition-delay`. Lo stato «in pausa» dipende dagli attributi
 `disabled` di Avvia e Stop: se cambi la tabella degli stati, aggiorna anche quel selettore.
 Il `meta` `theme-color` nei tre file HTML colora la barra del browser su mobile con lo stesso
-quasi nero della pagina (`#101010`): se cambi `--background`, aggiorna anche lui.
+grigio scuro della pagina (`#141414`): se cambi `--background`, aggiorna anche lui.
 
 I colori di base sono variabili in `:root`. Lo sfondo non è il nero puro: `--background` è
-`#101010` e le schede (`--surface`) sono `#1a1a1a`, un gradino più chiare, con `--hover` a
-`#262626` e il testo `--text` a `#ededed`. È la stessa idea di Linear, Vercel e Notion: un grigio
-molto scuro abbaglia meno accanto al testo chiaro (il contrasto testo/sfondo resta circa 16:1,
+`#141414`, in stile Notion (che usa `#191919`), e le schede (`--surface`) sono `#1f1f1f`, un gradino
+più chiare, con `--hover` a `#2a2a2a` e il testo `--text` a `#ededed`. È la stessa idea di Linear,
+Vercel e Notion: un grigio scuro abbaglia meno accanto al testo chiaro (il contrasto testo/sfondo resta circa 15:1,
 ben sopra il 4,5:1 richiesto) e la differenza fra pagina e schede si vede anche senza bordi.
 I pulsanti rotondi e i campi usano `--background`, quindi dentro le schede sembrano «scavati»,
 un gradino più scuri.

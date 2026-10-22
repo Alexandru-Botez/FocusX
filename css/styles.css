@@ -41,11 +41,11 @@
   color-scheme: dark;
 
   /*
-    Quasi nero: sfondo principale dell'app. Non è il nero puro (#000000): un grigio
-    molto scuro stanca meno gli occhi accanto al testo chiaro e lascia vedere meglio
-    le schede, un gradino più chiare. È la scelta di app come Linear, Vercel e Notion.
+    Grigio scuro, in stile Notion: sfondo principale dell'app. Non è il nero puro (#000000):
+    un grigio scuro stanca meno gli occhi accanto al testo chiaro e lascia vedere meglio
+    le schede, un gradino più chiare. Notion usa #191919; qui restiamo un poco più scuri.
   */
-  --background: #101010;
+  --background: #141414;
 
   /* Bianco attenuato: testo e pulsante di avvio. Meno abbagliante del bianco quasi puro. */
   --text: #ededed;
@@ -57,7 +57,7 @@
   --border: #383838;
 
   /* Sfondo usato al passaggio del mouse sui pulsanti: un gradino sopra le schede. */
-  --hover: #262626;
+  --hover: #2a2a2a;
 
   /* Rosso chiaro per le azioni che chiudono o cancellano: Stop, cestino ed Elimina. */
   --danger: #ff6b6b;
@@ -74,7 +74,7 @@
     Sfondo delle schede, delle barre e delle finestrelle: più chiaro della pagina,
     così si staccano da lei anche senza guardare il bordo.
   */
-  --surface: #1a1a1a;
+  --surface: #1f1f1f;
 
   /* 44px di pulsante + 28px di padding sopra e sotto: riserviamo spazio prima delle voci. */
   --header-height: 100px;
@@ -384,7 +384,7 @@ h1 {
 
 /* :active dura durante la pressione; al rilascio la voce torna gradualmente alla dimensione normale. */
 .sidebar-menu .menu-option:active:not(:disabled) {
-  background-color: #303030;
+  background-color: #333333;
   transform: scale(0.96);
 }
 
