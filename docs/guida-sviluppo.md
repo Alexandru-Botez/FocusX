@@ -300,12 +300,19 @@ con solo feedback visivo, in attesa delle rispettive sezioni.
 `js/menu.js` e `js/timer.js`. Non carichiamo il timer dove i suoi elementi non sono presenti.
 L'header è attualmente ripetuto nei tre file HTML: quando lo modifichi, aggiornali tutti.
 
-Il pulsante Crea progetto mostra `#project-form`. Il campo `#project-name` è obbligatorio
-e ammette al massimo 80 caratteri. L'evento `submit` chiama `inviaModuloProgetto(evento)`:
-`preventDefault()` evita la ricarica e `trim()` rimuove gli spazi alle estremità.
-Un nome composto solo da spazi viene rifiutato. Annulla chiude e svuota il modulo.
+Il pulsante Crea progetto mostra `#project-form`, una barra di una riga con le stesse classi
+di quella degli obiettivi (`.goal-bar`, `.goal-bar-row`, `.goal-bar-actions`), più `.project-bar`
+per le differenze su telefono: icona (+ o matita, con `data-modo`), nome, colori, Salva e la X.
+Etichette, legenda e titolo hanno la classe `.solo-lettori`. Il campo `#project-name` è
+obbligatorio e ammette al massimo 80 caratteri. L'evento `submit` (anche Invio nel nome) chiama
+`inviaModuloProgetto(evento)`: `preventDefault()` evita la ricarica e `trim()` rimuove gli spazi
+alle estremità. Un nome composto solo da spazi viene rifiutato. Dopo `creaProgetto` la barra resta
+aperta: `reset()` svuota il nome e riporta il colore al bianco, e `segnaColoriUsati()` mette il
+puntino sul colore appena usato. La X e Esc chiamano `annullaModulo()`. `chiudiModuloConEsc` è un
+ascoltatore sul form: se la finestrella degli altri colori è aperta (`:popover-open`), non fa
+niente, e Esc chiude solo quella, perché i popover si chiudono da soli con Esc.
 
-Sotto il nome, il `fieldset.project-colors` contiene dodici `input type="radio"` con
+Accanto al nome, il `fieldset.project-colors` contiene dodici `input type="radio"` con
 `name="colore"`: avendo lo stesso `name`, se ne può selezionare uno solo, anche con le frecce.
 Il `value` di ciascuno è il colore esadecimale salvato; `aria-label` e `title` ne danno il nome.
 Il CSS toglie il pallino nativo con `appearance: none` e colora ogni cerchio con la variabile
@@ -349,15 +356,22 @@ il pulsante usa lo stesso rosso di Stop, `--danger`. Non c'è richiesta di confe
 Prima del cestino, il pulsante `.project-edit` con la matita chiama `apriModificaProgetto(id)`.
 Lo stesso `#project-form` serve per creare e per modificare: la variabile `idInModifica`
 vale `null` durante una creazione e contiene l'id del progetto durante una modifica.
-`apriModificaProgetto` cambia il titolo in «Modifica progetto» e il pulsante in «Salva modifiche»,
-scrive il nome nel campo e seleziona il colore assegnando `elements.colore.value`.
+`apriModificaProgetto` cambia il titolo in «Modifica progetto», `data-modo` in `"modifica"`
+e il nome nascosto di Salva in «Salva le modifiche», scrive il nome nel campo e seleziona il
+colore assegnando `elements.colore.value`. Poi `mettiModuloNellaVoce()` sposta la barra nella
+lista, in un `li.goal-edit-slot` subito prima della voce nascosta, e `rimettiModuloAlSuoPosto()`
+la riporta sopra la lista alla chiusura, come negli obiettivi. Nella lista dei progetti quel `li`
+annulla bordo, sfondo e flex di `.project-list li`, altrimenti la barra starebbe in un riquadro.
 Al salvataggio, `inviaModuloProgetto` controlla il nome e chiama `creaProgetto(nome, colore)`
 oppure `modificaProgetto(id, nome, colore)`. Quest'ultima usa `map` per creare un nuovo elenco
 in cui solo quel progetto cambia, copiato con `{ ...progetto, nome, colore }`: l'id resta
 lo stesso e le altre proprietà, come i futuri obiettivi, non vanno perse.
 `chiudiModuloProgetto()` riporta il modulo alla creazione; se elimini il progetto
 che stai modificando, il modulo si chiude.
-Durante una modifica, il progetto non compare nell'elenco, perché è già nel modulo.
+Durante una modifica, il progetto non compare nell'elenco, perché è già nella barra.
+Le voci sono compatte come quelle degli obiettivi: `padding: 8px`, cartella da 18px (il suo centro
+cade sotto il + della barra), matita e cestino da 32px senza bordo e grigi; il cestino diventa
+rosso al passaggio del mouse.
 Ogni `li` ha un attributo `data-id`, scritto con `voce.dataset.id`;
 `nascondiVoceInModifica()` dà `hidden` alla voce con l'id uguale a `idInModifica`.
 La chiamano `apriModificaProgetto`, `chiudiModuloProgetto` e `mostraProgetti`,
@@ -389,10 +403,7 @@ Il cambio di pagina non interrompe il timer: tornando a `index.html` riprende da
 `obiettivi.html` carica `js/menu.js` e `js/obiettivi.js` e riutilizza le classi di layout,
 modulo e pulsanti della pagina Progetti (`.projects-section`, `.project-form`, `.project-action`,
 `.project-item-action`), così le due pagine restano coerenti.
-Il modulo dei progetti è compatto: `gap: 10px` fra gli elementi, `padding: 20px`, campi alti
-circa 42px (`padding: 9px 12px`) e pulsanti da 40px. Le etichette stanno a 6px dal loro campo:
-`.project-form > label` ha `margin-bottom: -4px`. Il modulo degli obiettivi è invece una barra
-di una riga (vedi sotto).
+Anche qui il modulo è una barra di una riga, come nella pagina Progetti (vedi sotto).
 
 Un obiettivo ha la forma `{ id, nome, progettoId, data, fiammine, stato, minutiLavorati }` ed è salvato
 con la chiave `focusx.obiettivi.v1`. Del progetto salva solo l'id: nome e colore si leggono

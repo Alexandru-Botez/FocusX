@@ -866,15 +866,11 @@ button:disabled {
   text-align: left;
 }
 
-.projects-heading-row,
-.project-form-actions {
+.projects-heading-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
-}
-
-.projects-heading-row {
   justify-content: space-between;
   margin-bottom: 20px;
 }
@@ -916,73 +912,17 @@ button:disabled {
   transform: scale(0.97);
 }
 
-/* Un modulo compatto: 10px fra un elemento e l'altro, 20px di margine interno. */
+/*
+  Il contenitore delle barre di progetti e obiettivi: bordo, sfondo e l'animazione
+  d'ingresso. Il resto dell'aspetto lo dà .goal-bar, più sotto.
+*/
 .project-form {
-  display: grid;
-  gap: 10px;
   margin-bottom: 20px;
-  padding: 20px;
   border: 1px solid var(--border);
-  border-radius: 16px;
   background-color: var(--surface);
 
   /* Parte quando hidden viene rimosso: il modulo compare salendo di pochi pixel. */
   animation: compari 250ms var(--ease-out) both;
-}
-
-/* Il titolo dice se il modulo crea un progetto nuovo o ne modifica uno. */
-.project-form-title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-/* Etichetta e legenda sono informazioni secondarie rispetto ai valori scelti. */
-.project-form label,
-.project-colors legend,
-.flame-picker legend {
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-
-/*
-  L'etichetta sta vicina al suo campo: il margine negativo toglie 4px dei 10px
-  che la griglia del modulo lascia fra un elemento e l'altro, e ne restano 6.
-  > seleziona solo le etichette figlie dirette del modulo, come quella del nome.
-*/
-.project-form > label {
-  margin-bottom: -4px;
-}
-
-/*
-  [type="text"] seleziona solo il campo del nome: i radio dei colori hanno regole proprie.
-  Nella pagina Obiettivi progetto e data sono pulsanti con lo stesso aspetto (vedi più sotto).
-*/
-.project-form input[type="text"] {
-  /* min-width: 0 permette al campo di restringersi senza allargare la pagina. */
-  min-width: 0;
-  width: 100%;
-  /* 9px sopra e sotto, 12px ai lati: campi più bassi, testo comunque lontano dal bordo. */
-  padding: 9px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font: inherit;
-  background-color: var(--background);
-  color: var(--text);
-  transition: border-color var(--transition-fast) ease;
-}
-
-@media (hover: hover) {
-  .project-form input[type="text"]:hover {
-    border-color: var(--border-strong);
-  }
-}
-
-/* Con il focus il bordo diventa bianco e si unisce al contorno, senza lasciare una riga grigia. */
-.project-form input[type="text"]:focus-visible {
-  border-color: var(--text);
-  outline-offset: 0;
-  outline-width: 1px;
 }
 
 /* Il fieldset perde il bordo e gli spazi predefiniti; i cerchi vanno a capo se serve. */
@@ -994,14 +934,6 @@ button:disabled {
   padding: 0;
   border: 0;
   min-width: 0;
-}
-
-/* La legenda occupa una riga intera, sopra i cerchi, come l'etichetta sopra il nome. */
-.project-colors legend {
-  float: left;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 0;
 }
 
 .project-colors input {
@@ -1117,27 +1049,34 @@ button:disabled {
 
 .project-list {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+/*
+  Una voce compatta, come quelle degli obiettivi e la barra: 8px di margine interno.
+  Il nome occupa lo spazio a sinistra; matita e cestino restano all'estremità destra.
+*/
 .project-list li {
-  /* Il nome occupa lo spazio a sinistra; matita e cestino restano all'estremità destra. */
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 12px 12px 20px;
+  gap: 10px;
+  padding: 8px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background-color: var(--surface);
 }
 
-/* La cartella ha il colore del progetto: JavaScript imposta color, l'SVG usa currentColor. */
+/*
+  La cartella ha il colore del progetto: JavaScript imposta color, l'SVG usa currentColor.
+  18px con 5px di margine ai lati: il suo centro cade sotto il + della barra.
+*/
 .project-icon {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
+  margin: 0 5px;
   /* Non si restringe quando il nome è lungo. */
   flex-shrink: 0;
   fill: currentColor;
@@ -1158,32 +1097,41 @@ button:disabled {
   flex-shrink: 0;
 }
 
-/* Più specifico di button: un quadrato arrotondato da 44px, uguale anche su mobile. */
-.project-list .project-item-action {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-}
-
 /*
-  Negli obiettivi i pulsanti sono più piccoli, come le azioni della barra:
-  quadratini da 32px con gli angoli da 8px.
+  Nelle liste di progetti e obiettivi i pulsanti sono piccoli, come le azioni della barra:
+  quadratini da 32px con gli angoli da 8px, vicini fra loro.
 */
-.goal-list .project-item-action {
+:is(.project-list, .goal-list) .project-item-action {
   width: 32px;
   height: 32px;
   border-radius: 8px;
 }
 
-/* Matita e play vicini, come le azioni della barra. */
-.goal-list .project-item-actions {
+:is(.project-list, .goal-list) .project-item-actions {
   gap: 4px;
+}
+
+/* Nei progetti matita e cestino sono discreti: senza bordo, grigi, come la matita degli obiettivi. */
+.project-list .project-item-action {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--muted);
+}
+
+@media (hover: hover) {
+  .project-list .project-edit:hover {
+    color: var(--text);
+  }
+}
+
+.project-list .project-item-action:focus-visible {
+  color: var(--text);
 }
 
 .project-list .project-item-action svg,
 .goal-list .project-item-action svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.75;
@@ -1262,6 +1210,17 @@ button:disabled {
   margin: 0;
 }
 
+/*
+  Il li che contiene la barra non è una voce: nella lista dei progetti non deve ricevere
+  il bordo, lo sfondo e il flex di .project-list li, altrimenti la barra starebbe in un riquadro.
+*/
+.project-list li.goal-edit-slot {
+  display: block;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
 .goal-bar-row {
   display: flex;
   align-items: center;
@@ -1289,8 +1248,8 @@ button:disabled {
 
 /*
   Il nome prende tutto lo spazio libero (flex: 1), senza bordo né sfondo:
-  è la barra intera a sembrare il campo. [type="text"] serve a superare
-  la regola .project-form input[type="text"] del modulo dei progetti.
+  è la barra intera a sembrare il campo. font: inherit usa il font della pagina,
+  invece di quello piccolo che il browser dà ai campi.
 */
 .goal-bar .goal-bar-name[type="text"] {
   flex: 1;
@@ -1298,6 +1257,8 @@ button:disabled {
   padding: 8px 4px;
   border: 0;
   background-color: transparent;
+  color: var(--text);
+  font: inherit;
   /* Un segnaposto troppo lungo finisce con "…". */
   text-overflow: ellipsis;
 }
@@ -1417,6 +1378,49 @@ button:disabled {
   .goal-bar .goal-bar-delete:hover:not(:disabled) {
     color: var(--danger);
   }
+}
+
+/*
+  I colori del progetto nella barra: cerchietti da 18px in riga, come le fiammine
+  degli obiettivi. Le regole più specifiche qui sotto rimpiccioliscono quelle generali
+  di .project-colors: anello della selezione, puntino dei colori usati e il +.
+*/
+.goal-bar .project-colors {
+  align-items: center;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.goal-bar .project-colors input {
+  width: 18px;
+  height: 18px;
+}
+
+.goal-bar .project-colors input:checked {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text);
+}
+
+.goal-bar .project-colors input.is-used {
+  background-image: radial-gradient(circle, var(--background) 2.5px, transparent 3px);
+}
+
+.goal-bar .project-colors input:focus-visible,
+.goal-bar .project-colors .more-colors-button:focus-visible {
+  outline-offset: 4px;
+}
+
+.goal-bar .project-colors .more-colors-button {
+  width: 18px;
+  height: 18px;
+}
+
+.goal-bar .project-colors .more-colors-button svg {
+  width: 10px;
+  height: 10px;
+}
+
+.goal-bar .project-colors:has(.more-colors input:checked) .more-colors-button {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--text);
 }
 
 /* L'avviso del doppione, sotto la barra, allineato al nome. */
@@ -1691,16 +1695,7 @@ button:disabled {
   min-width: 0;
 }
 
-.flame-picker legend {
-  float: left;
-  width: 100%;
-  margin-bottom: 6px;
-  padding: 0;
-}
-
 .flame-options {
-  /* clear: both porta le fiammine sotto la legenda, che è un elemento float. */
-  clear: both;
   /* relative fa da riferimento per la finestrella delle fiammine in più. */
   position: relative;
   display: flex;
@@ -1711,7 +1706,6 @@ button:disabled {
 
 /*
   Ogni fiammina è un label che contiene il suo radio: cliccarla seleziona il radio.
-  .flame-picker davanti serve a superare .project-form label, che renderebbe grigio il testo.
   32px per fiammina: le otto stanno in una riga anche sui telefoni.
 */
 .flame-picker .flame-option {
@@ -1845,8 +1839,6 @@ button:disabled {
 
 /*
   Il numero si può scrivere: è un campo senza bordo, largo due cifre, che sembra testo.
-  .flame-count e [type="text"] servono a superare .project-form input[type="text"],
-  che darebbe al campo larghezza piena, padding e bordo del campo nome.
 */
 .flame-panel .flame-count input[type="text"] {
   width: 3ch;
@@ -2715,6 +2707,23 @@ button:disabled {
     margin-left: auto;
   }
 
+  /*
+    La barra dei progetti non ha data né progetto: su telefono le azioni restano
+    accanto al nome e i colori vanno nella riga sotto. order: 1 li sposta dopo le azioni;
+    con 4px fra i cerchietti, tredici stanno in una riga.
+  */
+  .project-bar.goal-bar .goal-bar-name[type="text"] {
+    flex-basis: auto;
+  }
+
+  .project-bar .project-colors {
+    order: 1;
+    /* Con il margine di 34px fa il 100% della riga: i tredici cerchietti ci stanno. */
+    flex-basis: calc(100% - 34px);
+    margin-left: 34px;
+    gap: 4px;
+  }
+
   /* Su telefono nove fiammine da 28px stanno in una riga. */
   .flame-picker .flame-option {
     width: 28px;
@@ -2807,7 +2816,6 @@ button:disabled {
   .timer-mode,
   .brand-link,
   .brand-logo-link,
-  .project-form input[type="text"],
   .project-form.goal-bar,
   :is(.goal-list, .home-goal) .goal-complete svg,
   .project-colors input,

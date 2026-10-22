@@ -30,10 +30,10 @@
     <meta name="theme-color" content="#000000">
     <title>Progetti</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=lista-1">
+    <link rel="stylesheet" href="css/styles.css?v=progetti-1">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/impostazioni.js?v=imp-1"></script>
-    <script type="module" src="js/progetti.js?v=imp-1"></script>
+    <script type="module" src="js/progetti.js?v=progetti-1"></script>
   </head>
 
   <body>
@@ -137,7 +137,7 @@
       <section class="projects-section" aria-labelledby="projects-heading">
         <!-- ===============================================================
              SEZIONE TITOLO E PULSANTE CREA
-             Il titolo della pagina e il pulsante che apre il modulo vuoto.
+             Il titolo della pagina e il pulsante che apre la barra vuota.
              =============================================================== -->
         <div class="projects-heading-row">
           <h2 id="projects-heading">Progetti</h2>
@@ -145,70 +145,100 @@
         </div>
 
         <!-- ===============================================================
-             SEZIONE MODULO DEL PROGETTO
-             Nome e colore. Lo stesso modulo serve per creare e per modificare
-             un progetto: JavaScript cambia il titolo e il testo del pulsante.
+             SEZIONE BARRA DEL PROGETTO
+             Una sola riga, come la barra degli obiettivi (ne usa le stesse classi
+             .goal-bar): nome, colore e azioni. Si scrive il nome e si preme Invio.
+             Per un progetto nuovo la barra si apre con Crea progetto, sopra la lista;
+             per una modifica JavaScript la sposta dentro la lista, al posto della voce.
              Se nome e colore sono uguali a quelli di un altro progetto,
-             Salva si disattiva e compare l'avviso sopra i pulsanti.
-             hidden lo nasconde finché non si preme Crea progetto o una matita.
+             Salva si disattiva e compare l'avviso sotto la barra.
+             data-modo vale "nuovo" o "modifica": il CSS sceglie l'icona a sinistra.
              JavaScript: sezioni MODULO, COLORI e CONTROLLO DEI DOPPIONI
              di js/progetti.js.
              =============================================================== -->
-        <form id="project-form" class="project-form" hidden aria-labelledby="project-form-title">
-          <h3 id="project-form-title" class="project-form-title">Nuovo progetto</h3>
-          <label for="project-name">Nome del progetto</label>
-          <input id="project-name" name="nome" type="text" required maxlength="80" autocomplete="off">
+        <form id="project-form" class="project-form goal-bar project-bar" data-modo="nuovo" hidden aria-labelledby="project-form-title">
+          <!-- Il titolo non si vede: lo leggono i lettori di schermo. JavaScript lo cambia in "Modifica progetto". -->
+          <h3 id="project-form-title" class="solo-lettori">Nuovo progetto</h3>
 
-          <!--
-            I colori: 12 cerchi, più il + che apre altri 12 colori in una finestrella.
-            value è il colore salvato; la variabile CSS --swatch colora il cerchio.
-            checked è il colore predefinito, che Annulla e reset() ripristinano.
-            JavaScript segna con un puntino i colori già usati da altri progetti.
-          -->
-          <fieldset class="project-colors">
-            <legend>Colore</legend>
-            <input type="radio" name="colore" value="#f5f5f5" style="--swatch: #f5f5f5" aria-label="Bianco" title="Bianco" checked>
-            <input type="radio" name="colore" value="#ff6b6b" style="--swatch: #ff6b6b" aria-label="Rosso" title="Rosso">
-            <input type="radio" name="colore" value="#ffa94d" style="--swatch: #ffa94d" aria-label="Arancione" title="Arancione">
-            <input type="radio" name="colore" value="#ffd43b" style="--swatch: #ffd43b" aria-label="Giallo" title="Giallo">
-            <input type="radio" name="colore" value="#a9e34b" style="--swatch: #a9e34b" aria-label="Lime" title="Lime">
-            <input type="radio" name="colore" value="#69db7c" style="--swatch: #69db7c" aria-label="Verde" title="Verde">
-            <input type="radio" name="colore" value="#38d9a9" style="--swatch: #38d9a9" aria-label="Verde acqua" title="Verde acqua">
-            <input type="radio" name="colore" value="#3bc9db" style="--swatch: #3bc9db" aria-label="Ciano" title="Ciano">
-            <input type="radio" name="colore" value="#4dabf7" style="--swatch: #4dabf7" aria-label="Azzurro" title="Azzurro">
-            <input type="radio" name="colore" value="#748ffc" style="--swatch: #748ffc" aria-label="Indaco" title="Indaco">
-            <input type="radio" name="colore" value="#b197fc" style="--swatch: #b197fc" aria-label="Viola" title="Viola">
-            <input type="radio" name="colore" value="#f783ac" style="--swatch: #f783ac" aria-label="Rosa" title="Rosa">
+          <div class="goal-bar-row">
+            <!-- L'icona a sinistra: + per un progetto nuovo, la matita durante una modifica. -->
+            <svg class="goal-bar-icon goal-bar-icon-new" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            <svg class="goal-bar-icon goal-bar-icon-edit" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4 20h4L19 9a2.83 2.83 0 0 0-4-4L4 16v4ZM13.5 6.5l4 4"></path>
+            </svg>
 
-            <!-- Il + apre e chiude la finestrella da solo, grazie a popovertarget: senza JavaScript. -->
-            <button id="more-colors-button" class="more-colors-button" type="button" popovertarget="more-colors" aria-label="Altri colori" title="Altri colori">
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M12 5v14M5 12h14"></path>
-              </svg>
-            </button>
+            <label for="project-name" class="solo-lettori">Nome del progetto</label>
+            <input id="project-name" class="goal-bar-name" name="nome" type="text" required maxlength="80" autocomplete="off"
+              placeholder="Aggiungi un progetto, premi Invio per salvare">
 
             <!--
-              La finestrella con gli altri 12 colori; si chiude anche con Esc o con un clic fuori.
-              I suoi radio hanno lo stesso name="colore": sono la stessa scelta dei 12 principali.
+              I colori: 12 cerchietti, più il + che apre altri 12 colori in una finestrella.
+              value è il colore salvato; la variabile CSS --swatch colora il cerchio.
+              checked è il colore predefinito, che Annulla e reset() ripristinano.
+              JavaScript segna con un puntino i colori già usati da altri progetti.
             -->
-            <div id="more-colors" class="more-colors" popover>
-              <p class="more-colors-title">Altri colori</p>
-              <div class="more-colors-grid">
-                <input type="radio" name="colore" value="#f03e3e" style="--swatch: #f03e3e" aria-label="Rosso intenso" title="Rosso intenso">
-                <input type="radio" name="colore" value="#f76707" style="--swatch: #f76707" aria-label="Arancione intenso" title="Arancione intenso">
-                <input type="radio" name="colore" value="#f59f00" style="--swatch: #f59f00" aria-label="Ambra" title="Ambra">
-                <input type="radio" name="colore" value="#74b816" style="--swatch: #74b816" aria-label="Erba" title="Erba">
-                <input type="radio" name="colore" value="#37b24d" style="--swatch: #37b24d" aria-label="Verde intenso" title="Verde intenso">
-                <input type="radio" name="colore" value="#0ca678" style="--swatch: #0ca678" aria-label="Smeraldo" title="Smeraldo">
-                <input type="radio" name="colore" value="#1098ad" style="--swatch: #1098ad" aria-label="Petrolio" title="Petrolio">
-                <input type="radio" name="colore" value="#228be6" style="--swatch: #228be6" aria-label="Blu" title="Blu">
-                <input type="radio" name="colore" value="#5c7cfa" style="--swatch: #5c7cfa" aria-label="Indaco intenso" title="Indaco intenso">
-                <input type="radio" name="colore" value="#845ef7" style="--swatch: #845ef7" aria-label="Viola intenso" title="Viola intenso">
-                <input type="radio" name="colore" value="#be4bdb" style="--swatch: #be4bdb" aria-label="Uva" title="Uva">
-                <input type="radio" name="colore" value="#e64980" style="--swatch: #e64980" aria-label="Lampone" title="Lampone">
+            <fieldset class="project-colors">
+              <legend class="solo-lettori">Colore</legend>
+              <input type="radio" name="colore" value="#f5f5f5" style="--swatch: #f5f5f5" aria-label="Bianco" title="Bianco" checked>
+              <input type="radio" name="colore" value="#ff6b6b" style="--swatch: #ff6b6b" aria-label="Rosso" title="Rosso">
+              <input type="radio" name="colore" value="#ffa94d" style="--swatch: #ffa94d" aria-label="Arancione" title="Arancione">
+              <input type="radio" name="colore" value="#ffd43b" style="--swatch: #ffd43b" aria-label="Giallo" title="Giallo">
+              <input type="radio" name="colore" value="#a9e34b" style="--swatch: #a9e34b" aria-label="Lime" title="Lime">
+              <input type="radio" name="colore" value="#69db7c" style="--swatch: #69db7c" aria-label="Verde" title="Verde">
+              <input type="radio" name="colore" value="#38d9a9" style="--swatch: #38d9a9" aria-label="Verde acqua" title="Verde acqua">
+              <input type="radio" name="colore" value="#3bc9db" style="--swatch: #3bc9db" aria-label="Ciano" title="Ciano">
+              <input type="radio" name="colore" value="#4dabf7" style="--swatch: #4dabf7" aria-label="Azzurro" title="Azzurro">
+              <input type="radio" name="colore" value="#748ffc" style="--swatch: #748ffc" aria-label="Indaco" title="Indaco">
+              <input type="radio" name="colore" value="#b197fc" style="--swatch: #b197fc" aria-label="Viola" title="Viola">
+              <input type="radio" name="colore" value="#f783ac" style="--swatch: #f783ac" aria-label="Rosa" title="Rosa">
+
+              <!-- Il + apre e chiude la finestrella da solo, grazie a popovertarget: senza JavaScript. -->
+              <button id="more-colors-button" class="more-colors-button" type="button" popovertarget="more-colors" aria-label="Altri colori" title="Altri colori">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+              </button>
+
+              <!--
+                La finestrella con gli altri 12 colori; si chiude anche con Esc o con un clic fuori.
+                I suoi radio hanno lo stesso name="colore": sono la stessa scelta dei 12 principali.
+              -->
+              <div id="more-colors" class="more-colors" popover>
+                <p class="more-colors-title">Altri colori</p>
+                <div class="more-colors-grid">
+                  <input type="radio" name="colore" value="#f03e3e" style="--swatch: #f03e3e" aria-label="Rosso intenso" title="Rosso intenso">
+                  <input type="radio" name="colore" value="#f76707" style="--swatch: #f76707" aria-label="Arancione intenso" title="Arancione intenso">
+                  <input type="radio" name="colore" value="#f59f00" style="--swatch: #f59f00" aria-label="Ambra" title="Ambra">
+                  <input type="radio" name="colore" value="#74b816" style="--swatch: #74b816" aria-label="Erba" title="Erba">
+                  <input type="radio" name="colore" value="#37b24d" style="--swatch: #37b24d" aria-label="Verde intenso" title="Verde intenso">
+                  <input type="radio" name="colore" value="#0ca678" style="--swatch: #0ca678" aria-label="Smeraldo" title="Smeraldo">
+                  <input type="radio" name="colore" value="#1098ad" style="--swatch: #1098ad" aria-label="Petrolio" title="Petrolio">
+                  <input type="radio" name="colore" value="#228be6" style="--swatch: #228be6" aria-label="Blu" title="Blu">
+                  <input type="radio" name="colore" value="#5c7cfa" style="--swatch: #5c7cfa" aria-label="Indaco intenso" title="Indaco intenso">
+                  <input type="radio" name="colore" value="#845ef7" style="--swatch: #845ef7" aria-label="Viola intenso" title="Viola intenso">
+                  <input type="radio" name="colore" value="#be4bdb" style="--swatch: #be4bdb" aria-label="Uva" title="Uva">
+                  <input type="radio" name="colore" value="#e64980" style="--swatch: #e64980" aria-label="Lampone" title="Lampone">
+                </div>
               </div>
+            </fieldset>
+
+            <!-- Le azioni, separate da una riga sottile: Salva (anche Invio nel nome) e la X (anche Esc). -->
+            <div class="goal-bar-actions">
+              <button id="save-project-button" class="goal-bar-action goal-bar-save" type="submit" aria-label="Salva il progetto" title="Salva (Invio)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <!-- La freccia del tasto Invio: scende e torna a sinistra. -->
+                  <path d="M19 5v6a4 4 0 0 1-4 4H5M9 11l-4 4 4 4"></path>
+                </svg>
+              </button>
+              <button id="cancel-project-button" class="goal-bar-action" type="button" aria-label="Annulla" title="Annulla (Esc)">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M6 6l12 12M18 6L6 18"></path>
+                </svg>
+              </button>
             </div>
-          </fieldset>
+          </div>
 
           <!--
             Compare quando nome e colore sono uguali a quelli di un altro progetto:
@@ -218,12 +248,6 @@
           <p id="project-duplicate-warning" class="project-form-warning" role="status" hidden>
             Esiste già un progetto con questo nome e questo colore.
           </p>
-
-          <!-- L'id del pulsante Salva serve a JavaScript per cambiarne il testo in "Salva modifiche". -->
-          <div class="project-form-actions">
-            <button id="save-project-button" class="project-action project-action-primary" type="submit">Salva progetto</button>
-            <button id="cancel-project-button" class="project-action" type="button">Annulla</button>
-          </div>
         </form>
 
         <!-- ===============================================================

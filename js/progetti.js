@@ -36,9 +36,16 @@ const moduloProgetto = document.getElementById("project-form");
 const titoloModuloProgetto = document.getElementById("project-form-title");
 const campoNomeProgetto = document.getElementById("project-name");
 const pulsanteSalvaProgetto = document.getElementById("save-project-button");
-// L'avviso che compare sopra Salva quando il progetto sarebbe un doppione.
+// L'avviso che compare sotto la barra quando il progetto sarebbe un doppione.
 const avvisoDoppione = document.getElementById("project-duplicate-warning");
 const pulsanteAnnullaProgetto = document.getElementById("cancel-project-button");
+
+// Il posto della barra sopra la lista, per riportarla lì dopo una modifica,
+// e il li che la contiene mentre sta nella lista: come in js/obiettivi.js.
+const casaDelModulo = moduloProgetto.parentElement;
+const dopoIlModulo = moduloProgetto.nextElementSibling;
+const postoModifica = document.createElement("li");
+postoModifica.className = "goal-edit-slot";
 
 // Colori.
 const pulsanteAltriColori = document.getElementById("more-colors-button");
@@ -136,8 +143,27 @@ function mostraProgetti(idNuovo) {
     elencoProgetti.append(voce);
   }
 
-  // Anche dopo una ricostruzione, il progetto in modifica resta nascosto.
+  // Anche dopo una ricostruzione, il progetto in modifica resta nascosto
+  // e la barra torna al suo posto, prima della sua voce.
   nascondiVoceInModifica();
+  mettiModuloNellaVoce();
+}
+
+// Durante una modifica sposta la barra nella lista, subito prima della voce nascosta:
+// sembra che la voce stessa si sia trasformata nella barra.
+function mettiModuloNellaVoce() {
+  const voce = [...elencoProgetti.children].find(voce => voce.dataset.id === idInModifica);
+  if (voce === undefined) {
+    return;
+  }
+  postoModifica.append(moduloProgetto);
+  voce.before(postoModifica);
+}
+
+// Riporta la barra al suo posto sopra la lista e toglie dalla lista il suo li.
+function rimettiModuloAlSuoPosto() {
+  casaDelModulo.insertBefore(moduloProgetto, dopoIlModulo);
+  postoModifica.remove();
 }
 
 // Nasconde dalla lista il progetto aperto nel modulo; con idInModifica null li mostra tutti.
@@ -244,13 +270,14 @@ function controllaDoppione() {
 // e salvando, il modulo richiama il controllo dei doppioni.
 // =====================================================================
 
-// Mostra il modulo vuoto per creare un progetto.
+// Mostra la barra vuota sopra la lista, per creare un progetto.
 function apriModuloProgetto() {
   moduloProgetto.hidden = false;
   pulsanteNuovoProgetto.hidden = true;
   messaggioProgetti.textContent = "";
   segnaColoriUsati();
   controllaDoppione();
+  campoNomeProgetto.focus();
 }
 
 // Apre il modulo con nome e colore di un progetto, pronto per modificarlo.
@@ -267,10 +294,14 @@ function apriModificaProgetto(id) {
   // Ora che il progetto è in modifica, il suo colore non conta più come usato.
   segnaColoriUsati();
   titoloModuloProgetto.textContent = "Modifica progetto";
-  pulsanteSalvaProgetto.textContent = "Salva modifiche";
+  // data-modo="modifica": il CSS mostra la matita a sinistra al posto del +.
+  moduloProgetto.dataset.modo = "modifica";
+  pulsanteSalvaProgetto.setAttribute("aria-label", "Salva le modifiche");
+  campoNomeProgetto.placeholder = "Nome del progetto";
 
-  // Il progetto compare già nel modulo: nell'elenco sarebbe un doppione.
+  // La voce del progetto si nasconde e la barra prende il suo posto nella lista.
   nascondiVoceInModifica();
+  mettiModuloNellaVoce();
 
   campoNomeProgetto.value = progetto.nome;
   // Assegnare value alla lista dei radio seleziona quello con lo stesso valore.
@@ -280,15 +311,22 @@ function apriModificaProgetto(id) {
   // Scrivere value da JavaScript non genera eventi: il controllo lo chiamiamo noi.
   controllaDoppione();
 
-  // focus porta il cursore nel campo e fa scorrere la pagina fino al modulo.
+  // Il focus va dopo lo spostamento: spostare un elemento gli toglie il focus.
   campoNomeProgetto.focus();
 }
 
-// Chiude il modulo, lo svuota e lo riporta alla creazione di un progetto nuovo.
+// Chiude il modulo, lo svuota, lo riporta sopra la lista e alla creazione di un progetto nuovo.
 function chiudiModuloProgetto() {
   moduloProgetto.hidden = true;
+  rimettiModuloAlSuoPosto();
   pulsanteNuovoProgetto.hidden = false;
   moduloProgetto.reset();
+  // reset non tocca la variabile --swatch scritta da JavaScript sul +: la togliamo noi.
+  pulsanteAltriColori.style.removeProperty("--swatch");
+  // Se la finestrella degli altri colori è rimasta aperta, la chiudiamo.
+  if (finestraAltriColori.matches(":popover-open")) {
+    finestraAltriColori.hidePopover();
+  }
   campoNomeProgetto.setCustomValidity("");
 
   // Il modulo torna alla creazione, pronto per il prossimo Crea progetto.
@@ -296,8 +334,32 @@ function chiudiModuloProgetto() {
   // Il progetto che era in modifica torna visibile nell'elenco.
   nascondiVoceInModifica();
   titoloModuloProgetto.textContent = "Nuovo progetto";
-  pulsanteSalvaProgetto.textContent = "Salva progetto";
+  moduloProgetto.dataset.modo = "nuovo";
+  pulsanteSalvaProgetto.setAttribute("aria-label", "Salva il progetto");
+  campoNomeProgetto.placeholder = "Aggiungi un progetto, premi Invio per salvare";
   controllaDoppione();
+}
+
+// Annulla, con la X o con Esc: chiude il modulo e riporta il focus da dove si era partiti,
+// cioè su Crea progetto o sulla matita del progetto che si stava modificando.
+function annullaModulo() {
+  // idInModifica va letto prima: chiudiModuloProgetto lo riporta a null.
+  const idModificato = idInModifica;
+  chiudiModuloProgetto();
+  if (idModificato === null) {
+    pulsanteNuovoProgetto.focus();
+  } else {
+    elencoProgetti.querySelector(`[data-id="${idModificato}"] .project-edit`)?.focus();
+  }
+}
+
+// Esc nella barra la chiude, come la X. Se però è aperta la finestrella degli altri colori,
+// Esc chiude soltanto quella: ci pensa il browser, perché è un popover.
+// :popover-open vale solo per un popover aperto.
+function chiudiModuloConEsc(evento) {
+  if (evento.key === "Escape" && !finestraAltriColori.matches(":popover-open")) {
+    annullaModulo();
+  }
 }
 
 // Al salvataggio: controlla il nome, legge il colore e sceglie fra creare e modificare.
@@ -341,7 +403,14 @@ function creaProgetto(nome, colore) {
 
   progetti = elencoAggiornato;
   mostraProgetti(nuovoProgetto.id);
-  chiudiModuloProgetto();
+
+  // La barra resta aperta per aggiungere subito un altro progetto: reset svuota il nome
+  // e riporta il colore a quello predefinito. Il colore appena usato riceve il puntino.
+  moduloProgetto.reset();
+  pulsanteAltriColori.style.removeProperty("--swatch");
+  segnaColoriUsati();
+  controllaDoppione();
+  campoNomeProgetto.focus();
 }
 
 // Cambia nome e colore di un progetto esistente e lo salva.
@@ -383,7 +452,8 @@ function cancellaErroreNome() {
 
 // Modulo.
 pulsanteNuovoProgetto.addEventListener("click", apriModuloProgetto);
-pulsanteAnnullaProgetto.addEventListener("click", chiudiModuloProgetto);
+pulsanteAnnullaProgetto.addEventListener("click", annullaModulo);
+moduloProgetto.addEventListener("keydown", chiudiModuloConEsc);
 moduloProgetto.addEventListener("submit", inviaModuloProgetto);
 campoNomeProgetto.addEventListener("input", cancellaErroreNome);
 

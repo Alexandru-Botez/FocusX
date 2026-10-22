@@ -44,14 +44,17 @@ sono ancora da sviluppare: vedi [Funzioni da sviluppare](#funzioni-da-sviluppare
 ### Progetti
 
 - Una pagina dedicata, raggiungibile dal menu.
-- Crea progetto apre un modulo per il nome e il colore; Salva progetto aggiunge la voce in cima all'elenco.
-- Dodici colori principali; il pulsante + apre una finestrella con altri dodici colori.
+- Crea progetto apre una barra compatta di una sola riga, come quella degli obiettivi:
+  si scrive il nome, si sceglie il colore e si preme Invio. Il progetto compare in cima
+  all'elenco e la barra resta aperta per aggiungerne un altro; la X o Esc la chiudono.
+- Dodici colori principali, in piccoli cerchi nella barra; il + apre una finestrella con altri dodici colori.
   Tutti sono abbastanza chiari da vedersi bene sullo sfondo scuro.
 - Un puntino segnala i colori già usati da altri progetti; restano comunque selezionabili.
 - Due progetti non possono avere lo stesso nome e lo stesso colore: Salva si disattiva
   e un avviso spiega perché. Le maiuscole e gli spazi ai lati non contano.
 - Una cartella del colore scelto compare a sinistra del nome di ogni progetto.
-- La matita a destra di ogni progetto riapre il modulo per cambiarne nome e colore.
+- Le voci sono compatte come quelle degli obiettivi. La matita a destra trasforma la voce
+  nella stessa barra, già compilata: Invio salva, Esc annulla.
 - Il cestino accanto lo elimina; al passaggio del mouse diventa rosso.
 - I progetti restano dopo una ricarica: sono salvati in `localStorage`, nel browser
   e all'indirizzo usati, e non vengono sincronizzati tra dispositivi.
