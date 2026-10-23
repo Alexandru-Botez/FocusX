@@ -2054,6 +2054,8 @@ button:disabled {
   Con il cerchio da 28px, il suo centro cade sotto il + della barra.
 */
 .goal {
+  /* relative: la linea accesa dell'obiettivo in corso (::before) si posiziona sulla voce. */
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2288,9 +2290,33 @@ button:disabled {
   color: var(--goal-progress);
 }
 
-/* [data-stato="in-corso"] seleziona il li con quell'attributo, scritto da JavaScript. */
+/*
+  La brace: l'obiettivo in corso ha un calore leggero a sinistra, che sfuma nello sfondo
+  a metà voce, e una linea accesa sul bordo sinistro. Il bordo resta quello delle altre voci.
+  [data-stato="in-corso"] seleziona il li con quell'attributo, scritto da JavaScript.
+  color-mix mescola l'arancione con lo sfondo: 14% basta per un calore appena visibile.
+*/
 .goal[data-stato="in-corso"] {
-  border-color: var(--goal-progress);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--goal-progress) 14%, var(--surface)),
+    var(--surface) 45%
+  );
+}
+
+/*
+  La linea accesa: 3px, staccata di 8px da sopra e da sotto, arrotondata solo a destra.
+  left: 0 la mette subito dentro il bordo sinistro della voce.
+*/
+.goal[data-stato="in-corso"]::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background-color: var(--goal-progress);
 }
 
 :is(.goal, .home-goal)[data-stato="completato"] .goal-name {

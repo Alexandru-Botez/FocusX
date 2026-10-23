@@ -581,7 +581,10 @@ a ogni cambio di stato.
 e l'obiettivo non è completato; un obiettivo completato si può sempre riaprire. `cambiaStato` ripete il controllo.
 `cambiaStato` aggiorna solo la voce interessata con `applicaStato(voce, obiettivo)`,
 che scrive `data-stato` sul `li` e `aria-pressed` sui pulsanti. Il CSS legge `data-stato`:
-in corso il bordo è arancione (`--goal-progress`); completato il nome viene barrato da uno sfondo che passa
+in corso la voce diventa una brace: uno sfondo `linear-gradient` che parte dall'arancione
+(`--goal-progress` al 14% con `color-mix`) e sfuma nella superficie a metà voce, più una linea
+accesa di 3px a sinistra disegnata con `::before` (per questo `.goal` ha `position: relative`),
+mentre il bordo resta grigio come nelle altre voci; completato il nome viene barrato da uno sfondo che passa
 da 0% a 100% di larghezza. Non c'è un'etichetta scritta dello stato: `.goal-complete` è il primo
 elemento del `li`, un cerchio a sinistra del nome (`border-radius: 50%`), e `.goal-start` sta a destra.
 Le voci sono compatte come la barra: `padding: 8px`, nome e dettagli a 2px l'uno dall'altro,
