@@ -613,6 +613,9 @@ Fino a 5 fiammine basta `elements.fiammine.value = String(n)`; oltre, si selezio
 `{ ...obiettivo, ...dati }`, così id e stato restano gli stessi. `chiudiModuloObiettivo` riporta
 `idInModifica` a `null` e il modulo alla creazione. Dopo il salvataggio, e dopo Annulla
 (`annullaModulo`, con la X o con Esc), il focus torna sulla matita.
+Un obiettivo in corso non si modifica: `applicaStato` disattiva la sua matita, con il title «Ferma il
+timer per modificarlo», e `apriModificaObiettivo` controlla di nuovo lo stato prima di aprire la barra.
+Quando il timer si ferma, l'obiettivo torna non completato e la matita si riattiva.
 
 Per eliminare un obiettivo si apre la sua modifica: il cestino `#delete-goal-button` è `hidden` in
 creazione e visibile solo in modifica, fra le azioni della barra, e rosso al passaggio del mouse.
@@ -879,6 +882,7 @@ Per gli obiettivi controlla che:
   di 5 fiammine; con un calendario o un elenco aperto Esc chiuda solo quello, poi Esc annulli
   e la voce ricompaia. Su telefono la barra vada su tre righe senza uscire dallo schermo. Salvando cambino nome, progetto, data e fiammine ma non stato e posizione.
 - Mettendo in corso un obiettivo, quello che era in corso torni non completato.
+- La matita di un obiettivo in corso sia disattivata e non apra la barra; a timer fermo torni attiva.
 - Con meno di 60 secondi lavorati il cerchio sia disattivato e al sessantesimo si attivi; un obiettivo già completato si possa riaprire,
   e poi il cerchio si disattivi.
 - Con lo stesso nome (anche con maiuscole diverse) e lo stesso progetto di un altro obiettivo,

@@ -321,6 +321,12 @@ function applicaStato(voce, obiettivo) {
   pulsanteCompleta.disabled = senzaTempo;
   pulsanteCompleta.title = senzaTempo ? "Lavora almeno un minuto prima di completarlo" : "Segna come completato";
 
+  // Mentre il timer lavora su un obiettivo, la matita è disattivata: si modifica a timer fermo.
+  const pulsanteModifica = voce.querySelector(".goal-edit");
+  const inCorso = obiettivo.stato === "in-corso";
+  pulsanteModifica.disabled = inCorso;
+  pulsanteModifica.title = inCorso ? "Ferma il timer per modificarlo" : "Modifica obiettivo";
+
   // Le date nel formato "2026-10-12" si possono confrontare come testo: "minore" vuol dire prima.
   const inRitardo = obiettivo.data < dataDiOggi() && obiettivo.stato !== "completato";
   voce.querySelector(".goal-date").classList.toggle("is-late", inRitardo);
@@ -699,7 +705,8 @@ function apriModuloObiettivo() {
 // Apre il modulo con i dati di un obiettivo, pronto per modificarlo.
 function apriModificaObiettivo(id) {
   const obiettivo = obiettivi.find(obiettivo => obiettivo.id === id);
-  if (obiettivo === undefined) {
+  // Un obiettivo in corso non si modifica: la matita è disattivata, il controllo resta anche qui.
+  if (obiettivo === undefined || obiettivo.stato === "in-corso") {
     return;
   }
 

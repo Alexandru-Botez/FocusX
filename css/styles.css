@@ -2327,8 +2327,9 @@ button:disabled {
   color: var(--muted);
 }
 
+/* Disattivata (obiettivo in corso), la matita resta grigia anche sotto il mouse. */
 @media (hover: hover) {
-  .goal-list .goal-edit:hover {
+  .goal-list .goal-edit:hover:not(:disabled) {
     color: var(--text);
   }
 }
