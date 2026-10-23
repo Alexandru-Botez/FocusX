@@ -1039,6 +1039,26 @@ button:disabled {
   }
 }
 
+/*
+  Un pulsante con un'icona prima del testo, come il + di Crea.
+  A sinistra meno spazio: il + disegna già un po' di vuoto intorno a sé.
+*/
+.projects-section .project-action-icon {
+  gap: 6px;
+  padding-left: 12px;
+}
+
+.project-action-icon svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* I pulsanti larghi si riducono meno dei cerchi del timer: l'effetto resta discreto. */
 .projects-section .project-action:active:not(:disabled) {
   transform: scale(0.97);

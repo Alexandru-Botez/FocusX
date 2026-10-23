@@ -30,7 +30,7 @@
     <meta name="theme-color" content="#141414">
     <title>Progetti</title>
     <link rel="icon" type="image/svg+xml" href="assets/focusx-mark.svg?v=fiamma-concentrata-2">
-    <link rel="stylesheet" href="css/styles.css?v=finestrella-progetto-1">
+    <link rel="stylesheet" href="css/styles.css?v=pulsante-crea-1">
     <script type="module" src="js/menu.js?v=avvia-1"></script>
     <script type="module" src="js/impostazioni.js?v=imp-1"></script>
     <script type="module" src="js/progetti.js?v=progetti-1"></script>
@@ -141,10 +141,17 @@
         <!-- ===============================================================
              SEZIONE TITOLO E PULSANTE CREA
              Il titolo della pagina e il pulsante che apre la barra vuota.
+             Il pulsante mostra solo il + e "Crea": aria-label fa leggere ai lettori
+             di schermo il nome completo, "Crea progetto".
              =============================================================== -->
         <div class="projects-heading-row">
           <h2 id="projects-heading">Progetti</h2>
-          <button id="new-project-button" class="project-action project-action-primary" type="button">Crea progetto</button>
+          <button id="new-project-button" class="project-action project-action-primary project-action-icon" type="button" aria-label="Crea progetto">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Crea
+          </button>
         </div>
 
         <!-- ===============================================================
