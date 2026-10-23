@@ -1326,6 +1326,14 @@ button:disabled {
   quindi qui si cambiano solo le cose diverse dal modulo dei progetti.
 */
 .project-form.goal-bar {
+  /*
+    L'animazione compari, con both, fa della barra un livello a sé: le sue finestrelle
+    (fiammine, calendario, progetti) non possono uscirne. Anche l'obiettivo appena creato
+    (.goal.is-new) è un livello, e venendo dopo nella pagina coprirebbe le finestrelle.
+    z-index: 1 mette tutta la barra sopra le voci della lista.
+  */
+  position: relative;
+  z-index: 1;
   display: block;
   padding: 6px 8px;
   border-radius: 12px;
