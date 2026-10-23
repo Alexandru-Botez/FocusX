@@ -456,7 +456,7 @@ la cartella del progetto e, dopo una riga sottile, le azioni: cestino (solo in m
 (il pulsante di invio, quindi anche Invio nel nome) e la X. Etichette e titolo ci sono ancora,
 ma con la classe `.solo-lettori`: invisibili, letti dai lettori di schermo. Il bordo della barra
 si schiarisce con `:focus-within`, quando il focus è su un suo elemento. `aggiornaSegnaposto()`
-scrive nel nome «Aggiungi un obiettivo a "Matematica", premi Invio per salvare» a ogni cambio
+scrive nel nome «Aggiungi un obiettivo a "Matematica"» a ogni cambio
 di progetto. `apriModuloObiettivo` sceglie il primo progetto e la data di oggi; dopo
 `creaObiettivo` la barra resta aperta, con il nome vuoto e una fiammina, per aggiungerne un altro.
 Esc la chiude con `chiudiModuloConEsc`, un ascoltatore sul form: parte prima di quelli sul

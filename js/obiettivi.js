@@ -667,16 +667,16 @@ function controllaDoppione() {
 // e salvando, il modulo richiama il controllo dei doppioni.
 // =====================================================================
 
-// Il segnaposto del nome ricorda dove finirà l'obiettivo e come salvarlo:
-// "Aggiungi un obiettivo a "Matematica", premi Invio per salvare".
+// Il segnaposto del nome ricorda dove finirà l'obiettivo:
+// "Aggiungi un obiettivo a "Matematica"".
 function aggiornaSegnaposto() {
   const progetto = progetti.find(progetto => progetto.id === sceltaProgetto.value);
   if (moduloObiettivo.dataset.modo === "modifica") {
     campoNomeObiettivo.placeholder = "Nome dell'obiettivo";
   } else if (progetto === undefined) {
-    campoNomeObiettivo.placeholder = "Aggiungi un obiettivo, premi Invio per salvare";
+    campoNomeObiettivo.placeholder = "Aggiungi un obiettivo";
   } else {
-    campoNomeObiettivo.placeholder = "Aggiungi un obiettivo a \"" + progetto.nome + "\", premi Invio per salvare";
+    campoNomeObiettivo.placeholder = "Aggiungi un obiettivo a \"" + progetto.nome + "\"";
   }
 }
 
